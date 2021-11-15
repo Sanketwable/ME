@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 func Run() {
@@ -20,7 +21,8 @@ func Run() {
 
 func Listen(port int) {
 	r := router.New()
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), r)
+	portt := os.Getenv("PORT")
+	err := http.ListenAndServe(fmt.Sprintf(":%s", portt), r)
 	if err != nil {
 		log.Fatal("error is : ", err)
 	}
