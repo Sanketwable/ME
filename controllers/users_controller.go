@@ -212,8 +212,6 @@ func UpdateForgettedPassword(email string, password string, uid uint32, w http.R
 			return
 		}
 	}(repo)
-
-	return
 }
 
 //DeleteUser is a func

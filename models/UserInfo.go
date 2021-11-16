@@ -7,11 +7,6 @@ type Qualification struct {
 	PassoutYear   string `gorm:"" json:"passout_year"`
 }
 
-// Class details for particular faculty
-type Class struct {
-	Year    uint32 `gorm:"" json:"year"`
-	Subject string `gorm:"" json:"subject"`
-}
 
 //FacultyInfo stores sone basic information about faculty
 type FacultyInfo struct {
@@ -21,7 +16,6 @@ type FacultyInfo struct {
 	PhoneNo       string        `gorm:"size:30;not null;" json:"phone_no"`
 	Qualification Qualification `json:"qualification"`
 	ProfilePhoto  string        `gorm:"" json:"profile_photo"`
-	Classes       []Class       `json:"class"`
 	Experience    float32       `gorm:"" json:"experience"`
 	OTPVerified   bool          `gorm:"default:false;" json:"otp_verified"`
 }
@@ -34,6 +28,5 @@ type StudentInfo struct {
 	Year         uint32  `gorm:"" json:"year"`
 	PhoneNo      string  `gorm:"size:30;not null;" json:"phone_no"`
 	ProfilePhoto string  `gorm:"" json:"profile_photo"`
-	Classes      []Class `json:"class"`
 	OTPVerified  bool    `gorm:"default:false;" json:"otp_verified"`
 }

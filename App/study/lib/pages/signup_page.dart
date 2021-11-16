@@ -6,7 +6,6 @@ import 'package:getwidget/getwidget.dart';
 import 'package:http/io_client.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:study/pages/home_page.dart';
 import 'package:study/pages/student_info.dart';
 import 'package:study/pages/teacher_info.dart';
 import '../constants/constants.dart';
@@ -20,7 +19,11 @@ var Token = "";
 var loginType;
 var otpRequested = false;
 var validOtp = true;
+var incorrectOTP = false;
 var userName = "";
+var signUpError;
+var signUpErrorWithOTP;
+var IncorrectDetails = false;
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -58,27 +61,33 @@ class _SignupState extends State<Signup> {
                         height: 330,
                         child: Column(
                           children: [
-                            Text(
-                              "Enter OTP",
-                              style: TextStyle(color: Colors.blue[400]),
-                            ),
+                            incorrectOTP
+                                ? Text(
+                                    signUpErrorWithOTP.toString(),
+                                    style: TextStyle(color: Colors.red),
+                                  )
+                                : Text(
+                                    "Enter OTP",
+                                    style: TextStyle(color: Colors.blue),
+                                  ),
                             OTPTextField(
                               length: 6,
                               width: MediaQuery.of(context).size.width,
-                              fieldWidth: 50,
-                              style: TextStyle(fontSize: 17),
+                              fieldWidth: 25,
+                              style: TextStyle(fontSize: 18),
                               textFieldAlignment: MainAxisAlignment.spaceAround,
                               fieldStyle: FieldStyle.underline,
                               onCompleted: (pin) async {
                                 showAlertDialog(context, "Signing Up");
                                 if (await signupWithOtp(pin) == "verified") {
                                   print("otp verified");
-                                  store('token', Token);
+                                  store('token', Token, loginType.toString(), userName);
                                   loginType == "faculty"
                                       ? Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (_) => FacultyInfo(userName, Token)),
+                                              builder: (_) =>
+                                                  FacultyInfo(userName, Token)),
                                           ModalRoute.withName("/FacultyInfo"))
                                       : Navigator.pushAndRemoveUntil(
                                           context,
@@ -89,6 +98,7 @@ class _SignupState extends State<Signup> {
                                 } else {
                                   setState(() {
                                     validOtp = false;
+                                    incorrectOTP = true;
                                     Navigator.pop(context, Signup());
                                   });
                                 }
@@ -103,6 +113,27 @@ class _SignupState extends State<Signup> {
                 : Container(
                     child: Column(
                       children: <Widget>[
+                        IncorrectDetails
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 20),
+                                child: Text(
+                                  signUpError.toString(),
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              )
+                            : const Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 20),
+                                child: Text(
+                                  "Enter your details below to signup",
+                                  style: TextStyle(color: Colors.black),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 15),
                           child: TextField(
@@ -178,6 +209,7 @@ class _SignupState extends State<Signup> {
                                 });
                               } else {
                                 setState(() {
+                                  IncorrectDetails = true;
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
@@ -255,6 +287,11 @@ class _SignupState extends State<Signup> {
       print(Expires);
       return Future.value("Otpsent");
     }
+    var res = response1.body;
+    print(res);
+    var obj = json.decode(res);
+    signUpError = obj['error'];
+    print("\nworng password\n");
     print("\notp not send\n");
     return Future.value("Error");
   }
@@ -292,7 +329,12 @@ class _SignupState extends State<Signup> {
       userName = obj['username'];
       return Future.value("verified");
     }
+    var res = response1.body;
+    print(res);
+    var obj = json.decode(res);
+    signUpErrorWithOTP = obj['error'];
     print("\nworng password\n");
+
     return Future.value("Error");
   }
 }

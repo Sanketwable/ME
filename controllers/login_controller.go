@@ -52,10 +52,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		dummyUser := user
 		foundUser := findEmail(dummyUser)
 
+
 		if foundUser.ID == 0 {
 			var err1 error = errors.New("not a user")
 			responses.ERROR(w, http.StatusNotAcceptable, err1)
 			return
+		}
+		if foundUser.LoginType != user.LoginType {
+			var err1 error = errors.New("not a valid loginType")
+			responses.ERROR(w, http.StatusNotAcceptable, err1)
+			return	
 		}
 		user.LastLogin = time.Now()
 

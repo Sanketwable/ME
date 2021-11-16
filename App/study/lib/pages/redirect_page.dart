@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:study/pages/home_page.dart';
+import 'package:study/pages/faculty_home_page.dart';
+import 'package:study/pages/student_home_page.dart';
 import 'package:study/pages/login_page.dart';
+import 'package:study/pages/student_home_page.dart';
 import '../controllers/token.dart';
+
+var LoginType = "";
+var UserName = "";
 
 class Redirect extends StatefulWidget {
   const Redirect({Key? key}) : super(key: key);
@@ -13,6 +18,8 @@ class Redirect extends StatefulWidget {
 class _RedirectState extends State<Redirect> {
   Future<String> finalAttemptoGetToken() async {
     var tkn = await getValue("token");
+    LoginType = await getLoginType();
+    UserName = await getUserName();
     return tkn;
   }
 
@@ -26,12 +33,11 @@ class _RedirectState extends State<Redirect> {
         if (snapshot.hasData) {
           print("token is ");
           print(snapshot);
-          return WelcomePage();
-          // return HomePage();
+          // return WelcomePage();
+          return LoginType == "faculty" ? FacultyHomePage(UserName) :StudentHomePage(UserName);
         } else {
           print("token not present");
           print(snapshot);
-          
           return WelcomePage();
         }
       },

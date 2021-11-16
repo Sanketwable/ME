@@ -7,14 +7,13 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:study/constants/constants.dart';
-import 'package:study/pages/home_page.dart';
+import 'package:study/pages/student_home_page.dart';
 
 final firstNameController = TextEditingController();
 final lastNameController = TextEditingController();
 final phoneNoController = TextEditingController();
 
 var year;
-
 var userName = "";
 var Token = "";
 
@@ -138,7 +137,7 @@ class _FacultyInfoState extends State<StudentInfo> {
                     setState(() {
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (_) => HomePage()),
+                          MaterialPageRoute(builder: (_) => StudentHomePage(userName)),
                           ModalRoute.withName("/Home"));
                     });
                   } else {

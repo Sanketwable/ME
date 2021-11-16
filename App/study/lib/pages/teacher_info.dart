@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:study/constants/constants.dart';
-import 'package:study/pages/home_page.dart';
+import 'package:study/pages/faculty_home_page.dart';
 
 final firstNameController = TextEditingController();
 final lastNameController = TextEditingController();
@@ -170,7 +170,7 @@ class _FacultyInfoState extends State<FacultyInfo> {
                     setState(() {
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (_) => HomePage()),
+                          MaterialPageRoute(builder: (_) => FacultyHomePage(userName)),
                           ModalRoute.withName("/Home"));
                     });
                   } else {

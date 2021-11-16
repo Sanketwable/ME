@@ -23,6 +23,7 @@ func Load() []Route {
 	routes = append(routes, loginRoutes...)
 	routes = append(routes, SignUpRoutes...)
 	routes = append(routes, ForgetPasswordRoutes...)
+	routes = append(routes, classesRoutes...)
 	return routes
 }
 

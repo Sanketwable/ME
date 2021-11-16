@@ -6,7 +6,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
-import './home_page.dart';
+import './faculty_home_page.dart';
+import './student_home_page.dart';
 import '../constants/constants.dart';
 import './signup_page.dart';
 import '../controllers/token.dart';
@@ -15,6 +16,8 @@ import '../controllers/token.dart';
 var dropdownValue;
 var Token;
 var IncorrectDetails = false;
+var loginError;
+var userName = "";
 
 final emailcontroller = TextEditingController();
 final passwordcontroller = TextEditingController();
@@ -36,7 +39,7 @@ class _WelcomePage extends State<WelcomePage> {
         child: Column(
           children: <Widget>[
             const Padding(
-              padding: EdgeInsets.only(top: 60.0, bottom: 80.0),
+              padding: EdgeInsets.only(top: 60.0, bottom: 50.0),
               child: Center(
                   child: Text(
                 "Login",
@@ -44,18 +47,18 @@ class _WelcomePage extends State<WelcomePage> {
               )),
             ),
             IncorrectDetails
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                ? Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     child: Text(
-                      "*Incorrect Details",
-                      style: TextStyle(
+                      loginError.toString(),
+                      style: const TextStyle(
                         color: Colors.red,
                       ),
                       textAlign: TextAlign.left,
                     ),
                   )
                 : const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 10),
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                     child: Text(
                       "Enter your details below to login",
                       style: TextStyle(color: Colors.black),
@@ -209,19 +212,31 @@ class _WelcomePage extends State<WelcomePage> {
       var obj = json.decode(res);
       var Error = obj['error'];
       Token = (obj['token']);
+      userName = obj['username'];
       print("this is the token ---" + Token);
       print(Error);
       return Future.value("loggedIN");
     }
+    var res = response1.body;
+    print(res);
+    var obj = json.decode(res);
+    loginError = obj['error'];
     print("\nworng password\n");
     return Future.value("Error");
   }
 
   void loginSucessfull() {
-    store('token', Token);
-    Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => HomePage()),
-        ModalRoute.withName("/Home"));
+    store('token', Token, dropdownValue.toString(), userName);
+    emailcontroller.clear();
+    passwordcontroller.clear();
+    dropdownValue.toString() == 'faculty'
+        ? Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => FacultyHomePage(userName)),
+            ModalRoute.withName("/Home"))
+        : Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => StudentHomePage(userName)),
+            ModalRoute.withName("/Home"));
   }
 }
