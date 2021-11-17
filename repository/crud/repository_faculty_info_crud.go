@@ -110,7 +110,7 @@ func (r *repositoryFacultyInfoCRUD) FacultyMobileVerify(pid uint64) error {
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		rs = r.db.Debug().Model(models.FacultyInfo{}).Where("user_id = ?", pid).Take(&models.FacultyInfo{}).UpdateColumns(
+		rs = r.db.Debug().Model(models.FacultyInfo{}).Where("user_id = ?", pid).Find(&models.FacultyInfo{}).Take(&models.FacultyInfo{}).UpdateColumns(
 			map[string]interface{}{
 				"otp_verified": true,
 			},
