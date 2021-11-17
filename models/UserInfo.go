@@ -10,7 +10,7 @@ type Qualification struct {
 
 //FacultyInfo stores sone basic information about faculty
 type FacultyInfo struct {
-	UserID        uint32        `gorm:"not null;unique" json:"id"`
+	UserID        uint32        `gorm:"not null;unique" json:"user_id"`
 	FirstName     string        `gorm:"size:30;not null;" json:"first_name"`
 	LastName      string        `gorm:"size:30;not null;" json:"last_name"`
 	PhoneNo       string        `gorm:"size:30;not null;" json:"phone_no"`
@@ -22,7 +22,7 @@ type FacultyInfo struct {
 
 // StudentInfo stores some basic informatin about student
 type StudentInfo struct {
-	UserID       uint32  `gorm:"not null;unique" json:"id"`
+	UserID       uint32  `gorm:"not null;unique" json:"user_id"`
 	FirstName    string  `gorm:"size:30;not null;" json:"first_name"`
 	LastName     string  `gorm:"size:30;not null;" json:"last_name"`
 	Year         uint32  `gorm:"" json:"year"`

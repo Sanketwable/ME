@@ -65,9 +65,9 @@ func (r *repositoryFacultyInfoCRUD) FindById(pid uint64) (models.FacultyInfo, er
 
 	done := make(chan bool)
 	go func(ch chan<- bool) {
-		err = r.db.Debug().Model(models.FacultyInfo{}).Where("author_id = ?", pid).Take(&FacultyInfo).Error
+		err = r.db.Debug().Model(models.FacultyInfo{}).Where("user_id = ?", pid).Take(&FacultyInfo).Error
 
-		err = r.db.Debug().Model(models.Qualification{}).Where("id = ?", pid).Take(&qualification).Error
+		err = r.db.Debug().Model(models.Qualification{}).Where("user_id = ?", pid).Take(&qualification).Error
 		if err != nil {
 			ch <- false
 			return
@@ -87,8 +87,8 @@ func (r *repositoryFacultyInfoCRUD) Update(pid uint64, FacultyInfo models.Facult
 	var rs *gorm.DB
 	done := make(chan bool)
 	go func(ch chan<- bool) {
-		rs = r.db.Debug().Model(models.FacultyInfo{}).Where("author_id = ?", pid).Take(&models.FacultyInfo{}).Updates(FacultyInfo)
-		rs = r.db.Debug().Model(models.Qualification{}).Where("id = ?", pid).Take(&models.Qualification{}).Updates(qualification)
+		rs = r.db.Debug().Model(models.FacultyInfo{}).Where("user_id = ?", pid).Take(&models.FacultyInfo{}).Updates(FacultyInfo)
+		rs = r.db.Debug().Model(models.Qualification{}).Where("user_id = ?", pid).Take(&models.Qualification{}).Updates(qualification)
 		ch <- true
 	}(done)
 
@@ -110,7 +110,7 @@ func (r *repositoryFacultyInfoCRUD) FacultyMobileVerify(pid uint64) error {
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		rs = r.db.Debug().Model(models.FacultyInfo{}).Where("id = ?", pid).Take(&models.FacultyInfo{}).UpdateColumns(
+		rs = r.db.Debug().Model(models.FacultyInfo{}).Where("user_id = ?", pid).Take(&models.FacultyInfo{}).UpdateColumns(
 			map[string]interface{}{
 				"otp_verified": true,
 			},
