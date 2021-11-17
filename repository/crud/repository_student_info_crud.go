@@ -4,6 +4,7 @@ import (
 	"api/models"
 	"api/utils/channels"
 	"errors"
+	"fmt"
 
 	"github.com/jinzhu/gorm"
 )
@@ -95,11 +96,12 @@ func (r *repositoryStudentInfoCRUD) Update(pid uint64, StudentInfo models.Studen
 }
 // StudentMobileVerify(uint64) (error)
 func (r *repositoryStudentInfoCRUD) StudentMobileVerify(pid uint64) error {
+	fmt.Println("here in studentMobileVerify")
 	var rs *gorm.DB
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		rs = r.db.Debug().Model(models.StudentInfo{}).Where("id = ?", pid).Take(&models.StudentInfo{}).UpdateColumns(
+		rs = r.db.Debug().Model(models.StudentInfo{}).Where("id = ?", pid).Take(&models.StudentInfo{}).UpdateColumn(
 			map[string]interface{}{
 				"otp_verified": true,
 			},
