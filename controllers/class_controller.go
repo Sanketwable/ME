@@ -15,8 +15,16 @@ import (
 )
 
 func CreateClass(w http.ResponseWriter, r *http.Request) {
-	_, err := auth.ExtractTokenID(r)
+	faculty_id, err := auth.ExtractTokenID(r)
 	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	dummyfaculty := models.User{}
+	dummyfaculty.ID = faculty_id
+	dummyfaculty = findUser(dummyfaculty)
+	if dummyfaculty.LoginType != "faculty" {
+		err := errors.New("only faculty can create class")
 		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
 	}
@@ -26,8 +34,10 @@ func CreateClass(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	class := models.Class{}
-	class.ClassCode = class.Branch[:2] + strconv.Itoa(int(class.ClassID)) + class.Subject[:2] + strconv.Itoa(int(class.FacultyID)) + "AZ" + strconv.Itoa(int(class.Year))
 	err = json.Unmarshal(body, &class)
+	class.FacultyID = faculty_id
+	class.ClassCode = class.Branch[:2] + strconv.Itoa(int(class.ClassID)) + class.Subject[:2] + strconv.Itoa(int(class.Year)) + "AZ" + strconv.Itoa(int(class.FacultyID))
+
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
@@ -153,9 +163,9 @@ func AddClassWithClassCode(w http.ResponseWriter, r *http.Request) {
 	classstudent := models.ClassStudent{}
 	classstudent.ClassID = uint32(dummyclass.ClassID)
 	classstudent.UserID = userID
-	
+
 	repo := crud.NewRepositoryClassCRUD(db)
-	
+
 	func(classRepository repository.ClassRepository) {
 		err := classRepository.AddStudent(classstudent)
 		if err != nil {
@@ -165,7 +175,6 @@ func AddClassWithClassCode(w http.ResponseWriter, r *http.Request) {
 		responses.JSON(w, http.StatusOK, "user added")
 	}(repo)
 
-	
 }
 func GetClasses(w http.ResponseWriter, r *http.Request) {
 	userID, err := auth.ExtractTokenID(r)
@@ -173,11 +182,11 @@ func GetClasses(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
 	}
-	// get all the classes for user id
-	if err != nil {
-		responses.ERROR(w, http.StatusUnprocessableEntity, err)
-		return
-	}
+	dummyfaculty := models.User{}
+	dummyfaculty.ID = userID
+
+	dummyfaculty = findUser(dummyfaculty)
+	classes := []models.Class{}
 	db, err := database.Connect()
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -188,13 +197,22 @@ func GetClasses(w http.ResponseWriter, r *http.Request) {
 	repo := crud.NewRepositoryClassCRUD(db)
 
 	func(classRepository repository.ClassRepository) {
-		classes, err := classRepository.FindAll(uint32(userID))
-		if err != nil {
-			responses.ERROR(w, http.StatusUnprocessableEntity, err)
-			return
+		if dummyfaculty.LoginType == "faculty" {
+			classes, err = classRepository.FindClassesFaculty(uint32(userID))
+			if err != nil {
+				responses.ERROR(w, http.StatusUnprocessableEntity, err)
+				return
+			}
+		} else if dummyfaculty.LoginType == "student" {
+			classes, err = classRepository.FindAll(uint32(userID))
+			if err != nil {
+				responses.ERROR(w, http.StatusUnprocessableEntity, err)
+				return
+			}
+			
 		}
-		responses.JSON(w, http.StatusOK, classes)
 	}(repo)
+	responses.JSON(w, http.StatusOK, classes)
 
 }
 
@@ -214,4 +232,15 @@ func findClass(dummyclass models.Class) models.Class {
 		dummyclass.ClassID = 0
 	}
 	return dummyclass
+}
+func findUser(dummyuser models.User) models.User {
+	var err error
+	db, _ := database.Connect()
+	defer db.Close()
+	err = db.Debug().Model(models.User{}).Where("id = ?", dummyuser.ID).Take(&dummyuser).Error
+	if err != nil {
+		dummyuser.ID = 0
+		return dummyuser
+	}
+	return dummyuser
 }

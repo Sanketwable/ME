@@ -27,6 +27,7 @@ var (
 	ZOOM_API_KEY        = ""
 	ZOOM_API_SECRET     = ""
 	ZOOM_EMAIL          = ""
+	HEROKUURL           = ""
 )
 
 // Load is a func
@@ -48,7 +49,7 @@ func Load() {
 
 	DBDRIVER = os.Getenv("DB_DRIVER")
 	DBPORT = os.Getenv("DB_PORT")
-	DBURL = fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"),os.Getenv("DB_NAME"))
+	DBURL = fmt.Sprintf("%s:%s@(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", os.Getenv("DB_USER"), os.Getenv("DB_PASS"), os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
 
 	SECRETKEY = []byte(os.Getenv("API_SECRET"))
 	STOREURL = []byte(os.Getenv("STORE_URL"))
@@ -64,5 +65,6 @@ func Load() {
 	ZOOM_API_KEY = (os.Getenv("ZOOM_API_KEY"))
 	ZOOM_API_SECRET = (os.Getenv("ZOOM_API_SECRET"))
 	ZOOM_EMAIL = (os.Getenv("ZOOM_EMAIL"))
+	HEROKUURL = os.Getenv("HEROKUURL")
 
 }

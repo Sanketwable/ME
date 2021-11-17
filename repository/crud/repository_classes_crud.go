@@ -4,6 +4,7 @@ import (
 	"api/models"
 	"api/utils/channels"
 	"errors"
+	"strconv"
 
 	"github.com/jinzhu/gorm"
 )
@@ -25,6 +26,8 @@ func (r *repositoryClassCRUD) Save(class models.Class) (models.Class, error) {
 			ch <- false
 			return
 		}
+		class.ClassCode =  class.ClassCode + strconv.Itoa(int(class.ClassID)) + "k"
+		err = r.db.Debug().Model(models.Class{}).Where("class_id = ?", class.ClassID).Take(&models.Class{}).Updates(class).Error
 		ch <- true
 	}(done)
 
@@ -45,7 +48,7 @@ func (r *repositoryClassCRUD) FindAll(user_id uint32) ([]models.Class, error) {
 		for _, value := range ClassStudent {
 			class := models.Class{}
 			class_id := value.ClassID
-			err = r.db.Debug().Model(models.Class{}).Where("id = ?", class_id).Take(&class).Error
+			err = r.db.Debug().Model(models.Class{}).Where("class_id = ?", class_id).Take(&class).Error
 			Class = append(Class, class)
 		}
 		if err != nil {
@@ -57,6 +60,25 @@ func (r *repositoryClassCRUD) FindAll(user_id uint32) ([]models.Class, error) {
 
 	if channels.OK(done) {
 		return Class, nil
+	}
+	return nil, err
+}
+func (r *repositoryClassCRUD) FindClassesFaculty(faculty_id uint32) ([]models.Class, error) {
+	var err error
+	class := []models.Class{}
+	done := make(chan bool) 
+	go func(ch chan<- bool) {
+		defer close(ch)
+		err = r.db.Debug().Model(models.Class{}).Where("faculty_id = ?", faculty_id).Limit(100).Find(&class).Error
+		if err != nil {
+			ch <- false
+			return
+		}
+		ch <- true
+	}(done)
+
+	if channels.OK(done) {
+		return class, nil
 	}
 	return nil, err
 }

@@ -95,11 +95,34 @@ func (r *repositoryFacultyInfoCRUD) Update(pid uint64, FacultyInfo models.Facult
 	if channels.OK(done) {
 		if rs.Error != nil {
 			if gorm.IsRecordNotFoundError(rs.Error) {
-				return 0, errors.New("Post not found")
+				return 0, errors.New("post not found")
 			}
 			return 0, rs.Error
 		}
 		return rs.RowsAffected, nil
 	}
 	return 0, rs.Error
+}
+// FacultyMobileVerify(uint64) (error)
+func (r *repositoryFacultyInfoCRUD) FacultyMobileVerify(pid uint64) error {
+	var rs *gorm.DB
+
+	done := make(chan bool)
+	go func(ch chan<- bool) {
+		defer close(ch)
+		rs = r.db.Debug().Model(models.FacultyInfo{}).Where("id = ?", pid).Take(&models.FacultyInfo{}).UpdateColumns(
+			map[string]interface{}{
+				"otp_verified": true,
+			},
+		)
+		ch <- true
+	}(done)
+
+	if channels.OK(done) {
+		if rs.Error != nil {
+			return rs.Error
+		}
+		return nil
+	}
+	return rs.Error
 }

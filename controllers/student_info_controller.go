@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"api/auth"
+	"api/config"
 	"api/database"
 	"api/models"
 	"api/repository"
@@ -48,9 +49,10 @@ func CreateStudentInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// smsContent := `Click on the URL to verify your mobile number for Study App`
-	// smsErr := SendCellularSMS(mobileNo, smsContent)
-	var smsErr error
+	token := auth.ExtractToken(r)
+	herokuURL := config.HEROKUURL
+	smsContent := `Click on the URL to verify your mobile number for Study App URL : ` + herokuURL +`/verifymobile?token=` + token
+	smsErr := SendCellularSMS(mobileNo, smsContent)
 	if smsErr == nil {
 		db, err := database.Connect()
 		if err != nil {

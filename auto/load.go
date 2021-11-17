@@ -15,7 +15,7 @@ func Load() {
 	}
 	defer db.Close()
 
-	// err = db.Debug().DropTableIfExists(&models.User{}, &models.StudentInfo{},&models.FacultyInfo{}, models.TempOTP{}, models.AvailableJobs{}, models.Requirement{}, models.Location{}, models.Bookmark{}, models.FileInfo{}, models.InterviewSchedule{}, models.License{}, models.Specialization{}, models.Certification{}, models.Reference{}, models.WorkExperience{}, models.Position{}, models.Education{}, models.Language{}, models.Award{}, models.Project{}, models.Volunteering{}, models.Qualification{}).Error
+	// err = db.Debug().DropTableIfExists(&models.User{}, &models.StudentInfo{},&models.FacultyInfo{}, models.TempOTP{}, models.Qualification{}, models.Class{}, models.ClassStudent{}).Error
 	// if err != nil {
 	// 	log.Fatal("this is an error :", err)
 	// }

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"api/controllers"
 	"api/middlewares"
 	"net/http"
 
@@ -15,6 +16,13 @@ type Route struct {
 	AuthRequired bool
 }
 
+var verifyRoute = Route {
+	Uri: "/verifymobile",
+	Method: http.MethodGet,
+	Handler: controllers.VerifyMobile,
+	AuthRequired: false,
+}
+
 // Load is  a func
 func Load() []Route {
 	routes := usersRoutes
@@ -24,6 +32,7 @@ func Load() []Route {
 	routes = append(routes, SignUpRoutes...)
 	routes = append(routes, ForgetPasswordRoutes...)
 	routes = append(routes, classesRoutes...)
+	routes = append(routes, verifyRoute)
 	return routes
 }
 
