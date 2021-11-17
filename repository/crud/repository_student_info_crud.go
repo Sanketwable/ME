@@ -101,7 +101,7 @@ func (r *repositoryStudentInfoCRUD) StudentMobileVerify(pid uint64) error {
 	done := make(chan bool)
 	go func(ch chan<- bool) {
 		defer close(ch)
-		rs = r.db.Debug().Model(models.StudentInfo{}).Where("id = ?", pid).Take(&models.StudentInfo{}).UpdateColumn(
+		rs = r.db.Debug().Model(models.StudentInfo{}).Where("student_infos.id = ?", pid).Take(&models.StudentInfo{}).UpdateColumn(
 			map[string]interface{}{
 				"otp_verified": true,
 			},
