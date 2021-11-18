@@ -132,8 +132,9 @@ class _WelcomePage extends State<WelcomePage> {
                   color: Colors.blue, borderRadius: BorderRadius.circular(20)),
               child: TextButton(
                 onPressed: () async {
-                  showAlertDialog(context, "Logging IN");
+                  var dialogContext = showAlertDialog(context, "Logging IN");
                   if (await login() == "Error") {
+                    Navigator.pop(dialogContext);
                     print("now has to stopped");
                     setState(() {
                       IncorrectDetails = true;
@@ -168,7 +169,7 @@ class _WelcomePage extends State<WelcomePage> {
     );
   }
 
-  showAlertDialog(BuildContext context, String lodingText) {
+  BuildContext showAlertDialog(BuildContext context, String lodingText) {
     AlertDialog alert = AlertDialog(
       content: Row(
         children: [
@@ -184,6 +185,7 @@ class _WelcomePage extends State<WelcomePage> {
         return alert;
       },
     );
+    return context;
   }
 
   Future<String> login() async {

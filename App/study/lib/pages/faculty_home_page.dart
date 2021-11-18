@@ -51,7 +51,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           child: TextButton(
             onPressed: () {},
             child: Text(
-              'Welcome' + facultyUsername,
+              'Welcome ' + facultyUsername,
               style: TextStyle(color: Colors.white, fontSize: 25),
             ),
           ),

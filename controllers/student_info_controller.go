@@ -70,8 +70,8 @@ func CreateStudentInfo(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			w.Header().Set("Location", fmt.Sprintf("%s%s", r.Host, r.URL.Path))
+			responses.JSON(w, http.StatusCreated, studentInfo)
 		}(repo)
-		responses.JSON(w, http.StatusCreated, studentInfo)
 	} else {
 		responses.JSON(w, http.StatusCreated, "error verifying phone")
 	}

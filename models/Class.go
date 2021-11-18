@@ -9,6 +9,7 @@ type Class struct {
 	Year      uint32 `gorm:"" json:"year"`
 	Branch    string `gorm:"" json:"branch"`
 	Subject   string `gorm:"" json:"subject"`
+	ImageLink string `gorm:"" json:"image_link"`
 }
 
 type ClassStudent struct {

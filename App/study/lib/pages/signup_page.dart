@@ -66,7 +66,7 @@ class _SignupState extends State<Signup> {
                                     signUpErrorWithOTP.toString(),
                                     style: TextStyle(color: Colors.red),
                                   )
-                                : Text(
+                                : const Text(
                                     "Enter OTP",
                                     style: TextStyle(color: Colors.blue),
                                   ),
@@ -78,10 +78,13 @@ class _SignupState extends State<Signup> {
                               textFieldAlignment: MainAxisAlignment.spaceAround,
                               fieldStyle: FieldStyle.underline,
                               onCompleted: (pin) async {
-                                showAlertDialog(context, "Signing Up");
+                                var dialogContext =
+                                    showAlertDialog(context, "Signing Up");
                                 if (await signupWithOtp(pin) == "verified") {
+                                  Navigator.pop(dialogContext);
                                   print("otp verified");
-                                  store('token', Token, loginType.toString(), userName);
+                                  store('token', Token, loginType.toString(),
+                                      userName);
                                   loginType == "faculty"
                                       ? Navigator.pushAndRemoveUntil(
                                           context,
@@ -96,10 +99,10 @@ class _SignupState extends State<Signup> {
                                                   StudentInfo(userName, Token)),
                                           ModalRoute.withName("/StudentInfo"));
                                 } else {
+                                  Navigator.pop(dialogContext);
                                   setState(() {
                                     validOtp = false;
                                     incorrectOTP = true;
-                                    Navigator.pop(context, Signup());
                                   });
                                 }
                               },
@@ -196,25 +199,18 @@ class _SignupState extends State<Signup> {
                               borderRadius: BorderRadius.circular(20)),
                           child: TextButton(
                             onPressed: () async {
-                              showAlertDialog(context, "Signing Up");
+                              var alert =
+                                  showAlertDialog(context, "Signing Up");
                               if (await signup() == "Otpsent") {
+                                Navigator.pop(alert);
                                 print("change window to enter otp");
                                 setState(() {
                                   otpRequested = true;
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => Signup()),
-                                      ModalRoute.withName("/Home"));
                                 });
                               } else {
+                                Navigator.pop(alert);
                                 setState(() {
                                   IncorrectDetails = true;
-                                  Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (_) => Signup()),
-                                      ModalRoute.withName("/Home"));
                                 });
                               }
                             },
@@ -237,7 +233,7 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  showAlertDialog(BuildContext context, String lodingText) {
+  BuildContext showAlertDialog(BuildContext context, String lodingText) {
     AlertDialog alert = AlertDialog(
       content: Row(
         children: [
@@ -253,6 +249,7 @@ class _SignupState extends State<Signup> {
         return alert;
       },
     );
+    return context;
   }
 
   Future<String> signup() async {
