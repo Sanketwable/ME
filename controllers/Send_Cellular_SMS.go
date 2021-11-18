@@ -11,7 +11,7 @@ import (
 func SendCellularSMS(mobileNO, message string) error {
 
 	accountSid := "AC5ec2c719f863d53c9f8500c92b4dfca8"
-	authToken := "ee1c06352931e7e3b4f8c8e61c08e2ea"
+	authToken := "b7c2bbd70f5a1ebceefeffc3e530e86e"
 
 	urlStr := "https://api.twilio.com/2010-04-01/Accounts/" + accountSid + "/Messages.json"
 
