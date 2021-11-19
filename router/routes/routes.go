@@ -33,6 +33,7 @@ func Load() []Route {
 	routes = append(routes, ForgetPasswordRoutes...)
 	routes = append(routes, classesRoutes...)
 	routes = append(routes, verifyRoute)
+	routes = append(routes, assignmentRoutes...)
 	return routes
 }
 
