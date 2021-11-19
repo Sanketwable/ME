@@ -27,7 +27,7 @@ func (r *repositoryAssignmentCRUD) SaveFileAssigment(assignment models.Assignmen
 			return
 		}
 		fileassignment.AssignmentID = assignment.AssignmentID
-		fileassignment.CreatedAt = time.Now()
+		fileassignment.CreatedAt = time.Now().String()
 		err = r.db.Debug().Model(models.FileAssignment{}).Create(&fileassignment).Error
 		if err != nil {
 			ch <- false
