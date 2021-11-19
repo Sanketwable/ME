@@ -33,7 +33,6 @@ func (r *repositoryAssignmentCRUD) SaveFileAssigment(assignment models.Assignmen
 			ch <- false
 			return
 		}
-		assignment.FileAssignment = fileassignment
 		ch <- true
 	}(done)
 
