@@ -30,7 +30,7 @@ type FormAssignment struct {
 }
 
 type Question struct {
-	AssignmentID uint32 `gorm:"primary_key;auto_increment" json:"assignment_id"`
+	AssignmentID uint32 `gorm:"" json:"assignment_id"`
 	Question     string `gorm:"" json:"question"`
 	Option1      string `gorm:"" json:"option1"`
 	Option2      string `gorm:"" json:"option2"`
