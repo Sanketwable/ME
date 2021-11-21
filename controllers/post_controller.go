@@ -14,6 +14,25 @@ import (
 	"time"
 )
 
+type PostsResponse struct {
+	PostID      uint32    `json:"post_id"`
+	ClassID     uint32    `json:"class_id"`
+	UserID      uint32    `json:"user_id"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Description string    `json:"description"`
+	Time        string    `json:"time"`
+}
+
+type CommentsResponse struct {
+	PostID    uint32 `json:"post_id"`
+	UserID    uint32 `json:"user_id"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Comment   string `json:"comment"`
+	Time      string `json:"time"`
+}
+
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	faculty_id, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -96,6 +115,7 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 	classid := r.URL.Query().Get("class_id")
 	class_id, err := strconv.Atoi(classid)	
 	posts := []models.Post{}
+	
 	db, err := database.Connect()
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -111,7 +131,28 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
-		responses.JSON(w, http.StatusOK, posts)
+		postresponse := []PostsResponse{}
+		for _, post := range posts {
+			pr := PostsResponse{}
+			pr.ClassID = post.ClassID
+			pr.Description = post.Description
+			pr.PostID = post.PostID
+			pr.Time = post.Time
+			repo1 := crud.NewRepositoryStudentInfoCRUD(db)
+			studentinfo, err := repo1.FindById(uint64(post.UserID))
+			if err != nil {
+				repo1 := crud.NewRepositoryFacultyInfoCRUD(db)
+				facultyinfo, _ := repo1.FindById(uint64(post.UserID))
+				pr.FirstName = facultyinfo.FirstName
+				pr.LastName = facultyinfo.LastName
+			} else {
+				pr.FirstName = studentinfo.FirstName
+				pr.LastName = studentinfo.LastName
+			}
+			postresponse = append(postresponse, pr)
+		}
+		
+		responses.JSON(w, http.StatusOK, postresponse)
 	}(repo)
 }
 
@@ -125,6 +166,7 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 	postid := r.URL.Query().Get("post_id")
 	post_id, err := strconv.Atoi(postid)	
 	comments := []models.Comment{}
+	commentresponse := []CommentsResponse{}
 	db, err := database.Connect()
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -140,6 +182,26 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
-		responses.JSON(w, http.StatusOK, comments)
+		for _, comment := range comments {
+			c := CommentsResponse{}
+			c.Comment = comment.Comment
+			c.PostID = comment.PostID
+			c.Time = comment.Time
+			c.UserID = comment.UserID
+
+			repo1 := crud.NewRepositoryStudentInfoCRUD(db)
+			studentinfo, err := repo1.FindById(uint64(comment.UserID))
+			if err != nil {
+				repo1 := crud.NewRepositoryFacultyInfoCRUD(db)
+				facultyinfo, _ := repo1.FindById(uint64(comment.UserID))
+				c.FirstName = facultyinfo.FirstName
+				c.LastName = facultyinfo.LastName
+			} else {
+				c.FirstName = studentinfo.FirstName
+				c.LastName = studentinfo.LastName
+			}
+			commentresponse = append(commentresponse, c)
+		}
+		responses.JSON(w, http.StatusOK, commentresponse)
 	}(repo)
 }

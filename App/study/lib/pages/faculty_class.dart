@@ -66,29 +66,29 @@ class _FacultyClassState extends State<FacultyClass> {
       appBar: AppBar(
         title: Text('Faculty'),
       ),
-      floatingActionButton: Container(
-        padding: EdgeInsets.all(20),
-        child: FittedBox(
-          child: FloatingActionButton(
-            onPressed: () {
-              if (_selectedPage == 0) {
-                print("here with selectedpage = 0");
-              } else if (_selectedPage == 1) {
-                print("here with selectedpage = 1");
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => MyDialog(Refresh)));
-              } else {
-                print("here with selectedpage = 2");
-                var dialogContext = addStudentEmail(context);
-              }
-            },
-            child: Icon(Icons.add),
-            tooltip: "Add Student to Class",
-            isExtended: true,
-            autofocus: true,
-          ),
-        ),
-      ),
+      floatingActionButton: _selectedPage == 0
+          ? SizedBox.shrink()
+          : Container(
+              padding: EdgeInsets.all(20),
+              child: FittedBox(
+                child: FloatingActionButton(
+                  onPressed: () {
+                    if (_selectedPage == 1) {
+                      print("here with selectedpage = 1");
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => MyDialog(Refresh)));
+                    } else {
+                      print("here with selectedpage = 2");
+                      var dialogContext = addStudentEmail(context);
+                    }
+                  },
+                  child: Icon(Icons.add),
+                  tooltip: "Add Student to Class",
+                  isExtended: true,
+                  autofocus: true,
+                ),
+              ),
+            ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       drawer: Drawer(
         child: ListView(
@@ -238,6 +238,7 @@ class _FacultyClassState extends State<FacultyClass> {
   }
 
   Widget timeLinePage() {
+    var postController = TextEditingController();
     return Column(
       children: [
         Padding(
@@ -252,12 +253,12 @@ class _FacultyClassState extends State<FacultyClass> {
               //     color: Colors.white, width: 0.5, style: BorderStyle.solid),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.blueGrey,
+                  color: Colors.grey,
                   offset: Offset(
-                    5.0,
-                    5.0,
+                    2.0,
+                    2.0,
                   ),
-                  blurRadius: 10.0,
+                  blurRadius: 2.0,
                   spreadRadius: 2.0,
                 ), //BoxShadow
               ],
@@ -267,7 +268,7 @@ class _FacultyClassState extends State<FacultyClass> {
                 Row(
                   children: [
                     Text(
-                      classData["branch"] + " ",
+                      "   " + classData["branch"] + " ",
                       style: TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     Text(
@@ -306,6 +307,64 @@ class _FacultyClassState extends State<FacultyClass> {
             ),
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.all(10.0),
+          child: Container(
+            padding: EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(10),
+              // border: Border.all(
+              //     color: Colors.white, width: 0.5, style: BorderStyle.solid),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black,
+                  offset: Offset(
+                    0.0,
+                    3.0,
+                  ),
+                  blurRadius: 3.0,
+                  spreadRadius: 1.0,
+                ), //BoxShadow
+              ],
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: CircleAvatar(
+                    backgroundColor: Colors.white,
+                    radius: 25,
+                    backgroundImage: NetworkImage(
+                        "https://i.ibb.co/xSk0BBy/mindset-converted-vector-hand-drawn-illustration-lettering-phrases-new-post-idea-poster-postcard-189.jpg"),
+                  ),
+                ),
+                Expanded(
+                  flex: 8,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                    child: TextField(
+                      controller: postController,
+                      obscureText: false,
+                      onSubmitted: (str) async {
+                        String response = await addPost(str);
+                        if (response == "sucessfull") {
+                          postController.clear();
+                          setState(() {});
+                        }
+                      },
+                      decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          labelText: 'Add Post',
+                          hintText: 'Write here to add post'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         Expanded(
           flex: 9,
           child: FutureBuilder(
@@ -314,8 +373,15 @@ class _FacultyClassState extends State<FacultyClass> {
                 return Padding(
                   padding: EdgeInsets.symmetric(
                       vertical: MediaQuery.of(context).size.width * 0.40),
-                  child:
-                      const Center(child: Text('Please wait its loading...')),
+                  child: Column(
+                    children: const [
+                      Center(child: Text('Please wait its loading...')),
+                      Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ],
+                  ),
                 );
               } else {
                 if (snapshot.hasError) {
@@ -327,9 +393,8 @@ class _FacultyClassState extends State<FacultyClass> {
                           padding: EdgeInsets.symmetric(
                               vertical:
                                   MediaQuery.of(context).size.width * 0.40),
-                          child: const Center(
-                              child: Text(
-                                  'You are not enrolled to any classes')),
+                          child:
+                              const Center(child: Text('Their are no posts')),
                         )
                       : ListView.builder(
                           scrollDirection: Axis.vertical,
@@ -338,80 +403,89 @@ class _FacultyClassState extends State<FacultyClass> {
                           itemBuilder: (context, index) {
                             var datas = snapshot.data![index];
                             return Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Center(
-                                child: Container(
-                                  // height: 100,
-                                  width: MediaQuery.of(context).size.width *
-                                      0.95,
-                                  decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      borderRadius:
-                                          BorderRadius.circular(10)),
-                                  child: TextButton(
-                                    onPressed: () {},
-                                    child: Container(
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.all(2.0),
-                                            child: Text(
-                                              datas["subject"]
-                                                  .toString()
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20),
+                              padding: const EdgeInsets.all(10),
+                              child: Container(
+                                padding: EdgeInsets.all(5),
+                                decoration: BoxDecoration(
+                                    border:
+                                        Border.all(color: Color(0x332980b9)),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        const CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          radius: 25,
+                                          backgroundImage: NetworkImage(
+                                              "https://i.ibb.co/4Jf3Qk6/Screenshot-2021-11-21-at-5-18-27-PM.jpg"),
+                                        ),
+                                        Flexible(
+                                          child: Container(
+                                            padding: const EdgeInsets.all(5.0),
+                                            child: Column(
+                                              children: [
+                                                Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Text(
+                                                    datas["description"],
+                                                    maxLines: 5,
+                                                    overflow:
+                                                        TextOverflow.visible,
+                                                    style: const TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 18,
+                                                        fontWeight:
+                                                            FontWeight.w600),
+                                                  ),
+                                                ),
+                                                Container(
+                                                  padding: EdgeInsets.all(5),
+                                                  alignment:
+                                                      Alignment.centerLeft,
+                                                  child: Text(
+                                                    "Date : " +
+                                                        datas["time"]
+                                                            .substring(0, 10) +
+                                                        "\nTime : " +
+                                                        datas["time"]
+                                                            .substring(10),
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 15),
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                datas["branch"],
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18),
-                                              ),
-                                              Text(
-                                                datas["year"].toString(),
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18),
-                                              ),
-                                              Spacer(),
-                                              Container(
-                                                child: CircleAvatar(
-                                                    radius: 35,
-                                                    backgroundImage:
-                                                        NetworkImage(datas[
-                                                            "image_link"])),
-                                              ),
-                                            ],
-                                          ),
-                                          Text(
-                                            "Class code : " +
-                                                datas["class_code"],
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12),
-                                          ),
-                                          Text(
-                                            datas["link"] + "\n",
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 11),
-                                          ),
-                                          // Text(
-                                          //   "sanket\n\n\n",
-                                          //   style: TextStyle(
-                                          //       color: Colors.white,
-                                          //       fontSize: 11),
-                                          // ),
-                                        ],
-                                      ),
+                                        ),
+
+                                        // Text(
+                                        //   "sanket\n\n\n",
+                                        //   style: TextStyle(
+                                        //       color: Colors.white,
+                                        //       fontSize: 11),
+                                        // ),
+                                      ],
                                     ),
-                                  ),
+                                    Divider(
+                                      color: Color(0x332980b9),
+                                    ),
+                                    Container(
+                                      // padding: EdgeInsets.all(0),
+                                      child: Center(
+                                        child: TextButton(
+                                            onPressed: () {
+                                              var cntx = Comments(
+                                                  context, datas["post_id"]);
+                                            },
+                                            child: Text("Comments")),
+                                      ),
+                                    )
+                                  ],
                                 ),
                               ),
                             );
@@ -420,11 +494,246 @@ class _FacultyClassState extends State<FacultyClass> {
                 }
               }
             },
-            future: getClasses(),
+            future: getPosts(),
           ),
         ),
       ],
     );
+  }
+
+  BuildContext Comments(BuildContext context, int postID) {
+    AlertDialog alert = AlertDialog(
+      elevation: 5.0,
+      content: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.80,
+          width: MediaQuery.of(context).size.width * 0.80,
+          child: FutureBuilder(
+            builder: (context, AsyncSnapshot<List> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: MediaQuery.of(context).size.width * 0.40),
+                  child: Column(
+                    children: const [
+                      Center(child: Text('Please wait its loading...')),
+                      Padding(
+                        padding: EdgeInsets.all(15.0),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  print(snapshot);
+                  var commentController = TextEditingController();
+                  return Column(
+                    children: [
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          child: Text("Comments"),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: Container(
+                              padding: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.rectangle,
+                                borderRadius: BorderRadius.circular(10),
+                                // border: Border.all(
+                                //     color: Colors.white, width: 0.5, style: BorderStyle.solid),
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black,
+                                    offset: Offset(
+                                      0.0,
+                                      3.0,
+                                    ),
+                                    blurRadius: 3.0,
+                                    spreadRadius: 1.0,
+                                  ), //BoxShadow
+                                ],
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    flex: 2,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.white,
+                                      radius: 25,
+                                      backgroundImage: NetworkImage(
+                                          "https://i.ibb.co/5nmxwtY/2186059.png"),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    flex: 8,
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 15, vertical: 5),
+                                      child: TextField(
+                                        controller: commentController,
+                                        obscureText: false,
+                                        onSubmitted: (str) async {
+                                          Navigator.pop(context);
+                                          String response =
+                                              await addComment(str, postID);
+                                          if (response == "sucessfull") {
+                                            commentController.clear();
+
+                                            setState(() {});
+                                          }
+                                        },
+                                        decoration: const InputDecoration(
+                                            border: InputBorder.none,
+                                            labelText: 'Add Comment',
+                                            hintText:
+                                                'Write here to add comment'),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        flex: 7,
+                        child: snapshot.data!.isEmpty
+                            ? Padding(
+                                padding: EdgeInsets.symmetric(
+                                    vertical:
+                                        MediaQuery.of(context).size.width * 0.40),
+                                child: const Center(child: Text('No Comments')),
+                              )
+                            : ListView.builder(
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (context, index) {
+                                  var datas = snapshot.data![index];
+                                  return Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              color: Color(0x332980b9)),
+                                          color: Colors.white,
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            children: [
+                                              const CircleAvatar(
+                                                backgroundColor: Colors.white,
+                                                radius: 15,
+                                                backgroundImage: NetworkImage(
+                                                    "https://i.ibb.co/4Jf3Qk6/Screenshot-2021-11-21-at-5-18-27-PM.jpg"),
+                                              ),
+                                              Flexible(
+                                                child: Container(
+                                                  padding:
+                                                      const EdgeInsets.all(2.0),
+                                                  child: Column(
+                                                    children: [
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.all(2),
+                                                        alignment:
+                                                            Alignment.centerLeft,
+                                                        child: Text(
+                                                          datas["user_id"]
+                                                              .toString(),
+                                                          overflow: TextOverflow
+                                                              .visible,
+                                                          style: const TextStyle(
+                                                              color: Colors.black,
+                                                              fontSize: 11,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.all(2),
+                                                        alignment:
+                                                            Alignment.centerLeft,
+                                                        child: Text(
+                                                          datas["comment"],
+                                                          style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontSize: 15),
+                                                        ),
+                                                      ),
+                                                      Container(
+                                                        padding:
+                                                            EdgeInsets.all(2),
+                                                        alignment:
+                                                            Alignment.centerLeft,
+                                                        child: Text(
+                                                          datas["time"]
+                                                              .substring(0, 10),
+                                                          style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontSize: 10),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                      
+                                              // Text(
+                                              //   "sanket\n\n\n",
+                                              //   style: TextStyle(
+                                              //       color: Colors.white,
+                                              //       fontSize: 11),
+                                              // ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                      Expanded(
+                        flex: 1,
+                        child: TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text("close")),
+                      )
+                    ],
+                  );
+                }
+              }
+            },
+            future: getComments(postID),
+          )),
+    );
+    showDialog(
+      barrierDismissible: true,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+    return context;
   }
 
   Widget AssignmentPage() {
@@ -643,6 +952,112 @@ class _FacultyClassState extends State<FacultyClass> {
     setState(() {
       _selectedPage = _selectedPage;
     });
+  }
+
+  Future<List<dynamic>> getComments(int postID) async {
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.get(
+      url + '/getcomments?post_id=' + postID.toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    var res = response1.body;
+
+    if (response1.statusCode == 200) {
+      var obj = json.decode(res);
+      print(obj);
+      return obj;
+    }
+    var obj = json.decode(res);
+    print(obj);
+    return Future.value(obj["error"]);
+  }
+
+  Future<List<dynamic>> getPosts() async {
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.get(
+      url + '/getposts?class_id=' + classData["class_id"].toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    var res = response1.body;
+
+    if (response1.statusCode == 200) {
+      var obj = json.decode(res);
+      print(obj);
+      return obj;
+    }
+    var obj = json.decode(res);
+    print(obj);
+    return Future.value(obj["error"]);
+  }
+
+  Future<String> addComment(String comment, int classID) async {
+    var token = await getValue("token");
+
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.post(
+      url + '/createcomment',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        "post_id": int.parse(classID.toString()),
+        "comment": comment,
+      }),
+    );
+    var res = response1.body;
+    var obj = json.decode(res);
+    print(obj);
+    if (response1.statusCode == 200) {
+      return Future.value("sucessfull");
+    }
+    emailError = obj['error'];
+    return Future.value("error");
+  }
+
+  Future<String> addPost(String post) async {
+    var token = await getValue("token");
+    print(post);
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.post(
+      url + '/createpost',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        "class_id": int.parse(classData["class_id"].toString()),
+        "description": post,
+      }),
+    );
+    var res = response1.body;
+    var obj = json.decode(res);
+    print(obj);
+    if (response1.statusCode == 200) {
+      return Future.value("sucessfull");
+    }
+    emailError = obj['error'];
+    return Future.value("error");
   }
 }
 
