@@ -61,7 +61,7 @@ func (r *repositoryStudentInfoCRUD) FindById(pid uint64) (models.StudentInfo, er
 	StudentInfo := models.StudentInfo{}
 	done := make(chan bool)
 	go func(ch chan<- bool) {
-		err = r.db.Debug().Model(models.StudentInfo{}).Where("author_id = ?", pid).Take(&StudentInfo).Error
+		err = r.db.Debug().Model(models.StudentInfo{}).Where("user_id = ?", pid).Take(&StudentInfo).Error
 		if err != nil {
 			ch <- false
 			return
