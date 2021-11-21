@@ -14,9 +14,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
-
-	"github.com/gorilla/mux"
 )
+
+type UserInfo struct {
+	Email     string `json:"email"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	UserName  string `json:"user_name"`
+	LoginType string `json:"login_type"`
+}
 
 //GetUsers is a func
 func GetUsers(w http.ResponseWriter, r *http.Request) {
@@ -78,14 +84,17 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 // }
 
 //GetUser is a func
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)
-	uid, err := strconv.ParseUint(vars["id"], 10, 32)
+	id := r.URL.Query().Get("id")
+	user_id, err := strconv.Atoi(id)
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
 	}
+	var user models.User
+	var userInfo UserInfo
+
 	db, err := database.Connect()
 	if err != nil {
 		responses.ERROR(w, http.StatusInternalServerError, err)
@@ -96,13 +105,45 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	repo := crud.NewRepositoryUsersCRUD(db)
 
 	func(usersRepository repository.UserRepository) {
-		user, err := usersRepository.FindById(uint32(uid))
+		user, err = usersRepository.FindById(uint32(user_id))
 		if err != nil {
 			responses.ERROR(w, http.StatusBadRequest, err)
 			return
 		}
-		responses.JSON(w, http.StatusOK, user)
+
 	}(repo)
+	userInfo.Email = user.Email
+	userInfo.UserName = user.UserName
+	userInfo.LoginType = user.LoginType
+
+	if user.LoginType == "student" {
+		repo1 := crud.NewRepositoryStudentInfoCRUD(db)
+
+		func(StudentInfoRepository repository.StudentInfoRepository) {
+			StudentInfo, err := StudentInfoRepository.FindById(uint64(user_id))
+			if err != nil {
+				responses.ERROR(w, http.StatusBadRequest, err)
+				return
+			}
+			userInfo.FirstName = StudentInfo.FirstName
+			userInfo.LastName = StudentInfo.LastName
+		}(repo1)
+	} else {
+		repo2:= crud.NewRepositoryFacultyInfoCRUD(db)
+
+		func(FacultyInfoRepository repository.FacultyInfoRepository) {
+			FacultyInfo, err := FacultyInfoRepository.FindById(uint64(user_id))
+			if err != nil {
+				responses.ERROR(w, http.StatusBadRequest, err)
+				return
+			}
+			userInfo.FirstName = FacultyInfo.FirstName
+			userInfo.LastName = FacultyInfo.LastName
+			
+		}(repo2)
+	}
+
+	responses.JSON(w, http.StatusOK, userInfo)
 }
 
 // UpdatedPassword is a struct

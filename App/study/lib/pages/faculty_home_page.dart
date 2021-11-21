@@ -128,7 +128,15 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   padding: EdgeInsets.symmetric(
                       vertical: MediaQuery.of(context).size.width * 0.40),
                   child:
-                      const Center(child: Text('Please wait its loading...')),
+                      Column(
+                        children: [
+                          const Center(child: Text('Please wait its loading...')),
+                          Padding(
+                              padding: const EdgeInsets.all(15.0),
+                              child: CircularProgressIndicator(),
+                            ),
+                        ],
+                      ),
                 );
               } else {
                 if (snapshot.hasError) {

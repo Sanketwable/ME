@@ -23,6 +23,16 @@ class StudentHomePage extends StatefulWidget {
 }
 
 class _StudentHomePageState extends State<StudentHomePage> {
+  int _selectedPage = 0;
+  void _onItemTapped(int index) {
+    if (_selectedPage != index) {
+      print("page changed");
+      setState(() {
+        _selectedPage = index;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,25 +60,29 @@ class _StudentHomePageState extends State<StudentHomePage> {
             label: 'Me',
           ),
         ],
-        currentIndex: 0,
+        currentIndex: _selectedPage,
         selectedItemColor: Colors.blue[800],
-        onTap: (index) {},
+        onTap: (index) {
+          _onItemTapped(index);
+        },
       ), // This trailing comma makes auto-formatting nicer for build methods.
-      floatingActionButton: Container(
-        padding: EdgeInsets.all(20),
-        // height: 100,
-        // width: 100,
-        child: FittedBox(
-          child: FloatingActionButton(
-            onPressed: () {
-              var dialogContext = addClassCode(context);
-            },
-            child: Icon(Icons.add),
-            isExtended: true,
-            autofocus: true,
-          ),
-        ),
-      ),
+      floatingActionButton: _selectedPage != 0
+          ? SizedBox.shrink()
+          : Container(
+              padding: EdgeInsets.all(20),
+              // height: 100,
+              // width: 100,
+              child: FittedBox(
+                child: FloatingActionButton(
+                  onPressed: () {
+                    var dialogContext = addClassCode(context);
+                  },
+                  child: Icon(Icons.add),
+                  isExtended: true,
+                  autofocus: true,
+                ),
+              ),
+            ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       appBar: AppBar(
         title: Text('Student'),
@@ -96,159 +110,45 @@ class _StudentHomePageState extends State<StudentHomePage> {
           ],
         ),
       ),
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 8),
-            child: Text(
-              "Classes",
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold),
-            ),
-          ),
-          Expanded(
-            flex: 9,
-            child: FutureBuilder(
-              builder: (context, AsyncSnapshot<List> snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Padding(
-                    padding: EdgeInsets.symmetric(
-                        vertical: MediaQuery.of(context).size.width * 0.40),
-                    child:
-                        const Center(child: Text('Please wait its loading...')),
-                  );
-                } else {
-                  if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
-                  } else {
-                    print(snapshot);
-                    return snapshot.data!.isEmpty
-                        ? Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical:
-                                    MediaQuery.of(context).size.width * 0.40),
-                            child: const Center(
-                                child: Text(
-                                    'You are not enrolled to any classes')),
-                          )
-                        : ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: snapshot.data!.length,
-                            itemBuilder: (context, index) {
-                              var datas = snapshot.data![index];
-                              return Padding(
-                                padding: const EdgeInsets.only(top: 10),
-                                child: Center(
-                                  child: Container(
-                                    width: MediaQuery.of(context).size.width *
-                                        0.95,
-                                    decoration: BoxDecoration(
-                                        boxShadow: const [
-                                          BoxShadow(
-                                            color: Colors.grey,
-                                            offset: Offset(
-                                              5.0,
-                                              5.0,
-                                            ),
-                                            blurRadius: 10.0,
-                                            spreadRadius: 2.0,
-                                          ), //BoxShadow
-                                        ],
-                                        border: Border.all(
-                                            color: Colors.black,
-                                            width: 0.5,
-                                            style: BorderStyle.none),
-                                        color: Colors.white,
-                                        borderRadius:
-                                            BorderRadius.circular(10)),
-                                    child: TextButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (_) =>
-                                                    StudentClass(datas)));
-                                      },
-                                      child: Container(
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.all(2.0),
-                                              child: Text(
-                                                datas["subject"]
-                                                    .toString()
-                                                    .toUpperCase(),
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 20),
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text(
-                                                  datas["branch"],
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 18),
-                                                ),
-                                                Text(
-                                                  " " +
-                                                      datas["year"].toString(),
-                                                  style: TextStyle(
-                                                      color: Colors.black,
-                                                      fontSize: 18),
-                                                ),
-                                                Spacer(),
-                                                Container(
-                                                  child: CircleAvatar(
-                                                      radius: 35,
-                                                      backgroundImage:
-                                                          NetworkImage(datas[
-                                                              "image_link"])),
-                                                ),
-                                              ],
-                                            ),
-                                            Text(
-                                              "Class code : " +
-                                                  datas["class_code"],
-                                              style: TextStyle(
-                                                  color: Colors.blueAccent,
-                                                  fontSize: 12),
-                                            ),
-                                            Text(
-                                              datas["link"] + "\n",
-                                              style: TextStyle(
-                                                  color: Colors.blue,
-                                                  fontSize: 11),
-                                            ),
-                                            // Text(
-                                            //   "sanket\n\n\n",
-                                            //   style: TextStyle(
-                                            //       color: Colors.white,
-                                            //       fontSize: 11),
-                                            // ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            },
-                          );
-                  }
-                }
-              },
-              future: getClasses(),
-            ),
-          ),
-        ],
-      ),
+      body: new Container(child: _buildChild(_selectedPage)),
     );
+  }
+
+  Widget _buildChild(int index) {
+    switch (index) {
+      case 0:
+        return classesPage();
+      case 1:
+        return Center(
+          child: Container(
+            child: Text("Colleagues"),
+          ),
+        );
+      case 2:
+        return Center(
+          child: Container(
+            child: Text("Messages"),
+          ),
+        );
+      case 3:
+        return Center(
+          child: Container(
+            child: Text("Activity"),
+          ),
+        );
+      case 4:
+        return Center(
+          child: Container(
+            child: Text("Me"),
+          ),
+        );
+      default:
+        return Center(
+          child: Container(
+            child: Text("default"),
+          ),
+        );
+    }
   }
 
   var codeSubmitted = false;
@@ -340,6 +240,156 @@ class _StudentHomePageState extends State<StudentHomePage> {
       },
     );
     return context;
+  }
+
+  Widget classesPage() {
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Text(
+            "Classes",
+            style: TextStyle(
+                color: Colors.grey, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          flex: 9,
+          child: FutureBuilder(
+            builder: (context, AsyncSnapshot<List> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Padding(
+                  padding: EdgeInsets.symmetric(
+                      vertical: MediaQuery.of(context).size.width * 0.40),
+                  child:
+                      const Center(child: Text('Please wait its loading...')),
+                );
+              } else {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  print(snapshot);
+                  return snapshot.data!.isEmpty
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical:
+                                  MediaQuery.of(context).size.width * 0.40),
+                          child: const Center(
+                              child:
+                                  Text('You are not enrolled to any classes')),
+                        )
+                      : ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, index) {
+                            var datas = snapshot.data![index];
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Center(
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.95,
+                                  decoration: BoxDecoration(
+                                      boxShadow: const [
+                                        BoxShadow(
+                                          color: Colors.grey,
+                                          offset: Offset(
+                                            5.0,
+                                            5.0,
+                                          ),
+                                          blurRadius: 10.0,
+                                          spreadRadius: 2.0,
+                                        ), //BoxShadow
+                                      ],
+                                      border: Border.all(
+                                          color: Colors.black,
+                                          width: 0.5,
+                                          style: BorderStyle.none),
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10)),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (_) =>
+                                                  StudentClass(datas)));
+                                    },
+                                    child: Container(
+                                      child: Column(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.all(2.0),
+                                            child: Text(
+                                              datas["subject"]
+                                                  .toString()
+                                                  .toUpperCase(),
+                                              style: TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 20),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                datas["branch"],
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 18),
+                                              ),
+                                              Text(
+                                                " " + datas["year"].toString(),
+                                                style: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 18),
+                                              ),
+                                              Spacer(),
+                                              Container(
+                                                child: CircleAvatar(
+                                                    radius: 35,
+                                                    backgroundImage:
+                                                        NetworkImage(datas[
+                                                            "image_link"])),
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            "Class code : " +
+                                                datas["class_code"],
+                                            style: TextStyle(
+                                                color: Colors.blueAccent,
+                                                fontSize: 12),
+                                          ),
+                                          Text(
+                                            datas["link"] + "\n",
+                                            style: TextStyle(
+                                                color: Colors.blue,
+                                                fontSize: 11),
+                                          ),
+                                          // Text(
+                                          //   "sanket\n\n\n",
+                                          //   style: TextStyle(
+                                          //       color: Colors.white,
+                                          //       fontSize: 11),
+                                          // ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                }
+              }
+            },
+            future: getClasses(),
+          ),
+        ),
+      ],
+    );
   }
 
   Future<List<dynamic>> getClasses() async {
