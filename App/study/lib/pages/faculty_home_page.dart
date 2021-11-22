@@ -4,7 +4,8 @@ import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/faculty_class.dart';
 import 'package:study/pages/redirect_page.dart';
-import 'package:getwidget/getwidget.dart';
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
@@ -14,12 +15,11 @@ import 'package:http/io_client.dart';
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
-import 'package:study/pages/teacher_info.dart';
 
 var facultyUsername = "";
 
 class FacultyHomePage extends StatefulWidget {
-  FacultyHomePage(String username) {
+  FacultyHomePage(String username, {Key? key}) : super(key: key) {
     facultyUsername = username;
   }
   @override
@@ -30,7 +30,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   int _selectedPage = 0;
   void _onItemTapped(int index) {
     if (_selectedPage != index) {
-      print("page changed");
       setState(() {
         _selectedPage = index;
       });
@@ -63,15 +62,15 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         },
       ),
       floatingActionButton: _selectedPage != 0
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: FittedBox(
                 child: FloatingActionButton(
                   onPressed: () {
-                    var dialogContext = addClass(context);
+                    addClass(context);
                   },
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                   isExtended: true,
                   autofocus: true,
                 ),
@@ -79,26 +78,24 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       appBar: AppBar(
-        title: Text('Faculty'),
+        title: const Text('Faculty'),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
               child: Column(
                 children: [
                   FutureBuilder(
                     builder: (context, data) {
-                      return Container(
-                        child: CircleAvatar(
-                            radius: 35,
-                            onBackgroundImageError: (Object, StackTrace) => {},
-                            backgroundImage: NetworkImage(data.toString())),
-                      );
+                      return CircleAvatar(
+                          radius: 35,
+                          onBackgroundImageError: (object, stackTrace) => {},
+                          backgroundImage: NetworkImage(data.toString()));
                     },
                     future: getProfilePhotoURL(),
                   ),
@@ -129,7 +126,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   }
 
   var edit = false;
-  var UpdateError = "";
+  var updateError = "";
   var firstNameController = TextEditingController();
   var lastNameController = TextEditingController();
   var phoneNoController = TextEditingController();
@@ -191,7 +188,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                           child: edit
                               ? CircleAvatar(
                                   radius: 55,
-                                  backgroundColor: Color(0xffFDCF09),
+                                  backgroundColor: const Color(0xffFDCF09),
                                   child: _image != null
                                       ? ClipRRect(
                                           borderRadius:
@@ -265,13 +262,14 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                         ),
                       ),
                     ),
-                    UpdateError == ""
-                        ? SizedBox.shrink()
-                        : Text(UpdateError,
-                            style: TextStyle(color: Colors.red, fontSize: 11)),
+                    updateError == ""
+                        ? const SizedBox.shrink()
+                        : Text(updateError,
+                            style: const TextStyle(
+                                color: Colors.red, fontSize: 11)),
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
                       child: TextField(
                         controller: firstNameController,
                         obscureText: false,
@@ -283,8 +281,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       ),
                     ),
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
                       child: TextField(
                         controller: lastNameController,
                         obscureText: false,
@@ -321,7 +319,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                             hintText: 'eg. 1, 2.5'),
                       ),
                     ),
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.all(8),
                       child: Center(child: Text("Qualification")),
                     ),
@@ -354,7 +352,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                     Container(
                       // height: 50,
                       // width: 250,
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                           color: Colors.blue,
                           borderRadius: BorderRadius.circular(20)),
@@ -368,7 +366,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                               showAlertDialog(context, "Submitting");
                               // var message = await updateBacisInfo();
                               if (await updateBasicInfo() == "Submitted") {
-                                print("Updated");
                                 firstNameController.clear();
                                 lastNameController.clear();
                                 phoneNoController.clear();
@@ -376,27 +373,26 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                 _image = null;
                                 degreeController.clear();
                                 passoutYearController.clear();
-                                UpdateError = "";
+                                updateError = "";
                                 Navigator.pop(context);
                                 setState(() {
                                   edit = !edit;
                                 });
                               } else {
-                                print("error occured");
                                 Navigator.pop(context);
                                 setState(() {
-                                  UpdateError = "error updating data";
+                                  updateError = "error updating data";
                                 });
                               }
                             }
                           },
                           child: edit
-                              ? Text(
+                              ? const Text(
                                   'Submit',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 18),
                                 )
-                              : Text(
+                              : const Text(
                                   'Edit',
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 18),
@@ -420,8 +416,9 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     AlertDialog alert = AlertDialog(
       content: Row(
         children: [
-          CircularProgressIndicator(),
-          Container(margin: EdgeInsets.only(left: 5), child: Text(lodingText)),
+          const CircularProgressIndicator(),
+          Container(
+              margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
         ],
       ),
     );
@@ -436,22 +433,18 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
 
   Future<String> updateBasicInfo() async {
     var imageLink = await uploadImage();
-    var Token = await getValue("token");
+    var token = await getValue("token");
     storeProfileURL(imageLink);
-    print("i am here with imageobj rceived");
-    // print(imageobj["data"]["image"]["url"]);
-    print(firstNameController.text);
-    print(lastNameController.text);
-    print(phoneNoController.text);
-    final ioc = new HttpClient();
+
+    final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
-    final http1 = new IOClient(ioc);
+    final http1 = IOClient(ioc);
     final http.Response response1 = await http1.put(
       url + '/facultyinfo',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + Token,
+        'Authorization': "Bearer " + token,
       },
       body: jsonEncode(<String, dynamic>{
         'first_name': firstNameController.text,
@@ -466,16 +459,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     );
 
     if (response1.statusCode == 201) {
-      var res = response1.body;
-      print(res);
-      var obj = json.decode(res);
       return Future.value("Submitted");
     }
-    var res = response1.body;
-    print(res);
-    var obj = json.decode(res);
-    print("\nnot submitted\n");
-    print(obj['error']);
     return Future.value("Error");
   }
 
@@ -485,9 +470,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
+    // ignore: prefer_typing_uninitialized_variables
     var res;
     int statusCode = 0;
-    print("i ama faculty");
+
     final http.Response response1 = await http1.get(
       url + '/facultyinfo',
       headers: <String, String>{
@@ -500,7 +486,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
 
     var obj = json.decode(res);
     if (statusCode == 200) {
-      print(obj);
       return obj;
     }
     List<int> l = [];
@@ -527,10 +512,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                   padding: EdgeInsets.symmetric(
                       vertical: MediaQuery.of(context).size.width * 0.40),
                   child: Column(
-                    children: [
-                      const Center(child: Text('Please wait its loading...')),
+                    children: const [
+                      Center(child: Text('Please wait its loading...')),
                       Padding(
-                        padding: const EdgeInsets.all(15.0),
+                        padding: EdgeInsets.all(15.0),
                         child: CircularProgressIndicator(),
                       ),
                     ],
@@ -540,7 +525,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  print(snapshot);
                   return snapshot.data!.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
@@ -588,62 +572,54 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                               builder: (_) =>
                                                   FacultyClass(datas)));
                                     },
-                                    child: Container(
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Text(
-                                              datas["subject"]
-                                                  .toString()
-                                                  .toUpperCase(),
-                                              style: TextStyle(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                            datas["subject"]
+                                                .toString()
+                                                .toUpperCase(),
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20),
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              datas["branch"],
+                                              style: const TextStyle(
                                                   color: Colors.black,
-                                                  fontSize: 20),
+                                                  fontSize: 18),
                                             ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                datas["branch"],
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 18),
-                                              ),
-                                              Text(
-                                                " " + datas["year"].toString(),
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 18),
-                                              ),
-                                              Spacer(),
-                                              Container(
-                                                child: CircleAvatar(
-                                                    radius: 35,
-                                                    onBackgroundImageError:
-                                                        (Object, StackTrace) =>
-                                                            {},
-                                                    backgroundImage:
-                                                        NetworkImage(datas[
-                                                            "image_link"])),
-                                              ),
-                                            ],
-                                          ),
-                                          Text(
-                                            "Class code : " +
-                                                datas["class_code"],
-                                            style: TextStyle(
-                                                color: Colors.blueAccent,
-                                                fontSize: 12),
-                                          ),
-                                          Text(
-                                            datas["link"] + "\n",
-                                            style: TextStyle(
-                                                color: Colors.blue,
-                                                fontSize: 11),
-                                          ),
-                                        ],
-                                      ),
+                                            Text(
+                                              " " + datas["year"].toString(),
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 18),
+                                            ),
+                                            const Spacer(),
+                                            CircleAvatar(
+                                                radius: 35,
+                                                onBackgroundImageError:
+                                                    (object, stackTrace) => {},
+                                                backgroundImage: NetworkImage(
+                                                    datas["image_link"])),
+                                          ],
+                                        ),
+                                        Text(
+                                          "Class code : " + datas["class_code"],
+                                          style: const TextStyle(
+                                              color: Colors.blueAccent,
+                                              fontSize: 12),
+                                        ),
+                                        Text(
+                                          datas["link"] + "\n",
+                                          style: const TextStyle(
+                                              color: Colors.blue, fontSize: 11),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -704,10 +680,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                 child: Column(
                   children: <Widget>[
                     classDetailsError == ""
-                        ? Text("")
+                        ? const Text("")
                         : Text(
                             classDetailsError,
-                            style: TextStyle(color: Colors.red),
+                            style: const TextStyle(color: Colors.red),
                           ),
                     const Padding(
                         padding: EdgeInsets.only(top: 30.0, bottom: 10.0),
@@ -722,7 +698,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                         },
                         child: CircleAvatar(
                           radius: 55,
-                          backgroundColor: Color(0xffFDCF09),
+                          backgroundColor: const Color(0xffFDCF09),
                           child: _image != null
                               ? ClipRRect(
                                   borderRadius: BorderRadius.circular(50),
@@ -748,8 +724,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       ),
                     ),
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
                       child: TextField(
                         controller: branchController,
                         obscureText: false,
@@ -760,8 +736,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       ),
                     ),
                     Padding(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
                       child: TextField(
                         controller: subjectController,
                         obscureText: false,
@@ -834,7 +810,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                             detailsSubmitted = false;
                             Navigator.pop(ctx);
                             Navigator.pop(context);
-                            print("failed to add class");
+
                             addClass(context);
                             classDetailsError = "";
                           } else {
@@ -842,7 +818,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                             Navigator.pop(ctx);
                             Navigator.pop(context);
                             setState(() {
-                              print("setstate classed");
                               detailsSubmitted = false;
                               imageLinkController.clear();
                               branchController.clear();
@@ -850,7 +825,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                               subjectController.clear();
                               yearController.clear();
                             });
-                            print("class added sucessfully");
                           }
                         },
                         child: const Text(
@@ -877,6 +851,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     return context;
   }
 
+  // ignore: prefer_typing_uninitialized_variables
   var _image;
   void _showPicker(context) {
     showModalBottomSheet(
@@ -887,7 +862,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
               children: <Widget>[
                 ListTile(
                     leading: const Icon(Icons.photo_library),
-                    title: Text('Photo Library'),
+                    title: const Text('Photo Library'),
                     onTap: () {
                       _imgFromGallery();
                       Navigator.of(context).pop();
@@ -927,8 +902,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   Widget messagesPage() {
     return Center(
         child: Container(
-      child: Text("Messages"),
-      padding: EdgeInsets.all(8),
+      child: const Text("Messages"),
+      padding: const EdgeInsets.all(8),
     ));
   }
 
@@ -936,11 +911,11 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     var uri =
         Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
     var request = http.MultipartRequest('POST', uri);
-    print(_image.path.toString());
+
     request.files.add(await http.MultipartFile.fromPath('image', _image.path));
     final response = (await request.send());
     final respStr = await response.stream.bytesToString();
-    print(respStr);
+
     var obj = json.decode(respStr);
     if (response.statusCode == 200) {
       return obj["data"]["image"]["url"];
@@ -969,13 +944,13 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         'image_link': imageLink,
       }),
     );
-    print(response1.statusCode);
+
     var res = response1.body;
     // print(res);
 
     if (response1.statusCode == 200) {
       var obj = json.decode(res);
-      print(obj);
+
       return obj.toString();
     }
     // classDetailsError = obj['error'];

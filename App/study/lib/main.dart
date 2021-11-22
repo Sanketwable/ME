@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:study/pages/redirect_page.dart';
 
-import './pages/login_page.dart';
-
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       debugShowCheckedModeBanner: false,
-      home: Redirect(),
+      home: const Redirect(),
     );
   }
 }

@@ -13,6 +13,7 @@ import (
 	"strconv"
 )
 
+// CreateAssignment is Handler Func to create new assignment
 func CreateAssignment(w http.ResponseWriter, r *http.Request) {
 	_, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -67,6 +68,7 @@ func CreateAssignment(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetAssignment is handler func to get list of assignments corresponding to class
 func GetAssignment(w http.ResponseWriter, r *http.Request) {
 	_, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -98,6 +100,7 @@ func GetAssignment(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 }
 
+// GetFormAssignment is Handler func to get information about Form assignment
 func GetFormAssignment(w http.ResponseWriter, r *http.Request) {
 	_, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -129,6 +132,7 @@ func GetFormAssignment(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 }
 
+// GetFileAssignment is Handler func to get information about File assignment
 func GetFileAssignment(w http.ResponseWriter, r *http.Request) {
 	_, err := auth.ExtractTokenID(r)
 	if err != nil {

@@ -1,20 +1,13 @@
 package controllers
 
 import (
-
 	"api/database"
 	"api/models"
 	"api/repository"
 	"api/repository/crud"
 
 	"fmt"
-
-	"github.com/jinzhu/gorm"
 )
-
-type repositoryTempOTPCRUD struct {
-	db *gorm.DB
-}
 
 //SaveTemp is func
 func SaveTemp(tempotp models.TempOTP) error {
@@ -96,7 +89,7 @@ func GetTempOTP(tempUser models.TempOTP) (models.TempOTP, error) {
 
 	func(tempOTPRepository repository.TempOTPRepository) {
 		tempotp, errw := tempOTPRepository.FindByEmail(tempUser.Email, tempUser)
-			fmt.Println("Error is ", err)
+		fmt.Println("Error is ", err)
 		returntemp = tempotp
 		err = errw
 		fmt.Println("in the GetTempOTP returntemp = ", returntemp)

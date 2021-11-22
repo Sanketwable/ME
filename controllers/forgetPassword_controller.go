@@ -46,7 +46,7 @@ func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 
 	ltype, uid := EmailPresent(req)
 	if ltype == "student" {
-		var err1 error = errors.New("No user Found coresponding to email provided")
+		var err1 error = errors.New("no user Found coresponding to email provided")
 		responses.ERROR(w, http.StatusNotAcceptable, err1)
 		return
 	}

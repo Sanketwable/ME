@@ -14,9 +14,9 @@ import '../controllers/token.dart';
 
 // ignore: prefer_typing_uninitialized_variables
 var dropdownValue;
-var Token;
-var IncorrectDetails = false;
-var loginError;
+String token = "";
+var incorrectDetails = false;
+var loginError = "";
 var userName = "";
 var userID = "";
 
@@ -24,6 +24,8 @@ final emailcontroller = TextEditingController();
 final passwordcontroller = TextEditingController();
 
 class WelcomePage extends StatefulWidget {
+  const WelcomePage({Key? key}) : super(key: key);
+
   @override
   _WelcomePage createState() => _WelcomePage();
 }
@@ -47,9 +49,10 @@ class _WelcomePage extends State<WelcomePage> {
                 style: TextStyle(color: Colors.grey, fontSize: 32),
               )),
             ),
-            IncorrectDetails
+            incorrectDetails
                 ? Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 20),
                     child: Text(
                       loginError.toString(),
                       style: const TextStyle(
@@ -67,7 +70,7 @@ class _WelcomePage extends State<WelcomePage> {
                     ),
                   ),
             Padding(
-              padding: EdgeInsets.symmetric(horizontal: 15),
+              padding: const EdgeInsets.symmetric(horizontal: 15),
               child: TextField(
                 controller: emailcontroller,
                 obscureText: false,
@@ -78,8 +81,8 @@ class _WelcomePage extends State<WelcomePage> {
               ),
             ),
             Padding(
-              padding:
-                  EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+              padding: const EdgeInsets.only(
+                  left: 15.0, right: 15.0, top: 15, bottom: 0),
               child: TextField(
                 controller: passwordcontroller,
                 obscureText: true,
@@ -95,7 +98,7 @@ class _WelcomePage extends State<WelcomePage> {
               child: Container(
                 height: 50,
                 width: MediaQuery.of(context).size.width,
-                margin: EdgeInsets.all(20),
+                margin: const EdgeInsets.all(20),
                 child: DropdownButtonHideUnderline(
                   child: GFDropdown(
                     padding: const EdgeInsets.all(15),
@@ -103,7 +106,7 @@ class _WelcomePage extends State<WelcomePage> {
                     border: const BorderSide(color: Colors.black12, width: 1),
                     dropdownButtonColor: Colors.grey[300],
                     value: dropdownValue,
-                    hint: Text("Select Login Type"),
+                    hint: const Text("Select Login Type"),
                     onChanged: (newValue) {
                       setState(() {
                         dropdownValue = newValue;
@@ -136,12 +139,12 @@ class _WelcomePage extends State<WelcomePage> {
                   var dialogContext = showAlertDialog(context, "Logging IN");
                   if (await login() == "Error") {
                     Navigator.pop(dialogContext);
-                    print("now has to stopped");
                     setState(() {
-                      IncorrectDetails = true;
+                      incorrectDetails = true;
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (_) => WelcomePage()),
+                          MaterialPageRoute(
+                              builder: (_) => const WelcomePage()),
                           ModalRoute.withName("/Home"));
                     });
                   } else {
@@ -160,9 +163,9 @@ class _WelcomePage extends State<WelcomePage> {
             TextButton(
               onPressed: () {
                 Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => Signup()));
+                    context, MaterialPageRoute(builder: (_) => const Signup()));
               },
-              child: Text("New User? Create account"),
+              child: const Text("New User? Create account"),
             )
           ],
         ),
@@ -174,8 +177,9 @@ class _WelcomePage extends State<WelcomePage> {
     AlertDialog alert = AlertDialog(
       content: Row(
         children: [
-          CircularProgressIndicator(),
-          Container(margin: EdgeInsets.only(left: 5), child: Text(lodingText)),
+          const CircularProgressIndicator(),
+          Container(
+              margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
         ],
       ),
     );
@@ -190,13 +194,10 @@ class _WelcomePage extends State<WelcomePage> {
   }
 
   Future<String> login() async {
-    print(emailcontroller.text);
-    print(passwordcontroller.text);
-    print(dropdownValue.toString());
-    final ioc = new HttpClient();
+    final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
-    final http1 = new IOClient(ioc);
+    final http1 = IOClient(ioc);
     final http.Response response1 = await http1.post(
       url + '/login',
       headers: <String, String>{
@@ -211,26 +212,24 @@ class _WelcomePage extends State<WelcomePage> {
 
     if (response1.statusCode == 200) {
       var res = response1.body;
-      print(res);
+
       var obj = json.decode(res);
-      var Error = obj['error'];
-      Token = (obj['token']);
+      token = (obj['token']);
       userName = obj['username'];
       userID = obj['id'].toString();
-      print("this is the token ---" + Token);
-      print(Error);
+
       return Future.value("loggedIN");
     }
     var res = response1.body;
-    print(res);
+
     var obj = json.decode(res);
     loginError = obj['error'];
-    print("\nworng password\n");
+
     return Future.value("Error");
   }
 
   void loginSucessfull() {
-    store('token', Token, dropdownValue.toString(), userName, userID);
+    store('token', token, dropdownValue.toString(), userName, userID);
     emailcontroller.clear();
     passwordcontroller.clear();
     dropdownValue.toString() == 'faculty'

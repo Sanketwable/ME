@@ -5,19 +5,20 @@ import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
 import 'dart:convert';
-import 'package:getwidget/getwidget.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 import 'package:study/pages/student_class.dart';
 import '../constants/constants.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:image_picker/image_picker.dart';
-import './signup_page.dart';
+
 import '../controllers/token.dart';
 
 var studentUserName = "";
 
 class StudentHomePage extends StatefulWidget {
-  StudentHomePage(String username) {
+  StudentHomePage(String username, {Key? key}) : super(key: key) {
     studentUserName = username;
   }
   @override
@@ -28,7 +29,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
   int _selectedPage = 0;
   void _onItemTapped(int index) {
     if (_selectedPage != index) {
-      print("page changed");
       setState(() {
         _selectedPage = index;
       });
@@ -57,17 +57,17 @@ class _StudentHomePageState extends State<StudentHomePage> {
         },
       ), // This trailing comma makes auto-formatting nicer for build methods.
       floatingActionButton: _selectedPage != 0
-          ? SizedBox.shrink()
+          ? const SizedBox.shrink()
           : Container(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               // height: 100,
               // width: 100,
               child: FittedBox(
                 child: FloatingActionButton(
                   onPressed: () {
-                    var dialogContext = addClassCode(context);
+                    addClassCode(context);
                   },
-                  child: Icon(Icons.add),
+                  child: const Icon(Icons.add),
                   isExtended: true,
                   autofocus: true,
                 ),
@@ -75,26 +75,24 @@ class _StudentHomePageState extends State<StudentHomePage> {
             ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
       appBar: AppBar(
-        title: Text('Student'),
+        title: const Text('Student'),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
               child: Column(
                 children: [
                   FutureBuilder(
                     builder: (context, data) {
-                      return Container(
-                        child: CircleAvatar(
-                            radius: 35,
-                            onBackgroundImageError: (Object, StackTrace) => {},
-                            backgroundImage: NetworkImage(data.toString())),
-                      );
+                      return CircleAvatar(
+                          radius: 35,
+                          onBackgroundImageError: (object, stackTrace) => {},
+                          backgroundImage: NetworkImage(data.toString()));
                     },
                     future: getProfilePhotoURL(),
                   ),
@@ -118,7 +116,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
           ],
         ),
       ),
-      body: new Container(child: _buildChild(_selectedPage)),
+      body: Container(child: _buildChild(_selectedPage)),
     );
   }
 
@@ -127,12 +125,10 @@ class _StudentHomePageState extends State<StudentHomePage> {
       case 0:
         return classesPage();
       case 1:
-        return Me();
+        return me();
       default:
-        return Center(
-          child: Container(
-            child: Text("default"),
-          ),
+        return const Center(
+          child: Text("default"),
         );
     }
   }
@@ -145,12 +141,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
   var phoneNoController = TextEditingController();
   var yearController = TextEditingController();
   var profilePhoto = "";
-  var UpdateError = "";
+  var updateError = "";
+  // ignore: prefer_typing_uninitialized_variables
   var year;
   var edit = false;
+  // ignore: prefer_typing_uninitialized_variables
   var _image;
 
-  Widget Me() {
+  Widget me() {
     return FutureBuilder(
       builder: (context, AsyncSnapshot<dynamic> snapshot) {
         var data = snapshot.data;
@@ -194,7 +192,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                         child: edit
                             ? CircleAvatar(
                                 radius: 55,
-                                backgroundColor: Color(0xffFDCF09),
+                                backgroundColor: const Color(0xffFDCF09),
                                 child: _image != null
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(50),
@@ -267,12 +265,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       ),
                     ),
                   ),
-                  UpdateError == ""
-                      ? SizedBox.shrink()
-                      : Text(UpdateError,
-                          style: TextStyle(color: Colors.red, fontSize: 11)),
+                  updateError == ""
+                      ? const SizedBox.shrink()
+                      : Text(updateError,
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 11)),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                     child: TextField(
                       controller: firstNameController,
                       obscureText: false,
@@ -284,7 +284,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                     child: TextField(
                       controller: lastNameController,
                       obscureText: false,
@@ -324,7 +325,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   Container(
                     // height: 50,
                     // width: 250,
-                    padding: EdgeInsets.all(8),
+                    padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                         color: Colors.blue,
                         borderRadius: BorderRadius.circular(20)),
@@ -338,34 +339,32 @@ class _StudentHomePageState extends State<StudentHomePage> {
                             showAlertDialog(context, "Submitting");
                             // var message = await updateBacisInfo();
                             if (await updateBasicInfo() == "Submitted") {
-                              print("Updated");
                               firstNameController.clear();
                               lastNameController.clear();
                               phoneNoController.clear();
                               yearController.clear();
                               _image = null;
 
-                              UpdateError = "";
+                              updateError = "";
                               Navigator.pop(context);
                               setState(() {
                                 edit = !edit;
                               });
                             } else {
-                              print("error occured");
                               Navigator.pop(context);
                               setState(() {
-                                UpdateError = "error updating data";
+                                updateError = "error updating data";
                               });
                             }
                           }
                         },
                         child: edit
-                            ? Text(
+                            ? const Text(
                                 'Submit',
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18),
                               )
-                            : Text(
+                            : const Text(
                                 'Edit',
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 18),
@@ -393,7 +392,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
               children: <Widget>[
                 ListTile(
                     leading: const Icon(Icons.photo_library),
-                    title: Text('Photo Library'),
+                    title: const Text('Photo Library'),
                     onTap: () {
                       _imgFromGallery();
                       Navigator.of(context).pop();
@@ -434,8 +433,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
     AlertDialog alert = AlertDialog(
       content: Row(
         children: [
-          CircularProgressIndicator(),
-          Container(margin: EdgeInsets.only(left: 5), child: Text(lodingText)),
+          const CircularProgressIndicator(),
+          Container(
+              margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
         ],
       ),
     );
@@ -452,11 +452,11 @@ class _StudentHomePageState extends State<StudentHomePage> {
     var uri =
         Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
     var request = http.MultipartRequest('POST', uri);
-    print(_image.path.toString());
+
     request.files.add(await http.MultipartFile.fromPath('image', _image.path));
     final response = (await request.send());
     final respStr = await response.stream.bytesToString();
-    print(respStr);
+
     var obj = json.decode(respStr);
     if (response.statusCode == 200) {
       return obj["data"]["image"]["url"];
@@ -466,22 +466,18 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   Future<String> updateBasicInfo() async {
     var imageLink = await uploadImage();
-    var Token = await getValue("token");
+    var token = await getValue("token");
     storeProfileURL(imageLink);
-    print("i am here with imageobj rceived");
-    // print(imageobj["data"]["image"]["url"]);
-    print(firstNameController.text);
-    print(lastNameController.text);
-    print(phoneNoController.text);
-    final ioc = new HttpClient();
+
+    final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
-    final http1 = new IOClient(ioc);
+    final http1 = IOClient(ioc);
     final http.Response response1 = await http1.put(
       url + '/studentinfo',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + Token,
+        'Authorization': "Bearer " + token,
       },
       body: jsonEncode(<String, dynamic>{
         'first_name': firstNameController.text,
@@ -493,16 +489,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
     );
 
     if (response1.statusCode == 201) {
-      var res = response1.body;
-      print(res);
-      var obj = json.decode(res);
       return Future.value("Submitted");
     }
-    var res = response1.body;
-    print(res);
-    var obj = json.decode(res);
-    print("\nnot submitted\n");
-    print(obj['error']);
+
     return Future.value("Error");
   }
 
@@ -513,10 +502,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
-    var res;
-    var statusCode;
 
-    print("i ama student");
+    
     final http.Response response1 = await http1.get(
       url + '/studentinfo',
       headers: <String, String>{
@@ -524,8 +511,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
         'Authorization': "Bearer " + token,
       },
     );
-    res = response1.body;
-    statusCode = response1.statusCode;
+    var res = response1.body;
+    var statusCode = response1.statusCode;
 
     var obj = json.decode(res);
     if (statusCode == 200) {
@@ -546,14 +533,14 @@ class _StudentHomePageState extends State<StudentHomePage> {
                 child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.1,
                     height: MediaQuery.of(context).size.width * 0.1,
-                    child: CircularProgressIndicator()))
+                    child: const CircularProgressIndicator()))
             : Column(
                 children: [
                   codeError == ""
-                      ? Text("")
+                      ? const Text("")
                       : Text(
                           codeError,
-                          style: TextStyle(color: Colors.red),
+                          style: const TextStyle(color: Colors.red),
                         ),
                   SizedBox(
                     child: TextField(
@@ -577,7 +564,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               codeSubmitted = false;
                               Navigator.pop(ctx);
                               Navigator.pop(context);
-                              print("failed to add class");
+                              
                               addClassCode(context);
                               codeError = "";
                             } else {
@@ -586,7 +573,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               });
                               Navigator.pop(ctx);
                               Navigator.pop(context);
-                              print("class added sucessfully");
+                              
                             }
                           },
                           child: const Text(
@@ -649,7 +636,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  print(snapshot);
+                  
                   return snapshot.data!.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
@@ -697,65 +684,61 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                               builder: (_) =>
                                                   StudentClass(datas)));
                                     },
-                                    child: Container(
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Text(
-                                              datas["subject"]
-                                                  .toString()
-                                                  .toUpperCase(),
-                                              style: TextStyle(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                            datas["subject"]
+                                                .toString()
+                                                .toUpperCase(),
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 20),
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              datas["branch"],
+                                              style: const TextStyle(
                                                   color: Colors.black,
-                                                  fontSize: 20),
+                                                  fontSize: 18),
                                             ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                datas["branch"],
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 18),
-                                              ),
-                                              Text(
-                                                " " + datas["year"].toString(),
-                                                style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 18),
-                                              ),
-                                              Spacer(),
-                                              Container(
-                                                child: CircleAvatar(
-                                                    radius: 35,
-                                                    backgroundImage:
-                                                        NetworkImage(datas[
-                                                            "image_link"])),
-                                              ),
-                                            ],
-                                          ),
-                                          Text(
-                                            "Class code : " +
-                                                datas["class_code"],
-                                            style: TextStyle(
-                                                color: Colors.blueAccent,
-                                                fontSize: 12),
-                                          ),
-                                          Text(
-                                            datas["link"] + "\n",
-                                            style: TextStyle(
-                                                color: Colors.blue,
-                                                fontSize: 11),
-                                          ),
-                                          // Text(
-                                          //   "sanket\n\n\n",
-                                          //   style: TextStyle(
-                                          //       color: Colors.white,
-                                          //       fontSize: 11),
-                                          // ),
-                                        ],
-                                      ),
+                                            Text(
+                                              " " + datas["year"].toString(),
+                                              style: const TextStyle(
+                                                  color: Colors.black,
+                                                  fontSize: 18),
+                                            ),
+                                            const Spacer(),
+                                            CircleAvatar(
+                                                radius: 35,
+                                                backgroundImage:
+                                                    NetworkImage(datas[
+                                                        "image_link"])),
+                                          ],
+                                        ),
+                                        Text(
+                                          "Class code : " +
+                                              datas["class_code"],
+                                          style: const TextStyle(
+                                              color: Colors.blueAccent,
+                                              fontSize: 12),
+                                        ),
+                                        Text(
+                                          datas["link"] + "\n",
+                                          style: const TextStyle(
+                                              color: Colors.blue,
+                                              fontSize: 11),
+                                        ),
+                                        // Text(
+                                        //   "sanket\n\n\n",
+                                        //   style: TextStyle(
+                                        //       color: Colors.white,
+                                        //       fontSize: 11),
+                                        // ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -796,7 +779,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   Future<String> addClassRequest() async {
     var token = await getValue("token");
-    print(classCodeController.text);
+    
     final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
@@ -810,7 +793,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
     );
     var res = response1.body;
     var obj = json.decode(res);
-    print(obj);
+    
     if (response1.statusCode == 200) {
       return obj.toString();
     }

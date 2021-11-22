@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:study/controllers/token.dart';
-import 'package:study/pages/redirect_page.dart';
 import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
@@ -9,13 +8,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../pages/student_assignment_page.dart';
 import '../constants/constants.dart';
-import './signup_page.dart';
+
 import '../controllers/token.dart';
 
+// ignore: prefer_typing_uninitialized_variables
 var classData;
 
 class StudentClass extends StatefulWidget {
-  StudentClass(data) {
+  StudentClass(data, {Key? key}) : super(key: key) {
     classData = data;
   }
   @override
@@ -26,7 +26,7 @@ class _StudentClassState extends State<StudentClass> {
   int _selectedPage = 0;
   void _onItemTapped(int index) {
     if (_selectedPage != index) {
-      print("page changed");
+      
       setState(() {
         _selectedPage = index;
       });
@@ -55,28 +55,26 @@ class _StudentClassState extends State<StudentClass> {
         },
       ),
       appBar: AppBar(
-        title: Text('Student'),
+        title: const Text('Student'),
       ),
-      body: new Container(child: _buildChild(_selectedPage)),
+      body: Container(child: _buildChild(_selectedPage)),
     );
   }
 
   Widget _buildChild(int index) {
     switch (index) {
       case 0:
-        return PostPage();
+        return postPage();
       case 1:
-        return AssignmentPage();
+        return assignmentPage();
       default:
-        return Center(
-          child: Container(
-            child: Text("default"),
-          ),
+        return const Center(
+          child: Text("default"),
         );
     }
   }
 
-  Widget AssignmentPage() {
+  Widget assignmentPage() {
     return Column(
       children: [
         const Padding(
@@ -96,10 +94,10 @@ class _StudentClassState extends State<StudentClass> {
                   padding: EdgeInsets.symmetric(
                       vertical: MediaQuery.of(context).size.width * 0.40),
                   child: Column(
-                    children: [
-                      const Center(child: Text('Please wait its loading...')),
+                    children: const [
+                      Center(child: Text('Please wait its loading...')),
                       Padding(
-                        padding: const EdgeInsets.all(15.0),
+                        padding: EdgeInsets.all(15.0),
                         child: CircularProgressIndicator(),
                       ),
                     ],
@@ -109,7 +107,7 @@ class _StudentClassState extends State<StudentClass> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  print(snapshot);
+                  
                   return snapshot.data!.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
@@ -156,60 +154,56 @@ class _StudentClassState extends State<StudentClass> {
                                               builder: (_) =>
                                                   StudentAssignment(datas)));
                                     },
-                                    child: Container(
-                                      child: Column(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.all(2.0),
-                                            child: Text(
-                                              datas["name"]
-                                                  .toString()
-                                                  .toUpperCase(),
-                                              style: TextStyle(
+                                    child: Column(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(2.0),
+                                          child: Text(
+                                            datas["name"]
+                                                .toString()
+                                                .toUpperCase(),
+                                            style: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15),
+                                          ),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              "Due : " + datas["due"],
+                                              style: const TextStyle(
                                                   color: Colors.black,
-                                                  fontSize: 15),
+                                                  fontSize: 11),
                                             ),
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                "Due : " + datas["due"],
+                                            const Spacer(),
+                                            CircleAvatar(
+                                                radius: 20,
+                                                onBackgroundImageError:
+                                                    (object, sackTrace) =>
+                                                        {},
+                                                backgroundImage: datas[
+                                                            "assignment_type"] ==
+                                                        0
+                                                    ? const NetworkImage(
+                                                        "https://i.ibb.co/6bnkDz6/file-png.jpg")
+                                                    : const NetworkImage(
+                                                        "https://i.ibb.co/64MbTYL/assignment-file-folder-500x500.png")),
+                                          ],
+                                        ),
+                                        datas["assignment_type"] == 0
+                                            ? const Text(
+                                                "file assignment",
                                                 style: TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 11),
+                                                    color: Colors.blueAccent,
+                                                    fontSize: 12),
+                                              )
+                                            : const Text(
+                                                "form assignment",
+                                                style: TextStyle(
+                                                    color: Colors.blueAccent,
+                                                    fontSize: 12),
                                               ),
-                                              Spacer(),
-                                              Container(
-                                                child: CircleAvatar(
-                                                    radius: 20,
-                                                    onBackgroundImageError:
-                                                        (Object, StackTrace) =>
-                                                            {},
-                                                    backgroundImage: datas[
-                                                                "assignment_type"] ==
-                                                            0
-                                                        ? NetworkImage(
-                                                            "https://i.ibb.co/6bnkDz6/file-png.jpg")
-                                                        : NetworkImage(
-                                                            "https://i.ibb.co/64MbTYL/assignment-file-folder-500x500.png")),
-                                              ),
-                                            ],
-                                          ),
-                                          datas["assignment_type"] == 0
-                                              ? const Text(
-                                                  "file assignment",
-                                                  style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontSize: 12),
-                                                )
-                                              : const Text(
-                                                  "form assignment",
-                                                  style: TextStyle(
-                                                      color: Colors.blueAccent,
-                                                      fontSize: 12),
-                                                ),
-                                        ],
-                                      ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -244,22 +238,22 @@ class _StudentClassState extends State<StudentClass> {
 
     if (response1.statusCode == 200) {
       var obj = json.decode(res);
-      print(obj);
+      
       return obj;
     }
     var obj = json.decode(res);
-    print(obj);
+    
     return Future.value(obj["error"]);
   }
 
   var postController = TextEditingController();
-  Widget PostPage() {
+  Widget postPage() {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.rectangle,
@@ -284,35 +278,33 @@ class _StudentClassState extends State<StudentClass> {
                   children: [
                     Text(
                       classData["branch"] + " ",
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     Text(
                       classData["year"].toString(),
-                      style: TextStyle(color: Colors.black, fontSize: 18),
+                      style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
-                    Spacer(),
-                    Container(
-                      child: CircleAvatar(
-                          radius: 35,
-                          backgroundImage:
-                              NetworkImage(classData["image_link"])),
-                    ),
+                    const Spacer(),
+                    CircleAvatar(
+                        radius: 35,
+                        backgroundImage:
+                            NetworkImage(classData["image_link"])),
                   ],
                 ),
                 Text(
                   "Class code : " + classData["class_code"],
-                  style: TextStyle(color: Colors.blueAccent, fontSize: 12),
+                  style: const TextStyle(color: Colors.blueAccent, fontSize: 12),
                 ),
                 Text(
                   classData["link"] + "\n",
-                  style: TextStyle(color: Colors.blue, fontSize: 11),
+                  style: const TextStyle(color: Colors.blue, fontSize: 11),
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.only(left: 15, bottom: 10),
+                  padding: const EdgeInsets.only(left: 15, bottom: 10),
                   child: Text(
                     classData["subject"].toString().toUpperCase(),
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black,
                         fontSize: 28,
                         fontWeight: FontWeight.bold),
@@ -344,7 +336,7 @@ class _StudentClassState extends State<StudentClass> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  print(snapshot);
+                  
                   return snapshot.data!.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
@@ -362,10 +354,10 @@ class _StudentClassState extends State<StudentClass> {
                             return Padding(
                               padding: const EdgeInsets.all(10),
                               child: Container(
-                                padding: EdgeInsets.all(5),
+                                padding: const EdgeInsets.all(5),
                                 decoration: BoxDecoration(
                                     border:
-                                        Border.all(color: Color(0x332980b9)),
+                                        Border.all(color: const Color(0x332980b9)),
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Column(
@@ -384,7 +376,7 @@ class _StudentClassState extends State<StudentClass> {
                                             child: Column(
                                               children: [
                                                 Container(
-                                                  padding: EdgeInsets.all(5),
+                                                  padding: const EdgeInsets.all(5),
                                                   alignment:
                                                       Alignment.centerLeft,
                                                   child: Text(
@@ -400,7 +392,7 @@ class _StudentClassState extends State<StudentClass> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: EdgeInsets.all(5),
+                                                  padding: const EdgeInsets.all(5),
                                                   alignment:
                                                       Alignment.centerLeft,
                                                   child: Text(
@@ -414,7 +406,7 @@ class _StudentClassState extends State<StudentClass> {
                                                         "\nTime : " +
                                                         datas["time"]
                                                             .substring(10),
-                                                    style: TextStyle(
+                                                    style: const TextStyle(
                                                         color: Colors.black,
                                                         fontSize: 15),
                                                   ),
@@ -432,19 +424,16 @@ class _StudentClassState extends State<StudentClass> {
                                         // ),
                                       ],
                                     ),
-                                    Divider(
+                                    const Divider(
                                       color: Color(0x332980b9),
                                     ),
-                                    Container(
-                                      // padding: EdgeInsets.all(0),
-                                      child: Center(
-                                        child: TextButton(
-                                            onPressed: () {
-                                              var cntx = Comments(
-                                                  context, datas["post_id"]);
-                                            },
-                                            child: Text("Comments")),
-                                      ),
+                                    Center(
+                                      child: TextButton(
+                                          onPressed: () {
+                                            comments(
+                                                context, datas["post_id"]);
+                                          },
+                                          child: const Text("Comments")),
                                     )
                                   ],
                                 ),
@@ -462,7 +451,7 @@ class _StudentClassState extends State<StudentClass> {
     );
   }
 
-  BuildContext Comments(BuildContext context, int postID) {
+  BuildContext comments(BuildContext context, int postID) {
     AlertDialog alert = AlertDialog(
       elevation: 5.0,
       content: SizedBox(
@@ -488,81 +477,79 @@ class _StudentClassState extends State<StudentClass> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  print(snapshot);
+                  
                   var commentController = TextEditingController();
                   return Column(
                     children: [
                       Expanded(
                         flex: 1,
                         child: Container(
-                          padding: EdgeInsets.all(8),
-                          child: Text("Comments"),
+                          padding: const EdgeInsets.all(8),
+                          child: const Text("Comments"),
                         ),
                       ),
                       Expanded(
                         flex: 1,
-                        child: Container(
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: Container(
-                              padding: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.rectangle,
-                                borderRadius: BorderRadius.circular(10),
-                                // border: Border.all(
-                                //     color: Colors.white, width: 0.5, style: BorderStyle.solid),
-                                boxShadow: const [
-                                  BoxShadow(
-                                    color: Colors.black,
-                                    offset: Offset(
-                                      0.0,
-                                      3.0,
-                                    ),
-                                    blurRadius: 3.0,
-                                    spreadRadius: 1.0,
-                                  ), //BoxShadow
-                                ],
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                    child: CircleAvatar(
-                                      backgroundColor: Colors.white,
-                                      radius: 25,
-                                      backgroundImage: NetworkImage(
-                                          "https://i.ibb.co/5nmxwtY/2186059.png"),
-                                    ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                              // border: Border.all(
+                              //     color: Colors.white, width: 0.5, style: BorderStyle.solid),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black,
+                                  offset: Offset(
+                                    0.0,
+                                    3.0,
                                   ),
-                                  Expanded(
-                                    flex: 8,
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      child: TextField(
-                                        controller: commentController,
-                                        obscureText: false,
-                                        onSubmitted: (str) async {
-                                          Navigator.pop(context);
-                                          String response =
-                                              await addComment(str, postID);
-                                          if (response == "sucessfull") {
-                                            commentController.clear();
+                                  blurRadius: 3.0,
+                                  spreadRadius: 1.0,
+                                ), //BoxShadow
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                const Expanded(
+                                  flex: 2,
+                                  child: CircleAvatar(
+                                    backgroundColor: Colors.white,
+                                    radius: 25,
+                                    backgroundImage: NetworkImage(
+                                        "https://i.ibb.co/5nmxwtY/2186059.png"),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 8,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 5),
+                                    child: TextField(
+                                      controller: commentController,
+                                      obscureText: false,
+                                      onSubmitted: (str) async {
+                                        Navigator.pop(context);
+                                        String response =
+                                            await addComment(str, postID);
+                                        if (response == "sucessfull") {
+                                          commentController.clear();
 
-                                            setState(() {});
-                                          }
-                                        },
-                                        decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            labelText: 'Add Comment',
-                                            hintText:
-                                                'Write here to add comment'),
-                                      ),
+                                          setState(() {});
+                                        }
+                                      },
+                                      decoration: const InputDecoration(
+                                          border: InputBorder.none,
+                                          labelText: 'Add Comment',
+                                          hintText:
+                                              'Write here to add comment'),
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
                           ),
                         ),
@@ -586,10 +573,10 @@ class _StudentClassState extends State<StudentClass> {
                                   return Padding(
                                     padding: const EdgeInsets.all(10),
                                     child: Container(
-                                      padding: EdgeInsets.all(5),
+                                      padding: const EdgeInsets.all(5),
                                       decoration: BoxDecoration(
                                           border: Border.all(
-                                              color: Color(0x332980b9)),
+                                              color: const Color(0x332980b9)),
                                           color: Colors.white,
                                           borderRadius:
                                               BorderRadius.circular(10)),
@@ -611,7 +598,7 @@ class _StudentClassState extends State<StudentClass> {
                                                     children: [
                                                       Container(
                                                         padding:
-                                                            EdgeInsets.all(2),
+                                                            const EdgeInsets.all(2),
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
@@ -632,12 +619,12 @@ class _StudentClassState extends State<StudentClass> {
                                                       ),
                                                       Container(
                                                         padding:
-                                                            EdgeInsets.all(2),
+                                                            const EdgeInsets.all(2),
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
                                                           datas["comment"],
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                               color:
                                                                   Colors.black,
                                                               fontSize: 15),
@@ -645,13 +632,13 @@ class _StudentClassState extends State<StudentClass> {
                                                       ),
                                                       Container(
                                                         padding:
-                                                            EdgeInsets.all(2),
+                                                            const EdgeInsets.all(2),
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
                                                           datas["time"]
                                                               .substring(0, 10),
-                                                          style: TextStyle(
+                                                          style: const TextStyle(
                                                               color:
                                                                   Colors.black,
                                                               fontSize: 10),
@@ -683,7 +670,7 @@ class _StudentClassState extends State<StudentClass> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: Text("close")),
+                            child: const Text("close")),
                       )
                     ],
                   );
@@ -720,11 +707,11 @@ class _StudentClassState extends State<StudentClass> {
 
     if (response1.statusCode == 200) {
       var obj = json.decode(res);
-      print(obj);
+      
       return obj;
     }
     var obj = json.decode(res);
-    print(obj);
+    
     return Future.value(obj["error"]);
   }
 
@@ -745,11 +732,11 @@ class _StudentClassState extends State<StudentClass> {
 
     if (response1.statusCode == 200) {
       var obj = json.decode(res);
-      print(obj);
+      
       return obj;
     }
     var obj = json.decode(res);
-    print(obj);
+    
     return Future.value(obj["error"]);
   }
 
@@ -771,13 +758,13 @@ class _StudentClassState extends State<StudentClass> {
         "comment": comment,
       }),
     );
-    var res = response1.body;
-    var obj = json.decode(res);
-    print(obj);
+    
+    
+    
     if (response1.statusCode == 200) {
       return Future.value("sucessfull");
     }
-    var emailError = obj['error'];
+    
     return Future.value("error");
   }
 

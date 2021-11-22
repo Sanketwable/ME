@@ -14,6 +14,7 @@ import (
 	"strconv"
 )
 
+// Create Class is a handler func used to create new class
 func CreateClass(w http.ResponseWriter, r *http.Request) {
 	faculty_id, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -62,6 +63,7 @@ func CreateClass(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GetClass is a handler func to get details of class
 func GetClass(w http.ResponseWriter, r *http.Request) {
 	// get class with class id
 	_, err := auth.ExtractTokenID(r)
@@ -94,6 +96,7 @@ func GetClass(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 }
 
+// AddClassWithEmail is handler func to add student to class with the help of email
 func AddClassWithEmail(w http.ResponseWriter, r *http.Request) {
 	_, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -138,6 +141,7 @@ func AddClassWithEmail(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 }
 
+// AddClassWithClassCode is handler func to add class to student class list by using class code
 func AddClassWithClassCode(w http.ResponseWriter, r *http.Request) {
 	userID, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -176,6 +180,8 @@ func AddClassWithClassCode(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 
 }
+
+// GetClasses is handler func to get list of classes corresponding to userid
 func GetClasses(w http.ResponseWriter, r *http.Request) {
 	userID, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -216,13 +222,16 @@ func GetClasses(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// DeleteClass is Faculty handler func to delete class
 func DeleteClass(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// UpdateClass is Faculty handler func to delete class
 func UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 }
+
 func findClass(dummyclass models.Class) models.Class {
 	var err error
 	db, _ := database.Connect()

@@ -4,15 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/faculty_class.dart';
-import 'package:study/pages/redirect_page.dart';
+
+
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
 import 'dart:convert';
 
+// ignore: prefer_typing_uninitialized_variables
 var assignmentData;
 
 class StudentAssignment extends StatefulWidget {
-  StudentAssignment(data) {
+  StudentAssignment(data, {Key? key}) : super(key: key) {
     assignmentData = data;
   }
   // const StudentAssignment({Key? key}) : super(key: key);
@@ -28,17 +32,17 @@ class _StudentAssignmentState extends State<StudentAssignment> {
       appBar: AppBar(
         title: const Text("Student"),
       ),
-      body: AssignmentBody(),
+      body: assignmentBody(),
     );
   }
 
-  Widget AssignmentBody() {
+  Widget assignmentBody() {
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.rectangle,
@@ -62,15 +66,15 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                 Center(
                   child: Text(
                     "Due : " + assignmentData["due"].toString(),
-                    style: TextStyle(color: Colors.black, fontSize: 18),
+                    style: const TextStyle(color: Colors.black, fontSize: 18),
                   ),
                 ),
                 Container(
                   alignment: Alignment.center,
-                  padding: EdgeInsets.only(left: 15, bottom: 10),
+                  padding: const EdgeInsets.only(left: 15, bottom: 10),
                   child: Text(
                     assignmentData["name"].toString().toUpperCase(),
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black,
                         fontSize: 28,
                         fontWeight: FontWeight.bold),
@@ -81,14 +85,14 @@ class _StudentAssignmentState extends State<StudentAssignment> {
           ),
         ),
         Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Container(
             alignment: Alignment.centerLeft,
             child: Text("Description : " + description),
           ),
         ),
         Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Container(
             alignment: Alignment.centerLeft,
             child: Text("Points : " + points.toString()),
@@ -103,7 +107,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                           vertical: MediaQuery.of(context).size.width * 0.40),
                       child: Center(
                         child: Column(
-                          children: [
+                          children: const [
                             Padding(
                               padding: EdgeInsets.all(10.0),
                               child: CircularProgressIndicator(),
@@ -114,7 +118,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                     );
                   } else {
                     return Padding(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       child: Container(
                         alignment: Alignment.centerLeft,
                         child: Text("Attachment Link : " + attachmentLink),
@@ -169,7 +173,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                   var datas = snapshot.data![index];
                                   return Padding(
                                     padding: const EdgeInsets.only(top: 10),
-                                    child: Container(
+                                    child: SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.95,
                                       child: Column(
@@ -189,7 +193,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                                     datas.question
                                                         .toString()
                                                         .toUpperCase(),
-                                                style: TextStyle(
+                                                style: const TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 18),
                                               ),
@@ -197,28 +201,28 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                           ),
                                           Container(
                                             alignment: Alignment.centerLeft,
-                                            padding: EdgeInsets.only(
+                                            padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
                                                 top: 5,
                                                 bottom: 5),
                                             child: Text(
                                               "a. " + datas.option1,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15),
                                             ),
                                           ),
                                           Container(
                                             alignment: Alignment.centerLeft,
-                                            padding: EdgeInsets.only(
+                                            padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
                                                 top: 5,
                                                 bottom: 5),
                                             child: Text(
                                               "b. " + datas.option2.toString(),
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15),
                                             ),
@@ -226,28 +230,28 @@ class _StudentAssignmentState extends State<StudentAssignment> {
 
                                           Container(
                                             alignment: Alignment.centerLeft,
-                                            padding: EdgeInsets.only(
+                                            padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
                                                 top: 5,
                                                 bottom: 5),
                                             child: Text(
                                               "c. " + datas.option3,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15),
                                             ),
                                           ),
                                           Container(
                                             alignment: Alignment.centerLeft,
-                                            padding: EdgeInsets.only(
+                                            padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
                                                 top: 5,
                                                 bottom: 5),
                                             child: Text(
                                               "d. " + datas.option4,
-                                              style: TextStyle(
+                                              style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 15),
                                             ),
@@ -279,7 +283,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
   String attachmentLink = "";
 
   Future<List<dynamic>> getFormAssignment() async {
-    print("get form assignment");
+    
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =
@@ -306,12 +310,12 @@ class _StudentAssignmentState extends State<StudentAssignment> {
       }
 
       var tagObjsJson = jsonDecode(res)['questions'] as List;
-      print("list  = \n");
+      
       // print(tagObjsJson);
       List<MyQuestion> tagObjs =
           tagObjsJson.map((tagJson) => MyQuestion.fromJson(tagJson)).toList();
-      print("object is \n\n ");
-      print(tagObjs.length);
+      
+      
 
       // print(tagObjs[0].question);
       return tagObjs;
@@ -321,7 +325,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
   }
 
   Future<List> getFileAssignment() async {
-    print("get file assignment");
+    
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =
