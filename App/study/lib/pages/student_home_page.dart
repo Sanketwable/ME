@@ -5,10 +5,12 @@ import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
 import 'dart:convert';
+import 'package:getwidget/getwidget.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 import 'package:study/pages/student_class.dart';
 import '../constants/constants.dart';
+import 'package:image_picker/image_picker.dart';
 import './signup_page.dart';
 import '../controllers/token.dart';
 
@@ -42,18 +44,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.calendar_today),
             label: 'Classes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Colleagues',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message_sharp),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.work),
-            label: 'Activity',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.account_box),
@@ -95,7 +85,25 @@ class _StudentHomePageState extends State<StudentHomePage> {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text(studentUserName),
+              child: Column(
+                children: [
+                  FutureBuilder(
+                    builder: (context, data) {
+                      return Container(
+                        child: CircleAvatar(
+                            radius: 35,
+                            onBackgroundImageError: (Object, StackTrace) => {},
+                            backgroundImage: NetworkImage(data.toString())),
+                      );
+                    },
+                    future: getProfilePhotoURL(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(studentUserName),
+                  ),
+                ],
+              ),
             ),
             ListTile(
               title: const Text('Sign Out'),
@@ -119,29 +127,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
       case 0:
         return classesPage();
       case 1:
-        return Center(
-          child: Container(
-            child: Text("Colleagues"),
-          ),
-        );
-      case 2:
-        return Center(
-          child: Container(
-            child: Text("Messages"),
-          ),
-        );
-      case 3:
-        return Center(
-          child: Container(
-            child: Text("Activity"),
-          ),
-        );
-      case 4:
-        return Center(
-          child: Container(
-            child: Text("Me"),
-          ),
-        );
+        return Me();
       default:
         return Center(
           child: Container(
@@ -153,6 +139,401 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   var codeSubmitted = false;
   var codeError = "";
+
+  var firstNameController = TextEditingController();
+  var lastNameController = TextEditingController();
+  var phoneNoController = TextEditingController();
+  var yearController = TextEditingController();
+  var profilePhoto = "";
+  var UpdateError = "";
+  var year;
+  var edit = false;
+  var _image;
+
+  Widget Me() {
+    return FutureBuilder(
+      builder: (context, AsyncSnapshot<dynamic> snapshot) {
+        var data = snapshot.data;
+
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.width * 0.40),
+            child: const Center(child: Text('Please wait its loading...')),
+          );
+        } else {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            if (snapshot.data!.isEmpty) {
+              firstNameController.text = "";
+              lastNameController.text = "";
+              phoneNoController.text = "";
+              yearController.text = "";
+            } else {
+              firstNameController.text = data["first_name"];
+              lastNameController.text = data["last_name"];
+              phoneNoController.text = data["phone_no"];
+              yearController.text = data["year"].toString();
+              profilePhoto = data["profile_photo"];
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  Center(
+                    child: GestureDetector(
+                      onTap: () {
+                        if (edit) {
+                          _showPicker(context);
+                        }
+                      },
+                      child: CircleAvatar(
+                        radius: 55,
+                        backgroundColor: Colors.white,
+                        child: edit
+                            ? CircleAvatar(
+                                radius: 55,
+                                backgroundColor: Color(0xffFDCF09),
+                                child: _image != null
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: Image.file(
+                                          File(_image.path),
+                                          width: 100,
+                                          height: 100,
+                                          fit: BoxFit.fitHeight,
+                                        ),
+                                      )
+                                    : Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius:
+                                                BorderRadius.circular(50)),
+                                        width: 100,
+                                        height: 100,
+                                        child: Image.network(
+                                          profilePhoto,
+                                          errorBuilder: (context, obj, st) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey[200],
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                              width: 100,
+                                              height: 100,
+                                              child: Icon(
+                                                Icons.person,
+                                                color: Colors.grey[800],
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                              )
+                            : (profilePhoto != ""
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(50),
+                                    child: Image.network(
+                                      profilePhoto,
+                                      errorBuilder: (context, obj, st) {
+                                        return Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey[200],
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                          width: 100,
+                                          height: 100,
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.grey[800],
+                                          ),
+                                        );
+                                      },
+                                    ))
+                                : Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey[200],
+                                        borderRadius:
+                                            BorderRadius.circular(50)),
+                                    width: 100,
+                                    height: 100,
+                                    child: Icon(
+                                      Icons.person,
+                                      color: Colors.grey[800],
+                                    ),
+                                  )),
+                      ),
+                    ),
+                  ),
+                  UpdateError == ""
+                      ? SizedBox.shrink()
+                      : Text(UpdateError,
+                          style: TextStyle(color: Colors.red, fontSize: 11)),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    child: TextField(
+                      controller: firstNameController,
+                      obscureText: false,
+                      readOnly: !edit,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'First Name',
+                          hintText: 'Enter your First Name'),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    child: TextField(
+                      controller: lastNameController,
+                      obscureText: false,
+                      readOnly: !edit,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Last Name',
+                          hintText: 'Enter your Last Name'),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    child: TextField(
+                      controller: phoneNoController,
+                      obscureText: false,
+                      readOnly: !edit,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Phone No',
+                          hintText: 'Enter your Phone'),
+                    ),
+                  ),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                    child: TextField(
+                      controller: yearController,
+                      obscureText: false,
+                      readOnly: !edit,
+                      decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Year',
+                          hintText: 'Year'),
+                    ),
+                  ),
+                  Container(
+                    // height: 50,
+                    // width: 250,
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(20)),
+                    child: TextButton(
+                        onPressed: () async {
+                          if (edit == false) {
+                            setState(() {
+                              edit = !edit;
+                            });
+                          } else {
+                            showAlertDialog(context, "Submitting");
+                            // var message = await updateBacisInfo();
+                            if (await updateBasicInfo() == "Submitted") {
+                              print("Updated");
+                              firstNameController.clear();
+                              lastNameController.clear();
+                              phoneNoController.clear();
+                              yearController.clear();
+                              _image = null;
+
+                              UpdateError = "";
+                              Navigator.pop(context);
+                              setState(() {
+                                edit = !edit;
+                              });
+                            } else {
+                              print("error occured");
+                              Navigator.pop(context);
+                              setState(() {
+                                UpdateError = "error updating data";
+                              });
+                            }
+                          }
+                        },
+                        child: edit
+                            ? Text(
+                                'Submit',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18),
+                              )
+                            : Text(
+                                'Edit',
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 18),
+                              )),
+                  ),
+                  const SizedBox(
+                    height: 90,
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      },
+      future: getInfo(),
+    );
+  }
+
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: Text('Photo Library'),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    _imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  _imgFromCamera() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  _imgFromGallery() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  showAlertDialog(BuildContext context, String lodingText) {
+    AlertDialog alert = AlertDialog(
+      content: Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 5), child: Text(lodingText)),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future uploadImage() async {
+    var uri =
+        Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
+    var request = http.MultipartRequest('POST', uri);
+    print(_image.path.toString());
+    request.files.add(await http.MultipartFile.fromPath('image', _image.path));
+    final response = (await request.send());
+    final respStr = await response.stream.bytesToString();
+    print(respStr);
+    var obj = json.decode(respStr);
+    if (response.statusCode == 200) {
+      return obj["data"]["image"]["url"];
+    }
+    return "no image";
+  }
+
+  Future<String> updateBasicInfo() async {
+    var imageLink = await uploadImage();
+    var Token = await getValue("token");
+    storeProfileURL(imageLink);
+    print("i am here with imageobj rceived");
+    // print(imageobj["data"]["image"]["url"]);
+    print(firstNameController.text);
+    print(lastNameController.text);
+    print(phoneNoController.text);
+    final ioc = new HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = new IOClient(ioc);
+    final http.Response response1 = await http1.put(
+      url + '/studentinfo',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + Token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        'first_name': firstNameController.text,
+        'last_name': lastNameController.text,
+        'phone_no': phoneNoController.text,
+        'profile_photo': imageLink.toString(),
+        'year': int.parse(yearController.text),
+      }),
+    );
+
+    if (response1.statusCode == 201) {
+      var res = response1.body;
+      print(res);
+      var obj = json.decode(res);
+      return Future.value("Submitted");
+    }
+    var res = response1.body;
+    print(res);
+    var obj = json.decode(res);
+    print("\nnot submitted\n");
+    print(obj['error']);
+    return Future.value("Error");
+  }
+
+  Future<dynamic> getInfo() async {
+    var token = await getValue("token");
+
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    var res;
+    var statusCode;
+
+    print("i ama student");
+    final http.Response response1 = await http1.get(
+      url + '/studentinfo',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    res = response1.body;
+    statusCode = response1.statusCode;
+
+    var obj = json.decode(res);
+    if (statusCode == 200) {
+      return obj;
+    }
+    List<int> l = [];
+    return l;
+  }
 
   BuildContext addClassCode(BuildContext context) {
     AlertDialog alert = AlertDialog(

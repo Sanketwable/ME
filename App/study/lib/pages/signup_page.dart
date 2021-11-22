@@ -21,6 +21,7 @@ var otpRequested = false;
 var validOtp = true;
 var incorrectOTP = false;
 var userName = "";
+var userID = "";
 var signUpError;
 var signUpErrorWithOTP;
 var IncorrectDetails = false;
@@ -84,7 +85,7 @@ class _SignupState extends State<Signup> {
                                   Navigator.pop(dialogContext);
                                   print("otp verified");
                                   store('token', Token, loginType.toString(),
-                                      userName);
+                                      userName, userID);
                                   loginType == "faculty"
                                       ? Navigator.pushAndRemoveUntil(
                                           context,
@@ -324,6 +325,7 @@ class _SignupState extends State<Signup> {
       print("this is the token ---" + Token);
       print(Error);
       userName = obj['username'];
+      userID = obj['id'].toString();
       return Future.value("verified");
     }
     var res = response1.body;

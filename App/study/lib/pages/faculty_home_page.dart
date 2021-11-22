@@ -5,6 +5,7 @@ import 'package:study/controllers/token.dart';
 import 'package:study/pages/faculty_class.dart';
 import 'package:study/pages/redirect_page.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 
 // ignore: import_of_legacy_library_into_null_safe
@@ -13,6 +14,7 @@ import 'package:http/io_client.dart';
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
+import 'package:study/pages/teacher_info.dart';
 
 var facultyUsername = "";
 
@@ -87,7 +89,25 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text(facultyUsername),
+              child: Column(
+                children: [
+                  FutureBuilder(
+                    builder: (context, data) {
+                      return Container(
+                        child: CircleAvatar(
+                            radius: 35,
+                            onBackgroundImageError: (Object, StackTrace) => {},
+                            backgroundImage: NetworkImage(data.toString())),
+                      );
+                    },
+                    future: getProfilePhotoURL(),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: Text(facultyUsername),
+                  ),
+                ],
+              ),
             ),
             ListTile(
               title: const Text('Sign Out'),
@@ -106,6 +126,385 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           ? classesPage()
           : (_selectedPage == 1 ? messagesPage() : mePage()),
     );
+  }
+
+  var edit = false;
+  var UpdateError = "";
+  var firstNameController = TextEditingController();
+  var lastNameController = TextEditingController();
+  var phoneNoController = TextEditingController();
+  var experienceController = TextEditingController();
+  var degreeController = TextEditingController();
+  var passoutYearController = TextEditingController();
+  var profilePhoto = "";
+  Widget mePage() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: FutureBuilder(
+        builder: (context, AsyncSnapshot<dynamic> snapshot) {
+          var data = snapshot.data;
+
+          // var yearController = TextEditingController();
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Padding(
+              padding: EdgeInsets.symmetric(
+                  vertical: MediaQuery.of(context).size.width * 0.40),
+              child: const Center(child: Text('Please wait its loading...')),
+            );
+          } else {
+            if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              if (snapshot.data!.isEmpty) {
+                firstNameController.text = "";
+                lastNameController.text = "";
+                phoneNoController.text = "";
+                experienceController.text = "";
+                degreeController.text = "";
+                passoutYearController.text = "";
+              } else {
+                firstNameController.text = data["first_name"];
+                lastNameController.text = data["last_name"];
+                phoneNoController.text = data["phone_no"];
+                profilePhoto = data["profile_photo"];
+                experienceController.text = data["experience"].toString();
+                degreeController.text = data["qualification"]["degree"];
+                passoutYearController.text =
+                    data["qualification"]["passout_year"].toString();
+                // yearController..text = data["year"].toString();
+              }
+
+              return SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          if (edit) {
+                            _showPicker(context);
+                          }
+                        },
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Colors.white,
+                          child: edit
+                              ? CircleAvatar(
+                                  radius: 55,
+                                  backgroundColor: Color(0xffFDCF09),
+                                  child: _image != null
+                                      ? ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          child: Image.file(
+                                            File(_image.path),
+                                            width: 100,
+                                            height: 100,
+                                            fit: BoxFit.fitHeight,
+                                          ),
+                                        )
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey[200],
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                          width: 100,
+                                          height: 100,
+                                          child: Image.network(
+                                            profilePhoto,
+                                            errorBuilder: (context, obj, st) {
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey[200],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50)),
+                                                width: 100,
+                                                height: 100,
+                                                child: Icon(
+                                                  Icons.person,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                )
+                              : (profilePhoto != ""
+                                  ? ClipRRect(
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: Image.network(
+                                        profilePhoto,
+                                        errorBuilder: (context, obj, st) {
+                                          return Container(
+                                            decoration: BoxDecoration(
+                                                color: Colors.grey[200],
+                                                borderRadius:
+                                                    BorderRadius.circular(50)),
+                                            width: 100,
+                                            height: 100,
+                                            child: Icon(
+                                              Icons.person,
+                                              color: Colors.grey[800],
+                                            ),
+                                          );
+                                        },
+                                      ))
+                                  : Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey[200],
+                                          borderRadius:
+                                              BorderRadius.circular(50)),
+                                      width: 100,
+                                      height: 100,
+                                      child: Icon(
+                                        Icons.person,
+                                        color: Colors.grey[800],
+                                      ),
+                                    )),
+                        ),
+                      ),
+                    ),
+                    UpdateError == ""
+                        ? SizedBox.shrink()
+                        : Text(UpdateError,
+                            style: TextStyle(color: Colors.red, fontSize: 11)),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      child: TextField(
+                        controller: firstNameController,
+                        obscureText: false,
+                        readOnly: !edit,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'First Name',
+                            hintText: 'Enter your First Name'),
+                      ),
+                    ),
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                      child: TextField(
+                        controller: lastNameController,
+                        obscureText: false,
+                        readOnly: !edit,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Last Name',
+                            hintText: 'Enter your Last Name'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
+                      child: TextField(
+                        controller: phoneNoController,
+                        obscureText: false,
+                        readOnly: !edit,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Phone No',
+                            hintText: '+919372615111'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
+                      child: TextField(
+                        controller: experienceController,
+                        obscureText: false,
+                        readOnly: !edit,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Experience',
+                            hintText: 'eg. 1, 2.5'),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Center(child: Text("Qualification")),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
+                      child: TextField(
+                        controller: degreeController,
+                        obscureText: false,
+                        readOnly: !edit,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Degree',
+                            hintText: 'eg. B.Tech'),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 8),
+                      child: TextField(
+                        controller: passoutYearController,
+                        obscureText: false,
+                        readOnly: !edit,
+                        decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Passout Year',
+                            hintText: 'eg. 2022'),
+                      ),
+                    ),
+                    Container(
+                      // height: 50,
+                      // width: 250,
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          color: Colors.blue,
+                          borderRadius: BorderRadius.circular(20)),
+                      child: TextButton(
+                          onPressed: () async {
+                            if (edit == false) {
+                              setState(() {
+                                edit = !edit;
+                              });
+                            } else {
+                              showAlertDialog(context, "Submitting");
+                              // var message = await updateBacisInfo();
+                              if (await updateBasicInfo() == "Submitted") {
+                                print("Updated");
+                                firstNameController.clear();
+                                lastNameController.clear();
+                                phoneNoController.clear();
+                                experienceController.clear();
+                                _image = null;
+                                degreeController.clear();
+                                passoutYearController.clear();
+                                UpdateError = "";
+                                Navigator.pop(context);
+                                setState(() {
+                                  edit = !edit;
+                                });
+                              } else {
+                                print("error occured");
+                                Navigator.pop(context);
+                                setState(() {
+                                  UpdateError = "error updating data";
+                                });
+                              }
+                            }
+                          },
+                          child: edit
+                              ? Text(
+                                  'Submit',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                )
+                              : Text(
+                                  'Edit',
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 18),
+                                )),
+                    ),
+                    // const SizedBox(
+                    //   height: 90,
+                    // ),
+                  ],
+                ),
+              );
+            }
+          }
+        },
+        future: getInfo(),
+      ),
+    );
+  }
+
+  showAlertDialog(BuildContext context, String lodingText) {
+    AlertDialog alert = AlertDialog(
+      content: Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(margin: EdgeInsets.only(left: 5), child: Text(lodingText)),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future<String> updateBasicInfo() async {
+    var imageLink = await uploadImage();
+    var Token = await getValue("token");
+    storeProfileURL(imageLink);
+    print("i am here with imageobj rceived");
+    // print(imageobj["data"]["image"]["url"]);
+    print(firstNameController.text);
+    print(lastNameController.text);
+    print(phoneNoController.text);
+    final ioc = new HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = new IOClient(ioc);
+    final http.Response response1 = await http1.put(
+      url + '/facultyinfo',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + Token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        'first_name': firstNameController.text,
+        'last_name': lastNameController.text,
+        'phone_no': phoneNoController.text,
+        'qualification': {
+          'degree': degreeController.text,
+          'passout_year': passoutYearController.text
+        },
+        'profile_photo': imageLink.toString(),
+      }),
+    );
+
+    if (response1.statusCode == 201) {
+      var res = response1.body;
+      print(res);
+      var obj = json.decode(res);
+      return Future.value("Submitted");
+    }
+    var res = response1.body;
+    print(res);
+    var obj = json.decode(res);
+    print("\nnot submitted\n");
+    print(obj['error']);
+    return Future.value("Error");
+  }
+
+  Future<dynamic> getInfo() async {
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    var res;
+    int statusCode = 0;
+    print("i ama faculty");
+    final http.Response response1 = await http1.get(
+      url + '/facultyinfo',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    res = response1.body;
+    statusCode = response1.statusCode;
+
+    var obj = json.decode(res);
+    if (statusCode == 200) {
+      print(obj);
+      return obj;
+    }
+    List<int> l = [];
+    return l;
   }
 
   Widget classesPage() {
@@ -127,16 +526,15 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                 return Padding(
                   padding: EdgeInsets.symmetric(
                       vertical: MediaQuery.of(context).size.width * 0.40),
-                  child:
-                      Column(
-                        children: [
-                          const Center(child: Text('Please wait its loading...')),
-                          Padding(
-                              padding: const EdgeInsets.all(15.0),
-                              child: CircularProgressIndicator(),
-                            ),
-                        ],
+                  child: Column(
+                    children: [
+                      const Center(child: Text('Please wait its loading...')),
+                      Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: CircularProgressIndicator(),
                       ),
+                    ],
+                  ),
                 );
               } else {
                 if (snapshot.hasError) {
@@ -244,7 +642,6 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                                 color: Colors.blue,
                                                 fontSize: 11),
                                           ),
-                                         
                                         ],
                                       ),
                                     ),
@@ -318,6 +715,38 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                           "Enter class details",
                           style: TextStyle(color: Colors.blue, fontSize: 10),
                         )),
+                    Center(
+                      child: GestureDetector(
+                        onTap: () {
+                          _showPicker(context);
+                        },
+                        child: CircleAvatar(
+                          radius: 55,
+                          backgroundColor: Color(0xffFDCF09),
+                          child: _image != null
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(50),
+                                  child: Image.file(
+                                    File(_image.path),
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.fitHeight,
+                                  ),
+                                )
+                              : Container(
+                                  decoration: BoxDecoration(
+                                      color: Colors.grey[200],
+                                      borderRadius: BorderRadius.circular(50)),
+                                  width: 100,
+                                  height: 100,
+                                  child: Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.grey[800],
+                                  ),
+                                ),
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding:
                           EdgeInsets.symmetric(horizontal: 15, vertical: 8),
@@ -354,18 +783,18 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                             hintText: 'Eg. meet.google.com/ffs24f2'),
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 8),
-                      child: TextField(
-                        controller: imageLinkController,
-                        obscureText: false,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Image Link',
-                            hintText: 'https://wwww.image.com/ece.png'),
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //       horizontal: 15, vertical: 8),
+                    //   child: TextField(
+                    //     controller: imageLinkController,
+                    //     obscureText: false,
+                    //     decoration: const InputDecoration(
+                    //         border: OutlineInputBorder(),
+                    //         labelText: 'Image Link',
+                    //         hintText: 'https://wwww.image.com/ece.png'),
+                    //   ),
+                    // ),
                     // TextFormField(
                     //   controller: yearController,
                     //   keyboardType: TextInputType.number,
@@ -409,6 +838,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                             addClass(context);
                             classDetailsError = "";
                           } else {
+                            _image = null;
                             Navigator.pop(ctx);
                             Navigator.pop(context);
                             setState(() {
@@ -447,6 +877,53 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     return context;
   }
 
+  var _image;
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: Text('Photo Library'),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    _imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  _imgFromCamera() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  _imgFromGallery() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
   Widget messagesPage() {
     return Center(
         child: Container(
@@ -455,15 +932,24 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     ));
   }
 
-  Widget mePage() {
-    return Center(
-        child: Container(
-      child: Text("Me"),
-      padding: EdgeInsets.all(8),
-    ));
+  Future uploadImage() async {
+    var uri =
+        Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
+    var request = http.MultipartRequest('POST', uri);
+    print(_image.path.toString());
+    request.files.add(await http.MultipartFile.fromPath('image', _image.path));
+    final response = (await request.send());
+    final respStr = await response.stream.bytesToString();
+    print(respStr);
+    var obj = json.decode(respStr);
+    if (response.statusCode == 200) {
+      return obj["data"]["image"]["url"];
+    }
+    return "no image";
   }
 
   Future<String> addClassRequest() async {
+    var imageLink = await uploadImage();
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =
@@ -480,7 +966,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
         'year': int.parse(yearController.text),
         'branch': branchController.text,
         'subject': subjectController.text,
-        'image_link': imageLinkController.text,
+        'image_link': imageLink,
       }),
     );
     print(response1.statusCode);

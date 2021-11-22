@@ -79,7 +79,7 @@ func (r *repositoryStudentInfoCRUD) Update(pid uint64, StudentInfo models.Studen
 	var rs *gorm.DB
 	done := make(chan bool)
 	go func(ch chan<- bool) {
-		rs = r.db.Debug().Model(models.StudentInfo{}).Where("author_id = ?", pid).Take(&models.StudentInfo{}).Updates(StudentInfo)
+		rs = r.db.Debug().Model(models.StudentInfo{}).Where("user_id = ?", pid).Take(&models.StudentInfo{}).Updates(StudentInfo)
 		ch <- true
 	}(done)
 

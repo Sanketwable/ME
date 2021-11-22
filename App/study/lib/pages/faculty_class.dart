@@ -90,34 +90,6 @@ class _FacultyClassState extends State<FacultyClass> {
               ),
             ),
       floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: FutureBuilder(
-                builder: (context, AsyncSnapshot snapshot) {
-                  return Text(snapshot.data.toString());
-                },
-                future: getUserName(),
-              ),
-            ),
-            ListTile(
-              title: const Text('Sign Out'),
-              onTap: () {
-                delete();
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const Redirect()),
-                    ModalRoute.withName("/Home"));
-              },
-            ),
-          ],
-        ),
-      ),
       body: _selectedPage == 0
           ? timeLinePage()
           : (_selectedPage == 1 ? AssignmentPage() : StudentsPage()),
@@ -447,7 +419,11 @@ class _FacultyClassState extends State<FacultyClass> {
                                                   alignment:
                                                       Alignment.centerLeft,
                                                   child: Text(
-                                                    "Date : " +
+                                                    datas["first_name"] +
+                                                        " " +
+                                                        datas["last_name"] +
+                                                        "\n"
+                                                            "Date : " +
                                                         datas["time"]
                                                             .substring(0, 10) +
                                                         "\nTime : " +
@@ -612,7 +588,8 @@ class _FacultyClassState extends State<FacultyClass> {
                             ? Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical:
-                                        MediaQuery.of(context).size.width * 0.40),
+                                        MediaQuery.of(context).size.width *
+                                            0.40),
                                 child: const Center(child: Text('No Comments')),
                               )
                             : ListView.builder(
@@ -650,15 +627,18 @@ class _FacultyClassState extends State<FacultyClass> {
                                                       Container(
                                                         padding:
                                                             EdgeInsets.all(2),
-                                                        alignment:
-                                                            Alignment.centerLeft,
+                                                        alignment: Alignment
+                                                            .centerLeft,
                                                         child: Text(
-                                                          datas["user_id"]
-                                                              .toString(),
+                                                          datas["first_name"] +
+                                                              datas[
+                                                                  "last_name"] +
+                                                              "\n".toString(),
                                                           overflow: TextOverflow
                                                               .visible,
                                                           style: const TextStyle(
-                                                              color: Colors.black,
+                                                              color:
+                                                                  Colors.black,
                                                               fontSize: 11,
                                                               fontWeight:
                                                                   FontWeight
@@ -668,25 +648,27 @@ class _FacultyClassState extends State<FacultyClass> {
                                                       Container(
                                                         padding:
                                                             EdgeInsets.all(2),
-                                                        alignment:
-                                                            Alignment.centerLeft,
+                                                        alignment: Alignment
+                                                            .centerLeft,
                                                         child: Text(
                                                           datas["comment"],
                                                           style: TextStyle(
-                                                              color: Colors.black,
+                                                              color:
+                                                                  Colors.black,
                                                               fontSize: 15),
                                                         ),
                                                       ),
                                                       Container(
                                                         padding:
                                                             EdgeInsets.all(2),
-                                                        alignment:
-                                                            Alignment.centerLeft,
+                                                        alignment: Alignment
+                                                            .centerLeft,
                                                         child: Text(
                                                           datas["time"]
                                                               .substring(0, 10),
                                                           style: TextStyle(
-                                                              color: Colors.black,
+                                                              color:
+                                                                  Colors.black,
                                                               fontSize: 10),
                                                         ),
                                                       ),
@@ -694,7 +676,7 @@ class _FacultyClassState extends State<FacultyClass> {
                                                   ),
                                                 ),
                                               ),
-                      
+
                                               // Text(
                                               //   "sanket\n\n\n",
                                               //   style: TextStyle(

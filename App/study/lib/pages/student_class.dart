@@ -57,34 +57,6 @@ class _StudentClassState extends State<StudentClass> {
       appBar: AppBar(
         title: Text('Student'),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: FutureBuilder(
-                builder: (context, AsyncSnapshot snapshot) {
-                  return Text(snapshot.data.toString());
-                },
-                future: getUserName(),
-              ),
-            ),
-            ListTile(
-              title: const Text('Sign Out'),
-              onTap: () {
-                delete();
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const Redirect()),
-                    ModalRoute.withName("/Home"));
-              },
-            ),
-          ],
-        ),
-      ),
       body: new Container(child: _buildChild(_selectedPage)),
     );
   }
@@ -432,7 +404,11 @@ class _StudentClassState extends State<StudentClass> {
                                                   alignment:
                                                       Alignment.centerLeft,
                                                   child: Text(
-                                                    "Date : " +
+                                                    datas["first_name"] +
+                                                        " " +
+                                                        datas["last_name"] +
+                                                        "\n" +
+                                                        "Date : " +
                                                         datas["time"]
                                                             .substring(0, 10) +
                                                         "\nTime : " +
@@ -639,8 +615,10 @@ class _StudentClassState extends State<StudentClass> {
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
-                                                          datas["user_id"]
-                                                              .toString(),
+                                                          datas["first_name"] +
+                                                              " " +
+                                                              datas[
+                                                                  "last_name"],
                                                           overflow: TextOverflow
                                                               .visible,
                                                           style: const TextStyle(

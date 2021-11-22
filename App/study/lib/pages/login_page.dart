@@ -18,6 +18,7 @@ var Token;
 var IncorrectDetails = false;
 var loginError;
 var userName = "";
+var userID = "";
 
 final emailcontroller = TextEditingController();
 final passwordcontroller = TextEditingController();
@@ -215,6 +216,7 @@ class _WelcomePage extends State<WelcomePage> {
       var Error = obj['error'];
       Token = (obj['token']);
       userName = obj['username'];
+      userID = obj['id'].toString();
       print("this is the token ---" + Token);
       print(Error);
       return Future.value("loggedIN");
@@ -228,7 +230,7 @@ class _WelcomePage extends State<WelcomePage> {
   }
 
   void loginSucessfull() {
-    store('token', Token, dropdownValue.toString(), userName);
+    store('token', Token, dropdownValue.toString(), userName, userID);
     emailcontroller.clear();
     passwordcontroller.clear();
     dropdownValue.toString() == 'faculty'

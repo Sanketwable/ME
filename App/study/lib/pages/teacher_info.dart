@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
 import 'dart:convert';
@@ -7,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:study/constants/constants.dart';
+import 'package:study/controllers/token.dart';
 import 'package:study/pages/faculty_home_page.dart';
 
 final firstNameController = TextEditingController();
@@ -53,6 +55,38 @@ class _FacultyInfoState extends State<FacultyInfo> {
                 "    Hi " + userName + "\nEnter your basic Info ",
                 style: TextStyle(color: Colors.grey, fontSize: 20),
               )),
+            ),
+            Center(
+              child: GestureDetector(
+                onTap: () {
+                  _showPicker(context);
+                },
+                child: CircleAvatar(
+                  radius: 55,
+                  backgroundColor: Color(0xffFDCF09),
+                  child: _image != null
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image.file(
+                            File(_image.path),
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.fitHeight,
+                          ),
+                        )
+                      : Container(
+                          decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(50)),
+                          width: 100,
+                          height: 100,
+                          child: Icon(
+                            Icons.camera_alt,
+                            color: Colors.grey[800],
+                          ),
+                        ),
+                ),
+              ),
             ),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
@@ -170,7 +204,8 @@ class _FacultyInfoState extends State<FacultyInfo> {
                     setState(() {
                       Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (_) => FacultyHomePage(userName)),
+                          MaterialPageRoute(
+                              builder: (_) => FacultyHomePage(userName)),
                           ModalRoute.withName("/Home"));
                     });
                   } else {
@@ -199,6 +234,70 @@ class _FacultyInfoState extends State<FacultyInfo> {
     );
   }
 
+  var _image;
+  void _showPicker(context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (BuildContext bc) {
+          return SafeArea(
+            child: Wrap(
+              children: <Widget>[
+                ListTile(
+                    leading: const Icon(Icons.photo_library),
+                    title: Text('Photo Library'),
+                    onTap: () {
+                      _imgFromGallery();
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                  leading: const Icon(Icons.photo_camera),
+                  title: const Text('Camera'),
+                  onTap: () {
+                    _imgFromCamera();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  _imgFromCamera() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  _imgFromGallery() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  Future uploadImage() async {
+    var uri =
+        Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
+    var request = http.MultipartRequest('POST', uri);
+    print(_image.path.toString());
+    request.files.add(await http.MultipartFile.fromPath('image', _image.path));
+    final response = (await request.send());
+    final respStr = await response.stream.bytesToString();
+    print(respStr);
+
+    var obj = json.decode(respStr);
+    if (response.statusCode == 200) {
+      return obj["data"]["image"]["url"];
+    }
+    return "no image";
+  }
+
   showAlertDialog(BuildContext context, String lodingText) {
     AlertDialog alert = AlertDialog(
       content: Row(
@@ -218,6 +317,10 @@ class _FacultyInfoState extends State<FacultyInfo> {
   }
 
   Future<String> submitBasicInfo() async {
+    var imageLink = await uploadImage();
+    storeProfileURL(imageLink);
+    print("i am here with imageobj rceived");
+    // print(imageobj["data"]["image"]["url"]);
     print(firstNameController.text);
     print(lastNameController.text);
     print(phoneNoController.text);
@@ -243,6 +346,7 @@ class _FacultyInfoState extends State<FacultyInfo> {
           'passout_year': passoutYeatController.text,
         },
         'experience': double.parse(experience.toString()),
+        'profile_photo': imageLink.toString(),
       }),
     );
 

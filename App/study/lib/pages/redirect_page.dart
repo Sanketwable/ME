@@ -3,6 +3,7 @@ import 'package:study/pages/faculty_home_page.dart';
 import 'package:study/pages/student_home_page.dart';
 import 'package:study/pages/login_page.dart';
 import 'package:study/pages/student_home_page.dart';
+import 'package:study/pages/student_info.dart';
 import '../controllers/token.dart';
 
 var LoginType = "";
@@ -35,6 +36,7 @@ class _RedirectState extends State<Redirect> {
           print(snapshot);
           // return WelcomePage();
           return LoginType == "faculty" ? FacultyHomePage(UserName) :StudentHomePage(UserName);
+          // return StudentInfo("sanket", snapshot.toString());
         } else {
           print("token not present");
           print(snapshot);
