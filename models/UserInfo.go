@@ -20,7 +20,7 @@ type FacultyInfo struct {
 	OTPVerified   bool          `gorm:"default:false;" json:"otp_verified"`
 }
 
-// StudentInfo stores some basic informatin about student
+// StudentInfo stores some basic information about student
 type StudentInfo struct {
 	UserID       uint32  `gorm:"not null;unique" json:"user_id"`
 	FirstName    string  `gorm:"size:30;not null;" json:"first_name"`

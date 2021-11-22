@@ -13,11 +13,12 @@ type repositoryStudentInfoCRUD struct {
 	db *gorm.DB
 }
 
-//NewRepositoryStudentInfoCRUD is
+//NewRepositoryStudentInfoCRUD is func that returns repo
 func NewRepositoryStudentInfoCRUD(db *gorm.DB) *repositoryStudentInfoCRUD {
 	return &repositoryStudentInfoCRUD{db}
 }
 
+// Save is used to save the basic student info
 func (r *repositoryStudentInfoCRUD) Save(Studentinfo models.StudentInfo) (models.StudentInfo, error) {
 	var err error
 	done := make(chan bool)
@@ -36,6 +37,7 @@ func (r *repositoryStudentInfoCRUD) Save(Studentinfo models.StudentInfo) (models
 	return models.StudentInfo{}, err
 }
 
+// FindAll is used to find all students 
 func (r *repositoryStudentInfoCRUD) FindAll() ([]models.StudentInfo, error) {
 	var err error
 	posts := []models.StudentInfo{}
@@ -75,6 +77,7 @@ func (r *repositoryStudentInfoCRUD) FindById(pid uint64) (models.StudentInfo, er
 	return models.StudentInfo{}, err
 }
 
+// Update is used to update student info
 func (r *repositoryStudentInfoCRUD) Update(pid uint64, StudentInfo models.StudentInfo) (int64, error) {
 	var rs *gorm.DB
 	done := make(chan bool)
@@ -94,7 +97,8 @@ func (r *repositoryStudentInfoCRUD) Update(pid uint64, StudentInfo models.Studen
 	}
 	return 0, rs.Error
 }
-// StudentMobileVerify(uint64) (error)
+
+// StudentMobileVerify is used to update whether mobile has been verified or not
 func (r *repositoryStudentInfoCRUD) StudentMobileVerify(pid uint64) error {
 	fmt.Println("here in studentMobileVerify")
 	var rs *gorm.DB

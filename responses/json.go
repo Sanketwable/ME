@@ -6,6 +6,7 @@ import (
 	"net/http"
 )
 
+// JSON is used to write payload to response of a request
 func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 	w.WriteHeader(statusCode)
 	err := json.NewEncoder(w).Encode(data)
@@ -15,6 +16,7 @@ func JSON(w http.ResponseWriter, statusCode int, data interface{}) {
 
 }
 
+// ERROR is used to write error to response of a request
 func ERROR(w http.ResponseWriter, statusCode int, err error) {
 	if err != nil {
 		JSON(w, statusCode, struct {

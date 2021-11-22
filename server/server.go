@@ -10,6 +10,7 @@ import (
 	"os"
 )
 
+// Run is used to start the server
 func Run() {
 	config.Load()
 	fmt.Println("config file loaded")
@@ -19,6 +20,7 @@ func Run() {
 	Listen(config.PORT)
 }
 
+// Listen is used to make server run on partucular port
 func Listen(port int) {
 	r := router.New()
 	portt := os.Getenv("PORT")

@@ -19,7 +19,7 @@ type User struct {
 	LoginType string    `gorm:"" json:"login_type"`
 }
 
-//BeforeSave is a func
+//BeforeSave is a func to check password and hash password
 func (u *User) BeforeSave() error {
 	hashedPassword, err := security.Hash(u.Password)
 	if err != nil {
@@ -30,7 +30,7 @@ func (u *User) BeforeSave() error {
 	return nil
 }
 
-//Prepare is a struct
+//Prepare is a func to eliminate the spaces in email and username
 func (u *User) Prepare() {
 	u.UserName = html.EscapeString(strings.TrimSpace(u.UserName))
 	u.Email = html.EscapeString(strings.TrimSpace(u.Email))

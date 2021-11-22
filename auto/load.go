@@ -7,7 +7,7 @@ import (
 	"log"
 )
 
-//Load is
+//Load is function to create basic schema of DB
 func Load() {
 	db, err := database.Connect()
 	if err != nil {

@@ -12,11 +12,12 @@ type repositoryFacultyInfoCRUD struct {
 	db *gorm.DB
 }
 
-//NewRepositoryFacultyInfoCRUD is
+//NewRepositoryFacultyInfoCRUD is func to return repo
 func NewRepositoryFacultyInfoCRUD(db *gorm.DB) *repositoryFacultyInfoCRUD {
 	return &repositoryFacultyInfoCRUD{db}
 }
 
+// Save is used to save the faculty information
 func (r *repositoryFacultyInfoCRUD) Save(Facultyinfo models.FacultyInfo, qualification models.Qualification) (models.FacultyInfo, error) {
 	var err error
 	done := make(chan bool)
@@ -37,6 +38,7 @@ func (r *repositoryFacultyInfoCRUD) Save(Facultyinfo models.FacultyInfo, qualifi
 	return models.FacultyInfo{}, err
 }
 
+// FindAll is used to find all faculty
 func (r *repositoryFacultyInfoCRUD) FindAll() ([]models.FacultyInfo, error) {
 	var err error
 	posts := []models.FacultyInfo{}
@@ -56,7 +58,7 @@ func (r *repositoryFacultyInfoCRUD) FindAll() ([]models.FacultyInfo, error) {
 	return nil, err
 }
 
-// FindById is a func
+// FindById is a func to find faculty by id
 func (r *repositoryFacultyInfoCRUD) FindById(pid uint64) (models.FacultyInfo, error) {
 	var err error
 	FacultyInfo := models.FacultyInfo{}
@@ -83,6 +85,7 @@ func (r *repositoryFacultyInfoCRUD) FindById(pid uint64) (models.FacultyInfo, er
 	return models.FacultyInfo{}, err
 }
 
+// Update is used to update faculty info
 func (r *repositoryFacultyInfoCRUD) Update(pid uint64, FacultyInfo models.FacultyInfo, qualification models.Qualification) (int64, error) {
 	var rs *gorm.DB
 	done := make(chan bool)
@@ -103,7 +106,7 @@ func (r *repositoryFacultyInfoCRUD) Update(pid uint64, FacultyInfo models.Facult
 	}
 	return 0, rs.Error
 }
-// FacultyMobileVerify(uint64) (error)
+// FacultyMobileVerify is update mobile verification for faculty
 func (r *repositoryFacultyInfoCRUD) FacultyMobileVerify(pid uint64) error {
 	var rs *gorm.DB
 

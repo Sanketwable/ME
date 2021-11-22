@@ -17,6 +17,7 @@ func NewRepositoryClassCRUD(db *gorm.DB) *repositoryClassCRUD{
 	return &repositoryClassCRUD{db}
 }
 
+// Save is used to save the newly created class
 func (r *repositoryClassCRUD) Save(class models.Class) (models.Class, error) {
 	var err error
 	done := make(chan bool) 
@@ -37,6 +38,7 @@ func (r *repositoryClassCRUD) Save(class models.Class) (models.Class, error) {
 	return models.Class{}, err
 }
 
+// FindAll is used to get list of all the classes corresponding to userid
 func (r *repositoryClassCRUD) FindAll(user_id uint32) ([]models.Class, error) {
 	var err error
 	Class := []models.Class{}
@@ -63,6 +65,8 @@ func (r *repositoryClassCRUD) FindAll(user_id uint32) ([]models.Class, error) {
 	}
 	return nil, err
 }
+
+// FindClassesFaculty is used to get class corresponding to facultyid
 func (r *repositoryClassCRUD) FindClassesFaculty(faculty_id uint32) ([]models.Class, error) {
 	var err error
 	class := []models.Class{}
@@ -83,6 +87,7 @@ func (r *repositoryClassCRUD) FindClassesFaculty(faculty_id uint32) ([]models.Cl
 	return nil, err
 }
 
+// FindById is used to find the class coreesponding to classid
 func (r *repositoryClassCRUD) FindById(class_id uint32) (models.Class, error) {
 	var err error
 	class := models.Class{}
@@ -108,6 +113,7 @@ func (r *repositoryClassCRUD) FindById(class_id uint32) (models.Class, error) {
 	return models.Class{ }, err
 }
 
+// Update is used to update the class
 func (r *repositoryClassCRUD) Update(class_id uint32, class models.Class) (int64, error) {
 	var rs *gorm.DB
 	
@@ -127,6 +133,7 @@ func (r *repositoryClassCRUD) Update(class_id uint32, class models.Class) (int64
 	return 0, rs.Error
 }
 
+// Delete is used to delete the class
 func (r *repositoryClassCRUD) Delete(class_id uint32) (int64, error) {
 	var rs *gorm.DB 
 	done := make(chan bool) 
@@ -146,6 +153,7 @@ func (r *repositoryClassCRUD) Delete(class_id uint32) (int64, error) {
 	return 0, rs.Error
 }
 
+// AddStudent is used to add student to class
 func (r *repositoryClassCRUD) AddStudent(classstudent models.ClassStudent) (error) {
 	var err error
 	done := make(chan bool) 

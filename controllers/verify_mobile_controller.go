@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+// VerifyMobile is endpoint to verify the link on sms send on mobile
 func VerifyMobile(w http.ResponseWriter, r *http.Request) {
 	
 	id, _ := auth.ExtractTokenID(r)

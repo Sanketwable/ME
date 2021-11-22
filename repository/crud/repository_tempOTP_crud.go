@@ -12,11 +12,12 @@ import (
 type repositoryTempOTPCRUD struct {
 	db *gorm.DB
 }
-//NewRepositoryTempOTPCRUD is func
+//NewRepositoryTempOTPCRUD is func returns repo
 func NewRepositoryTempOTPCRUD(db *gorm.DB) *repositoryTempOTPCRUD{
 	return &repositoryTempOTPCRUD{db}
 }
 
+// Save is used to save temp otp send by email
 func (r *repositoryTempOTPCRUD) Save(tempotp models.TempOTP) (models.TempOTP, error) {
 	var err1 error = nil
 	done := make(chan bool)
@@ -36,6 +37,7 @@ func (r *repositoryTempOTPCRUD) Save(tempotp models.TempOTP) (models.TempOTP, er
 	return models.TempOTP{}, err1
 }
 
+// FindByEmail is used to find otp by email
 func (r *repositoryTempOTPCRUD) FindByEmail(email string, tempotp models.TempOTP) (models.TempOTP, error) {
 	var err error
 
@@ -62,6 +64,7 @@ func (r *repositoryTempOTPCRUD) FindByEmail(email string, tempotp models.TempOTP
 	return tempotp, err
 }
 
+// Delete is used to delete OTP after veification
 func (r *repositoryTempOTPCRUD) Delete(email string, tempotp models.TempOTP) (int64, error) {
 	var rs *gorm.DB 
 	done := make(chan bool) 
@@ -80,6 +83,8 @@ func (r *repositoryTempOTPCRUD) Delete(email string, tempotp models.TempOTP) (in
 	return 0, rs.Error
 
 }
+
+// UpdateTempOTP is used to update the resended OTP
 func (r *repositoryTempOTPCRUD) UpdateTempOTP(email string, tempotp  models.TempOTP) (int64, error) {
 	var rs *gorm.DB
 	done := make(chan bool) 
@@ -95,7 +100,7 @@ func (r *repositoryTempOTPCRUD) UpdateTempOTP(email string, tempotp  models.Temp
 	if channels.OK(done) {
 		if rs.Error != nil {
 			if gorm.IsRecordNotFoundError(rs.Error) {
-				return 0, errors.New("Post not found")
+				return 0, errors.New("post not found")
 			}
 			return 0, rs.Error
 		}

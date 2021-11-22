@@ -11,11 +11,12 @@ import (
 type repositoryUsersCRUD struct {
 	db *gorm.DB
 }
-//NewRepositoryUsersCRUD is func
+//NewRepositoryUsersCRUD is func that return repo
 func NewRepositoryUsersCRUD(db *gorm.DB) *repositoryUsersCRUD{
 	return &repositoryUsersCRUD{db}
 }
 
+// Save is used to save the user's email and password
 func (r *repositoryUsersCRUD) Save(user models.User) (models.User, error) {
 	var err error
 	done := make(chan bool) 
@@ -34,6 +35,7 @@ func (r *repositoryUsersCRUD) Save(user models.User) (models.User, error) {
 	return models.User{}, err
 }
 
+// FindAll is used to find the user's email and password
 func (r *repositoryUsersCRUD) FindAll() ([]models.User, error) {
 	var err error
 
@@ -56,6 +58,7 @@ func (r *repositoryUsersCRUD) FindAll() ([]models.User, error) {
 	return nil, err
 }
 
+// FindById is used to find the user's email and password by id
 func (r *repositoryUsersCRUD) FindById(uid uint32) (models.User, error) {
 	var err error
 
@@ -82,6 +85,7 @@ func (r *repositoryUsersCRUD) FindById(uid uint32) (models.User, error) {
 	return models.User{ }, err
 }
 
+// UpdateLastLogin is used to update the last login of the user
 func (r *repositoryUsersCRUD) UpdateLastLogin(uid uint32, user models.User) (int64, error) {
 	var rs *gorm.DB
  
@@ -106,6 +110,7 @@ func (r *repositoryUsersCRUD) UpdateLastLogin(uid uint32, user models.User) (int
 	return 0, rs.Error
 }
 
+// UpdatePassword is used to update password
 func (r *repositoryUsersCRUD) UpdatePassword(uid uint32, user models.User) (int64, error) {
 	var rs *gorm.DB
 	
@@ -129,6 +134,7 @@ func (r *repositoryUsersCRUD) UpdatePassword(uid uint32, user models.User) (int6
 	return 0, rs.Error
 }
 
+// Delete is used to delete the user but not used
 func (r *repositoryUsersCRUD) Delete(uid uint32) (int64, error) {
 	var rs *gorm.DB 
 	done := make(chan bool) 

@@ -6,7 +6,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-//New is function
+//New is function to create an new gorilla/mux router
 func New() *mux.Router {
 	r := mux.NewRouter().StrictSlash(true)
 	return routes.SetUpRoutesWithMiddlewares(r)

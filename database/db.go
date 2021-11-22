@@ -6,6 +6,7 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
 
+// Connect is func to connect to DB
 func Connect() (*gorm.DB, error) {
 	db, err := gorm.Open(config.DBDRIVER, config.DBURL)
 	if err != nil {

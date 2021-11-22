@@ -11,11 +11,12 @@ type repositoryPostCRUD struct {
 	db *gorm.DB
 }
 
-//NewRepositoryPostCRUD is func
+//NewRepositoryPostCRUD is func to return repo
 func NewRepositoryPostCRUD(db *gorm.DB) *repositoryPostCRUD {
 	return &repositoryPostCRUD{db}
 }
 
+// SavePost is used to save posts
 func (r *repositoryPostCRUD) SavePost(post models.Post) (models.Post, error) {
 	var err error
 	done := make(chan bool)
@@ -33,6 +34,8 @@ func (r *repositoryPostCRUD) SavePost(post models.Post) (models.Post, error) {
 	}
 	return models.Post{}, err
 }
+
+// SaveComment is used to save comments
 func (r *repositoryPostCRUD) SaveComment(comment models.Comment) (models.Comment, error) {
 	var err error
 	done := make(chan bool)
@@ -51,6 +54,8 @@ func (r *repositoryPostCRUD) SaveComment(comment models.Comment) (models.Comment
 	return models.Comment{}, err
 
 }
+
+// FindPosts is used to find posts corresponding to classid
 func (r *repositoryPostCRUD) FindPosts(class_id uint32) ([]models.Post, error) {
 	var err error
 	Posts := []models.Post{}
@@ -70,6 +75,8 @@ func (r *repositoryPostCRUD) FindPosts(class_id uint32) ([]models.Post, error) {
 	}
 	return nil, err
 }
+
+// FindComments is used to find comments corresponding to post
 func (r *repositoryPostCRUD) FindComments(post_id uint32) ([]models.Comment, error) {
 	var err error
 	Comments := []models.Comment{}

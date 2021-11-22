@@ -30,7 +30,7 @@ var (
 	HEROKUURL           = ""
 )
 
-// Load is a func
+// Load is a func to load config variables
 func Load() {
 	var err error
 

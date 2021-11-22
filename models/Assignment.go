@@ -13,6 +13,7 @@ type Assignment struct {
 	Due            string         `gorm:"" json:"due"`
 }
 
+// FileAssignment is a file assignment struct
 type FileAssignment struct {
 	AssignmentID   uint32    `gorm:"not null" json:"assignment_id"`
 	Description    string    `gorm:"" json:"description"`
@@ -21,6 +22,7 @@ type FileAssignment struct {
 	CreatedAt      string`gorm:"" json:"created_at"`
 }
 
+// FormAssignment is a file assignment struct
 type FormAssignment struct {
 	AssignmentID uint32     `gorm:"not null" json:"assignment_id"`
 	Description  string     `gorm:"" json:"description"`
@@ -29,6 +31,7 @@ type FormAssignment struct {
 	CreatedAt    time.Time  `gorm:"" json:"created_at"`
 }
 
+// Question is structure to show question for form assignment
 type Question struct {
 	AssignmentID uint32 `gorm:"" json:"assignment_id"`
 	Question     string `gorm:"" json:"question"`
@@ -39,6 +42,7 @@ type Question struct {
 	Answer       uint32 `gorm:"" json:"answer"`
 }
 
+// StudentAssignment is a relation between student and assignment
 type StudentAssignment struct {
 	AssignmentID uint32 `gorm:"not null" json:"assignment_id"`
 	StudentID    uint32 `gorm:"not null" json:"student_id"`

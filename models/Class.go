@@ -12,6 +12,7 @@ type Class struct {
 	ImageLink string `gorm:"" json:"image_link"`
 }
 
+// ClassStudent is a relation between class and student
 type ClassStudent struct {
 	ClassID uint32 `gorm:"" json:"class_id"`
 	UserID  uint32 `gorm:"" json:"user_id"`

@@ -8,7 +8,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// Route is a struct
+// Route is a struct that stores all the parameter of an endpoint
 type Route struct {
 	Uri          string
 	Method       string
@@ -23,7 +23,7 @@ var verifyRoute = Route {
 	AuthRequired: false,
 }
 
-// Load is  a func
+// Load is  a func to create array of all the routes
 func Load() []Route {
 	routes := usersRoutes
 	routes = append(routes, studentRoutes...)
@@ -38,7 +38,7 @@ func Load() []Route {
 	return routes
 }
 
-//SetUpRoutes is a func
+//SetUpRoutes is a func to set all the routes from the Route array
 func SetUpRoutes(r *mux.Router) *mux.Router {
 
 	for _, route := range Load() {
@@ -47,7 +47,7 @@ func SetUpRoutes(r *mux.Router) *mux.Router {
 	return r
 }
 
-//SetUpRoutesWithMiddlewares is  a func
+//SetUpRoutesWithMiddlewares is  a func to add all the created middlewares
 func SetUpRoutesWithMiddlewares(r *mux.Router) *mux.Router {
 
 	for _, route := range Load() {

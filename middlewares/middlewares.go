@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// SetMiddlewareLogger is used to print the request to server
 func SetMiddlewareLogger(next http.HandlerFunc) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request)  {
 		log.Println("New Request arrived")
@@ -15,6 +16,7 @@ func SetMiddlewareLogger(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// SetMiddlewareJSON is used to set header
 func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request)  {
 		w.Header().Set("Content-Type", "application/json")
@@ -22,6 +24,7 @@ func SetMiddlewareJSON(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+// SetMiddlewareAuthentication is function to verify the token
 func SetMiddlewareAuthentication(next http.HandlerFunc) http.HandlerFunc {
 	return func (w http.ResponseWriter, r *http.Request)  {
 		err := auth.TokenValid(r)

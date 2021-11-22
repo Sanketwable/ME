@@ -17,6 +17,7 @@ func NewRepositoryAssignmentCRUD(db *gorm.DB) *repositoryAssignmentCRUD {
 	return &repositoryAssignmentCRUD{db}
 }
 
+// SaveFileAssigment is a assignment func to save the assignment details
 func (r *repositoryAssignmentCRUD) SaveFileAssigment(assignment models.Assignment, fileassignment models.FileAssignment) (models.Assignment, error) {
 	var err error
 	done := make(chan bool)
@@ -41,6 +42,8 @@ func (r *repositoryAssignmentCRUD) SaveFileAssigment(assignment models.Assignmen
 	}
 	return models.Assignment{}, err
 }
+
+// SaveFormAssigment is function to store form assignment
 func (r *repositoryAssignmentCRUD) SaveFormAssigment(assignment models.Assignment, formassignment models.FormAssignment, questions []models.Question) (models.Assignment, error) {
 	var err error
 	done := make(chan bool)
@@ -75,6 +78,8 @@ func (r *repositoryAssignmentCRUD) SaveFormAssigment(assignment models.Assignmen
 	}
 	return models.Assignment{}, err
 }
+
+// FindAssignment is function to query DB to find assignment corresponding to class
 func (r *repositoryAssignmentCRUD) FindAssignment(classID uint32) ([]models.Assignment, error) {
 	var err error
 
@@ -97,6 +102,8 @@ func (r *repositoryAssignmentCRUD) FindAssignment(classID uint32) ([]models.Assi
 	}
 	return nil, err
 }
+
+// FindFormAssignment is used to find form assignment 
 func (r *repositoryAssignmentCRUD) FindFormAssignment(assignmentID uint32) (models.FormAssignment, error) {
 	var err error
 
@@ -121,6 +128,8 @@ func (r *repositoryAssignmentCRUD) FindFormAssignment(assignmentID uint32) (mode
 	}
 	return formassignment, err
 }
+
+// FindFileAssignment is used to find file assignment
 func (r *repositoryAssignmentCRUD) FindFileAssignment(assignmentID uint32) (models.FileAssignment, error) {
 	var err error
 

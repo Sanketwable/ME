@@ -1,5 +1,6 @@
 package models
 
+// Post is a struct of post in class
 type Post struct {
 	PostID      uint32    `gorm:"primary_key;auto_increment" json:"post_id"`
 	ClassID     uint32    `gorm:"not null;" json:"class_id"`
@@ -11,6 +12,7 @@ type Post struct {
 	Comments    []Comment `json:"comment"`
 }
 
+// Comment is used to store comment on any post
 type Comment struct {
 	PostID    uint32 `gorm:"not null" json:"post_id"`
 	UserID    uint32 `gorm:"not null" json:"user_id"`

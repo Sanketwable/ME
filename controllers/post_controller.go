@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"time"
 )
-
+// PostsResponse is Response to server post request
 type PostsResponse struct {
 	PostID      uint32    `json:"post_id"`
 	ClassID     uint32    `json:"class_id"`
@@ -24,6 +24,7 @@ type PostsResponse struct {
 	Time        string    `json:"time"`
 }
 
+// CommentsResponse is a Response struct to server comment request
 type CommentsResponse struct {
 	PostID    uint32 `json:"post_id"`
 	UserID    uint32 `json:"user_id"`
@@ -33,6 +34,7 @@ type CommentsResponse struct {
 	Time      string `json:"time"`
 }
 
+// CreatePost Func is a Handler Func to create new Post by faculty
 func CreatePost(w http.ResponseWriter, r *http.Request) {
 	faculty_id, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -69,6 +71,8 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 
 }
+
+// CreateComment is a Func to create comment on post
 func CreateComment(w http.ResponseWriter, r *http.Request) {
 	user_id, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -105,6 +109,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 }
 
+// GetPosts is a func to get posts corresponding to class
 func GetPosts(w http.ResponseWriter, r *http.Request) {
 	_, err := auth.ExtractTokenID(r)
 	if err != nil {
@@ -156,6 +161,7 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 	}(repo)
 }
 
+// GetComments function returns all the comments on posts
 func GetComments(w http.ResponseWriter, r *http.Request) {
 	_, err := auth.ExtractTokenID(r)
 	if err != nil {

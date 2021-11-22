@@ -8,7 +8,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-//SignIn is func
+//SignIn is func to check password's hash to password by user
 func SignIn(email, password string) (string, error) {
 	user := models.User{}
 	var err error
