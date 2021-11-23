@@ -61,7 +61,7 @@ func (r *repositoryMessageCRUD) FindByClassID(classID uint64) ([]models.Message,
 	messages := []models.Message{}
 	done := make(chan bool)
 	go func(ch chan<- bool) {
-		err = r.db.Debug().Model(models.Message{}).Limit(500).Find(&messages).Where("class_id = ?", classID).Error
+		err = r.db.Debug().Model(models.Message{}).Limit(500).Where("class_id = ?", classID).Find(&messages).Error
 		if err != nil {
 			ch <- false
 			return

@@ -92,7 +92,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       return CircleAvatar(
                           radius: 35,
                           onBackgroundImageError: (object, stackTrace) => {},
-                          backgroundImage: NetworkImage(data.toString()));
+                          backgroundImage: NetworkImage(data.data.toString()));
                     },
                     future: getProfilePhotoURL(),
                   ),
@@ -186,13 +186,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
                           _showPicker(context);
                         }
                       },
-                      child: CircleAvatar(
-                        radius: 55,
-                        backgroundColor: Colors.white,
+                      child: Padding(
+                        padding: const EdgeInsets.all(15.0),
                         child: edit
                             ? CircleAvatar(
-                                radius: 55,
-                                backgroundColor: const Color(0xffFDCF09),
+                                radius: 51,
+                                backgroundColor: Colors.red,
                                 child: _image != null
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(50),
@@ -203,15 +202,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                           fit: BoxFit.fitHeight,
                                         ),
                                       )
-                                    : Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.grey[200],
-                                            borderRadius:
-                                                BorderRadius.circular(50)),
-                                        width: 100,
-                                        height: 100,
+                                    : ClipRRect(
+                                        borderRadius: BorderRadius.circular(50),
                                         child: Image.network(
                                           profilePhoto,
+                                          height: 100,
+                                          width: 100,
+                                          fit: BoxFit.fitHeight,
                                           errorBuilder: (context, obj, st) {
                                             return Container(
                                               decoration: BoxDecoration(
@@ -227,41 +224,47 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                               ),
                                             );
                                           },
-                                        ),
-                                      ),
-                              )
-                            : (profilePhoto != ""
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(50),
-                                    child: Image.network(
-                                      profilePhoto,
-                                      errorBuilder: (context, obj, st) {
-                                        return Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey[200],
-                                              borderRadius:
-                                                  BorderRadius.circular(50)),
-                                          width: 100,
+                                        )))
+                            : CircleAvatar(
+                                radius: 51,
+                                backgroundColor: Colors.blue,
+                                child: (profilePhoto != ""
+                                    ? ClipRRect(
+                                        borderRadius: BorderRadius.circular(50),
+                                        child: Image.network(
+                                          profilePhoto,
                                           height: 100,
-                                          child: Icon(
-                                            Icons.person,
-                                            color: Colors.grey[800],
-                                          ),
-                                        );
-                                      },
-                                    ))
-                                : Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius:
-                                            BorderRadius.circular(50)),
-                                    width: 100,
-                                    height: 100,
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.grey[800],
-                                    ),
-                                  )),
+                                          width: 100,
+                                          fit: BoxFit.fitHeight,
+                                          errorBuilder: (context, obj, st) {
+                                            return Container(
+                                              decoration: BoxDecoration(
+                                                  color: Colors.grey[200],
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          50)),
+                                              width: 100,
+                                              height: 100,
+                                              child: Icon(
+                                                Icons.person,
+                                                color: Colors.grey[800],
+                                              ),
+                                            );
+                                          },
+                                        ))
+                                    : Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.grey[200],
+                                            borderRadius:
+                                                BorderRadius.circular(50)),
+                                        width: 100,
+                                        height: 100,
+                                        child: Icon(
+                                          Icons.person,
+                                          color: Colors.grey[800],
+                                        ),
+                                      )),
+                              ),
                       ),
                     ),
                   ),
@@ -503,7 +506,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
 
-    
     final http.Response response1 = await http1.get(
       url + '/studentinfo',
       headers: <String, String>{
@@ -564,7 +566,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               codeSubmitted = false;
                               Navigator.pop(ctx);
                               Navigator.pop(context);
-                              
+
                               addClassCode(context);
                               codeError = "";
                             } else {
@@ -573,7 +575,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
                               });
                               Navigator.pop(ctx);
                               Navigator.pop(context);
-                              
                             }
                           },
                           child: const Text(
@@ -636,7 +637,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  
                   return snapshot.data!.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
@@ -714,14 +714,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                             const Spacer(),
                                             CircleAvatar(
                                                 radius: 35,
-                                                backgroundImage:
-                                                    NetworkImage(datas[
-                                                        "image_link"])),
+                                                backgroundImage: NetworkImage(
+                                                    datas["image_link"])),
                                           ],
                                         ),
                                         Text(
-                                          "Class code : " +
-                                              datas["class_code"],
+                                          "Class code : " + datas["class_code"],
                                           style: const TextStyle(
                                               color: Colors.blueAccent,
                                               fontSize: 12),
@@ -729,8 +727,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                         Text(
                                           datas["link"] + "\n",
                                           style: const TextStyle(
-                                              color: Colors.blue,
-                                              fontSize: 11),
+                                              color: Colors.blue, fontSize: 11),
                                         ),
                                         // Text(
                                         //   "sanket\n\n\n",
@@ -779,7 +776,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   Future<String> addClassRequest() async {
     var token = await getValue("token");
-    
+
     final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
@@ -793,7 +790,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
     );
     var res = response1.body;
     var obj = json.decode(res);
-    
+
     if (response1.statusCode == 200) {
       return obj.toString();
     }

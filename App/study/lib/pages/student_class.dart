@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:study/controllers/token.dart';
 import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
@@ -13,6 +16,7 @@ import '../controllers/token.dart';
 
 // ignore: prefer_typing_uninitialized_variables
 var classData;
+var userID;
 
 class StudentClass extends StatefulWidget {
   StudentClass(data, {Key? key}) : super(key: key) {
@@ -26,7 +30,6 @@ class _StudentClassState extends State<StudentClass> {
   int _selectedPage = 0;
   void _onItemTapped(int index) {
     if (_selectedPage != index) {
-      
       setState(() {
         _selectedPage = index;
       });
@@ -45,6 +48,10 @@ class _StudentClassState extends State<StudentClass> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.message_sharp),
+            label: 'Messages',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.assignment),
             label: 'Assignments',
           ),
         ],
@@ -66,12 +73,302 @@ class _StudentClassState extends State<StudentClass> {
       case 0:
         return postPage();
       case 1:
+        return messagePage();
+      case 2:
         return assignmentPage();
       default:
         return const Center(
           child: Text("default"),
         );
     }
+  }
+
+  var messageController = TextEditingController();
+  ScrollController _scrollController = ScrollController();
+  Widget messagePage() {
+    // _controller.initialScrollOffset = _controller.position.maxScrollExtent;
+
+    return StreamBuilder(
+      stream: getMessages(),
+      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Padding(
+            padding: EdgeInsets.symmetric(
+                vertical: MediaQuery.of(context).size.width * 0.40),
+            child: const Center(child: Text('Please wait its loading...')),
+          );
+        } else {
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            return Container(
+              child: Column(
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Scaffold(
+                      appBar: AppBar(
+                        elevation: 2,
+                        automaticallyImplyLeading: false,
+                        backgroundColor: Colors.white,
+                        flexibleSpace: SafeArea(
+                          child: Container(
+                            padding: EdgeInsets.only(right: 16, left: 10),
+                            child: Row(
+                              children: <Widget>[
+                                SizedBox(
+                                  width: 2,
+                                ),
+                                CircleAvatar(
+                                  backgroundImage:
+                                      NetworkImage(classData["image_link"]),
+                                  maxRadius: 20,
+                                ),
+                                SizedBox(
+                                  width: 12,
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: <Widget>[
+                                      Text(
+                                        classData["subject"],
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w600),
+                                      ),
+                                      SizedBox(
+                                        height: 6,
+                                      ),
+                                      Text(
+                                        classData["branch"] +
+                                            " " +
+                                            classData["year"].toString(),
+                                        style: TextStyle(
+                                            color: Colors.grey.shade600,
+                                            fontSize: 13),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    flex: 8,
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      controller: ScrollController(
+                          initialScrollOffset: snapshot.data!.length * 35),
+
+                      // reverse: true,
+                      padding: EdgeInsets.only(top: 10, bottom: 10),
+                      // physics: NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        return Container(
+                          padding: EdgeInsets.only(
+                              left: 14, right: 14, top: 10, bottom: 10),
+                          child: Align(
+                            alignment:
+                                (snapshot.data![index]["user_id"].toString() !=
+                                        userID
+                                    ? Alignment.topLeft
+                                    : Alignment.topRight),
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: (snapshot.data![index]["user_id"]
+                                            .toString() !=
+                                        userID
+                                    ? Colors.grey.shade200
+                                    : Colors.blue[200]),
+                              ),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 3, left: 2),
+                                      child: snapshot.data![index]["user_id"]
+                                                  .toString() !=
+                                              userID
+                                          ? Text(
+                                              snapshot.data![index]
+                                                      ["first_name"] +
+                                                  " " +
+                                                  snapshot.data![index]
+                                                      ["last_name"],
+                                              style: TextStyle(
+                                                  fontSize: 10,
+                                                  color: Colors.blue),
+                                              textAlign: TextAlign.left)
+                                          : SizedBox.shrink()),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 8.0, left: 8, right: 8, top: 5),
+                                    child: Text(
+                                      snapshot.data![index]["message"],
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                        bottom: 3.0, left: 3, right: 3),
+                                    child: Text(
+                                      snapshot.data![index]["time"],
+                                      style: TextStyle(fontSize: 9),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1,
+                    child: Stack(
+                      children: <Widget>[
+                        Align(
+                          alignment: Alignment.bottomLeft,
+                          child: Container(
+                            padding:
+                                EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                            height: 60,
+                            width: double.infinity,
+                            color: Colors.white,
+                            child: Row(
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Container(
+                                    height: 30,
+                                    width: 30,
+                                    decoration: BoxDecoration(
+                                      color: Colors.lightBlue,
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                    child: Icon(
+                                      Icons.add,
+                                      color: Colors.white,
+                                      size: 20,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: messageController,
+                                    decoration: InputDecoration(
+                                        hintText: "Write message...",
+                                        hintStyle:
+                                            TextStyle(color: Colors.black54),
+                                        border: InputBorder.none),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 15,
+                                ),
+                                FloatingActionButton(
+                                  onPressed: () async {
+                                    print("button pressed");
+                                    await sendMessage();
+                                    messageController.clear();
+                                  },
+                                  child: Icon(
+                                    Icons.send,
+                                    color: Colors.white,
+                                    size: 18,
+                                  ),
+                                  backgroundColor: Colors.blue,
+                                  elevation: 0,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      },
+    );
+  }
+
+  Stream<List<dynamic>> getMessages() async* {
+    while (true) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      var someProduct = await getMessagesAPI();
+      yield someProduct;
+    }
+  }
+
+  Future<List> getMessagesAPI() async {
+    userID = await getUserID();
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.get(
+      url + '/message?class_id=' + classData["class_id"].toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    var res = response1.body;
+
+    if (response1.statusCode == 200) {
+      var obj = json.decode(res);
+
+      return obj;
+    }
+    var obj = json.decode(res);
+
+    return Future.value(obj["error"]);
+  }
+
+  Future<String> sendMessage() async {
+    print("send message called");
+    var token = await getValue("token");
+
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.post(
+      url + '/message',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        "class_id": classData["class_id"],
+        "message": messageController.text,
+      }),
+    );
+
+    if (response1.statusCode == 200) {
+      print(response1);
+      return Future.value("sucessfull");
+    }
+
+    return Future.value("error");
   }
 
   Widget assignmentPage() {
@@ -107,7 +404,6 @@ class _StudentClassState extends State<StudentClass> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  
                   return snapshot.data!.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
@@ -179,8 +475,7 @@ class _StudentClassState extends State<StudentClass> {
                                             CircleAvatar(
                                                 radius: 20,
                                                 onBackgroundImageError:
-                                                    (object, sackTrace) =>
-                                                        {},
+                                                    (object, sackTrace) => {},
                                                 backgroundImage: datas[
                                                             "assignment_type"] ==
                                                         0
@@ -238,11 +533,11 @@ class _StudentClassState extends State<StudentClass> {
 
     if (response1.statusCode == 200) {
       var obj = json.decode(res);
-      
+
       return obj;
     }
     var obj = json.decode(res);
-    
+
     return Future.value(obj["error"]);
   }
 
@@ -287,13 +582,13 @@ class _StudentClassState extends State<StudentClass> {
                     const Spacer(),
                     CircleAvatar(
                         radius: 35,
-                        backgroundImage:
-                            NetworkImage(classData["image_link"])),
+                        backgroundImage: NetworkImage(classData["image_link"])),
                   ],
                 ),
                 Text(
                   "Class code : " + classData["class_code"],
-                  style: const TextStyle(color: Colors.blueAccent, fontSize: 12),
+                  style:
+                      const TextStyle(color: Colors.blueAccent, fontSize: 12),
                 ),
                 Text(
                   classData["link"] + "\n",
@@ -336,7 +631,6 @@ class _StudentClassState extends State<StudentClass> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  
                   return snapshot.data!.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
@@ -356,8 +650,8 @@ class _StudentClassState extends State<StudentClass> {
                               child: Container(
                                 padding: const EdgeInsets.all(5),
                                 decoration: BoxDecoration(
-                                    border:
-                                        Border.all(color: const Color(0x332980b9)),
+                                    border: Border.all(
+                                        color: const Color(0x332980b9)),
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Column(
@@ -376,7 +670,8 @@ class _StudentClassState extends State<StudentClass> {
                                             child: Column(
                                               children: [
                                                 Container(
-                                                  padding: const EdgeInsets.all(5),
+                                                  padding:
+                                                      const EdgeInsets.all(5),
                                                   alignment:
                                                       Alignment.centerLeft,
                                                   child: Text(
@@ -392,7 +687,8 @@ class _StudentClassState extends State<StudentClass> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  padding: const EdgeInsets.all(5),
+                                                  padding:
+                                                      const EdgeInsets.all(5),
                                                   alignment:
                                                       Alignment.centerLeft,
                                                   child: Text(
@@ -430,8 +726,7 @@ class _StudentClassState extends State<StudentClass> {
                                     Center(
                                       child: TextButton(
                                           onPressed: () {
-                                            comments(
-                                                context, datas["post_id"]);
+                                            comments(context, datas["post_id"]);
                                           },
                                           child: const Text("Comments")),
                                     )
@@ -477,7 +772,6 @@ class _StudentClassState extends State<StudentClass> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  
                   var commentController = TextEditingController();
                   return Column(
                     children: [
@@ -598,7 +892,8 @@ class _StudentClassState extends State<StudentClass> {
                                                     children: [
                                                       Container(
                                                         padding:
-                                                            const EdgeInsets.all(2),
+                                                            const EdgeInsets
+                                                                .all(2),
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
@@ -619,29 +914,33 @@ class _StudentClassState extends State<StudentClass> {
                                                       ),
                                                       Container(
                                                         padding:
-                                                            const EdgeInsets.all(2),
+                                                            const EdgeInsets
+                                                                .all(2),
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
                                                           datas["comment"],
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 15),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 15),
                                                         ),
                                                       ),
                                                       Container(
                                                         padding:
-                                                            const EdgeInsets.all(2),
+                                                            const EdgeInsets
+                                                                .all(2),
                                                         alignment: Alignment
                                                             .centerLeft,
                                                         child: Text(
                                                           datas["time"]
                                                               .substring(0, 10),
-                                                          style: const TextStyle(
-                                                              color:
-                                                                  Colors.black,
-                                                              fontSize: 10),
+                                                          style:
+                                                              const TextStyle(
+                                                                  color: Colors
+                                                                      .black,
+                                                                  fontSize: 10),
                                                         ),
                                                       ),
                                                     ],
@@ -707,11 +1006,11 @@ class _StudentClassState extends State<StudentClass> {
 
     if (response1.statusCode == 200) {
       var obj = json.decode(res);
-      
+
       return obj;
     }
     var obj = json.decode(res);
-    
+
     return Future.value(obj["error"]);
   }
 
@@ -732,11 +1031,11 @@ class _StudentClassState extends State<StudentClass> {
 
     if (response1.statusCode == 200) {
       var obj = json.decode(res);
-      
+
       return obj;
     }
     var obj = json.decode(res);
-    
+
     return Future.value(obj["error"]);
   }
 
@@ -758,13 +1057,11 @@ class _StudentClassState extends State<StudentClass> {
         "comment": comment,
       }),
     );
-    
-    
-    
+
     if (response1.statusCode == 200) {
       return Future.value("sucessfull");
     }
-    
+
     return Future.value("error");
   }
 

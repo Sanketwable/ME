@@ -11,6 +11,7 @@ void store(String key, String value, String loginType, String userName, String u
 }
 
 void storeProfileURL(String url) async {
+  await storage.delete(key: "profile_photo");
   await storage.write(key: "profile_photo", value: url); 
 }
 
@@ -26,10 +27,15 @@ Future<String> getUserName() async {
 Future<String> getProfilePhotoURL() async {
   return await storage.read(key: "profile_photo");
 }
+Future<String> getUserID() async {
+  return await storage.read(key: "user_id");
+}
+
 
 void delete() async {
   await storage.delete(key: "token");
   await storage.delete(key: "loginType");
   await storage.delete(key: "username");
   await storage.delete(key: "profile_photo");
+  await storage.delete(key: "user_id");
 }

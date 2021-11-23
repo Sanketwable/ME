@@ -95,7 +95,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       return CircleAvatar(
                           radius: 35,
                           onBackgroundImageError: (object, stackTrace) => {},
-                          backgroundImage: NetworkImage(data.toString()));
+                          backgroundImage: NetworkImage(data.data.toString()));
                     },
                     future: getProfilePhotoURL(),
                   ),
@@ -182,13 +182,12 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                             _showPicker(context);
                           }
                         },
-                        child: CircleAvatar(
-                          radius: 55,
-                          backgroundColor: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(15.0),
                           child: edit
                               ? CircleAvatar(
-                                  radius: 55,
-                                  backgroundColor: const Color(0xffFDCF09),
+                                  radius: 51,
+                                  backgroundColor: Colors.red,
                                   child: _image != null
                                       ? ClipRRect(
                                           borderRadius:
@@ -200,15 +199,14 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                             fit: BoxFit.fitHeight,
                                           ),
                                         )
-                                      : Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey[200],
-                                              borderRadius:
-                                                  BorderRadius.circular(50)),
-                                          width: 100,
-                                          height: 100,
+                                      : ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
                                           child: Image.network(
                                             profilePhoto,
+                                            height: 100,
+                                            width: 100,
+                                            fit: BoxFit.fitHeight,
                                             errorBuilder: (context, obj, st) {
                                               return Container(
                                                 decoration: BoxDecoration(
@@ -227,38 +225,47 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                           ),
                                         ),
                                 )
-                              : (profilePhoto != ""
-                                  ? ClipRRect(
-                                      borderRadius: BorderRadius.circular(50),
-                                      child: Image.network(
-                                        profilePhoto,
-                                        errorBuilder: (context, obj, st) {
-                                          return Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.grey[200],
-                                                borderRadius:
-                                                    BorderRadius.circular(50)),
-                                            width: 100,
-                                            height: 100,
-                                            child: Icon(
-                                              Icons.person,
-                                              color: Colors.grey[800],
-                                            ),
-                                          );
-                                        },
-                                      ))
-                                  : Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey[200],
+                              : CircleAvatar(
+                                  radius: 51,
+                                  backgroundColor: Colors.blue,
+                                  child: (profilePhoto != ""
+                                      ? ClipRRect(
                                           borderRadius:
-                                              BorderRadius.circular(50)),
-                                      width: 100,
-                                      height: 100,
-                                      child: Icon(
-                                        Icons.person,
-                                        color: Colors.grey[800],
-                                      ),
-                                    )),
+                                              BorderRadius.circular(50),
+                                          child: Image.network(
+                                            profilePhoto,
+                                            height: 100,
+                                            width: 100,
+                                            fit: BoxFit.fitHeight,
+                                            errorBuilder: (context, obj, st) {
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                    color: Colors.grey[200],
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50)),
+                                                width: 100,
+                                                height: 100,
+                                                child: Icon(
+                                                  Icons.person,
+                                                  color: Colors.grey[800],
+                                                ),
+                                              );
+                                            },
+                                          ))
+                                      : Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.grey[200],
+                                              borderRadius:
+                                                  BorderRadius.circular(50)),
+                                          width: 100,
+                                          height: 100,
+                                          child: Icon(
+                                            Icons.person,
+                                            color: Colors.grey[800],
+                                          ),
+                                        )),
+                                ),
                         ),
                       ),
                     ),
