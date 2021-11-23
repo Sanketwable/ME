@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 )
 
 // Run is used to start the server
@@ -22,8 +23,8 @@ func Run() {
 // Listen is used to make server run on partucular port
 func Listen(port int) {
 	r := router.New()
-	// portt := os.Getenv("PORT")
-	err := http.ListenAndServe(fmt.Sprintf(":%d", port), r)
+	portt := os.Getenv("PORT")
+	err := http.ListenAndServe(fmt.Sprintf(":%s", portt), r)
 	if err != nil {
 		log.Fatal("error is : ", err)
 	}
