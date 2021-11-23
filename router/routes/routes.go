@@ -35,6 +35,7 @@ func Load() []Route {
 	routes = append(routes, verifyRoute)
 	routes = append(routes, assignmentRoutes...)
 	routes = append(routes, postsRoutes...)
+	routes = append(routes, messageRoute...)
 	return routes
 }
 

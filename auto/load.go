@@ -20,7 +20,7 @@ func Load() {
 	// 	log.Fatal("this is an error :", err)
 	// }
 
-	err = db.Debug().AutoMigrate(&models.User{}, &models.StudentInfo{},&models.FacultyInfo{}, models.TempOTP{}, models.Qualification{}, models.Class{}, models.ClassStudent{}, models.Assignment{}, models.FileAssignment{}, models.FormAssignment{}, models.Question{}, models.StudentAssignment{}, models.Post{}, models.Comment{}).Error
+	err = db.Debug().AutoMigrate(&models.User{}, &models.StudentInfo{},&models.FacultyInfo{}, models.TempOTP{}, models.Qualification{}, models.Class{}, models.ClassStudent{}, models.Assignment{}, models.FileAssignment{}, models.FormAssignment{}, models.Question{}, models.StudentAssignment{}, models.Post{}, models.Comment{}, models.Message{}).Error
 	if err != nil {
 		log.Fatal("error occured : ", err)
 	}

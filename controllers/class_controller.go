@@ -14,7 +14,7 @@ import (
 	"strconv"
 )
 
-// Create Class is a handler func used to create new class
+// CreateClass is a handler func used to create new class
 func CreateClass(w http.ResponseWriter, r *http.Request) {
 	faculty_id, err := auth.ExtractTokenID(r)
 	if err != nil {
