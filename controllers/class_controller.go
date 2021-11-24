@@ -218,6 +218,10 @@ func GetClasses(w http.ResponseWriter, r *http.Request) {
 			
 		}
 	}(repo)
+	last := len(classes) - 1
+	for i := 0; i < len(classes)/2; i++ {
+        classes[i], classes[last-i] = classes[last-i], classes[i]
+    }
 	responses.JSON(w, http.StatusOK, classes)
 
 }

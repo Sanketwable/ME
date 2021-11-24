@@ -533,7 +533,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  if (classes.isEmpty &&
+                  if (facultyClasses.isEmpty &&
                       snapshot.connectionState == ConnectionState.waiting) {
                     return Padding(
                       padding: EdgeInsets.symmetric(
@@ -542,7 +542,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                           child: Text('Please wait its loading...')),
                     );
                   }
-                  return classes.isEmpty
+                  return facultyClasses.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
                               vertical:

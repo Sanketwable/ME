@@ -866,12 +866,138 @@ class _FacultyClassState extends State<FacultyClass> {
     );
   }
 
+  List<Student> studentlist = [];
   Widget studentsPage() {
-    return Center(
-        child: Container(
-      child: const Text("Students"),
-      padding: const EdgeInsets.all(8),
-    ));
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: Text(
+            "Students",
+            style: TextStyle(
+                color: Colors.grey, fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Expanded(
+          flex: 9,
+          child: FutureBuilder(
+            builder: (context, AsyncSnapshot<List> snapshot) {
+              // snapshot.connectionState == ConnectionState.waiting
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  if (studentlist.isEmpty &&
+                      snapshot.connectionState == ConnectionState.waiting) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.width * 0.40),
+                      child: const Center(
+                          child: Text('Please wait its loading...')),
+                    );
+                  }
+                  return studentlist.isEmpty
+                      ? Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical:
+                                  MediaQuery.of(context).size.width * 0.40),
+                          child: const Center(
+                              child:
+                                  Text('No Student enrolled to this classes')),
+                        )
+                      : ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: studentlist.length,
+                          itemBuilder: (context, index) {
+                            var datas = studentlist[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(left:10, right: 10, top:4, bottom:4),
+                              child: Center(
+                                child: Container(
+                                  // width:
+                                  //     MediaQuery.of(context).size.width * 0.95,
+                                  // decoration: BoxDecoration(
+                                  //     boxShadow: const [
+                                  //       BoxShadow(
+                                  //         color: Colors.grey,
+                                  //         offset: Offset(
+                                  //           5.0,
+                                  //           5.0,
+                                  //         ),
+                                  //         blurRadius: 10.0,
+                                  //         spreadRadius: 2.0,
+                                  //       ), //BoxShadow
+                                  //     ],
+                                  //     border: Border.all(
+                                  //         color: Colors.black,
+                                  //         width: 0.5,
+                                  //         style: BorderStyle.none),
+                                  //     color: Colors.white,
+                                  //     borderRadius: BorderRadius.circular(10)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left:8, right: 8, top:4, bottom: 4),
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                            radius: 20,
+                                            backgroundImage: NetworkImage(
+                                                studentlist[index].profileUrl)),
+                                        Padding(
+                                          padding: const EdgeInsets.only(left : 8.0),
+                                          child: Text(
+                                            studentlist[index].firstName +
+                                                " " +
+                                                studentlist[index].lastName,
+                                            style: const TextStyle(
+                                                color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                }
+              }
+            },
+            future: getStudentList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Future<List<dynamic>> getStudentList() async {
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.get(
+      url + '/studentlist?class_id=' + facultyClass.classID.toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    var res = response1.body;
+
+    if (response1.statusCode == 200) {
+      var tagObjsJson = jsonDecode(res) as List;
+      studentlist =
+          tagObjsJson.map((tagJson) => Student.fromJson(tagJson)).toList();
+
+      return studentlist;
+    }
+    var obj = json.decode(res);
+
+    return Future.value(obj["error"]);
   }
 
   Future<String> addStudentEmailRequest() async {
@@ -1047,6 +1173,26 @@ class MyVector {
   var option3 = TextEditingController();
   var option4 = TextEditingController();
   var answer = TextEditingController();
+}
+
+class Student {
+  String firstName = "";
+  String lastName = "";
+  String profileUrl = "";
+
+  Map toJson() => {
+        'first_name': firstName,
+        'last_name': lastName,
+        'profile_url': profileUrl,
+      };
+  Student(this.firstName, this.lastName, this.profileUrl);
+  factory Student.fromJson(dynamic json) {
+    return Student(
+      json['first_name'] as String,
+      json['last_name'] as String,
+      json['profile_url'] as String,
+    );
+  }
 }
 
 class MyQuestion {

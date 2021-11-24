@@ -49,7 +49,7 @@ func GetStudentList(w http.ResponseWriter, r *http.Request) {
 			studentsIDs = append(studentsIDs, uint64(cs.UserID))
 		}
 	}
-	
+
 	repo := crud.NewRepositoryStudentInfoCRUD(db)
 
 	func(studentInfoRepository repository.StudentInfoRepository) {
@@ -58,13 +58,13 @@ func GetStudentList(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusUnprocessableEntity, err)
 			return
 		}
-		
+
 		for _, s := range students {
 			sl := StudentList{}
 			sl.FirstName = s.FirstName
 			sl.LastName = s.LastName
 			sl.ProfileURL = s.ProfilePhoto
-			studentList = append(studentList, sl);
+			studentList = append(studentList, sl)
 		}
 
 		responses.JSON(w, http.StatusOK, studentList)
