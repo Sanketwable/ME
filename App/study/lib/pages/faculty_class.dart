@@ -11,6 +11,7 @@ import 'package:http/io_client.dart';
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
+import 'package:study/pages/student_home_page.dart';
 import '../constants/constants.dart';
 
 import 'package:getwidget/getwidget.dart';
@@ -18,19 +19,21 @@ import '../controllers/token.dart';
 import 'faculty_assignment_page.dart';
 
 // ignore: prefer_typing_uninitialized_variables
-var classData;
 
 class FacultyClass extends StatefulWidget {
+  var classData;
   FacultyClass(data, {Key? key}) : super(key: key) {
     classData = data;
   }
 
   @override
-  _FacultyClassState createState() => _FacultyClassState();
+  _FacultyClassState createState() => _FacultyClassState(classData);
 }
 
 class _FacultyClassState extends State<FacultyClass> {
   int _selectedPage = 0;
+  MyClasses facultyClass;
+  _FacultyClassState(this.facultyClass);
   void _onItemTapped(int index) {
     setState(() {
       _selectedPage = index;
@@ -39,57 +42,63 @@ class _FacultyClassState extends State<FacultyClass> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.timeline),
-            label: 'Timeline',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message_sharp),
-            label: 'Assignments',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.people),
-            label: 'Students',
-          ),
-        ],
-        currentIndex: _selectedPage,
-        selectedItemColor: Colors.blue[800],
-        onTap: (index) {
-          _onItemTapped(index);
-        },
-      ),
-      appBar: AppBar(
-        title: const Text('Faculty'),
-      ),
-      floatingActionButton: _selectedPage == 0
-          ? const SizedBox.shrink()
-          : Container(
-              padding: const EdgeInsets.all(20),
-              child: FittedBox(
-                child: FloatingActionButton(
-                  onPressed: () {
-                    if (_selectedPage == 1) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => MyDialog(refresh)));
-                    } else {
-                      addStudentEmail(context);
-                    }
-                  },
-                  child: const Icon(Icons.add),
-                  tooltip: "Add Student to Class",
-                  isExtended: true,
-                  autofocus: true,
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.timeline),
+              label: 'Timeline',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message_sharp),
+              label: 'Assignments',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people),
+              label: 'Students',
+            ),
+          ],
+          currentIndex: _selectedPage,
+          selectedItemColor: Colors.blue[800],
+          onTap: (index) {
+            _onItemTapped(index);
+          },
+        ),
+        appBar: AppBar(
+          title: const Text('Faculty'),
+        ),
+        floatingActionButton: _selectedPage == 0
+            ? const SizedBox.shrink()
+            : Container(
+                padding: const EdgeInsets.all(20),
+                child: FittedBox(
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      if (_selectedPage == 1) {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) =>
+                                    MyDialog(refresh, facultyClass)));
+                      } else {
+                        addStudentEmail(context);
+                      }
+                    },
+                    child: const Icon(Icons.add),
+                    tooltip: "Add Student to Class",
+                    isExtended: true,
+                    autofocus: true,
+                  ),
                 ),
               ),
-            ),
-      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      body: _selectedPage == 0
-          ? timeLinePage()
-          : (_selectedPage == 1 ? assignmentPage() : studentsPage()),
+        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+        body: _selectedPage == 0
+            ? timeLinePage()
+            : (_selectedPage == 1 ? assignmentPage() : studentsPage()),
+      ),
     );
   }
 
@@ -236,33 +245,33 @@ class _FacultyClassState extends State<FacultyClass> {
                 Row(
                   children: [
                     Text(
-                      "   " + classData["branch"] + " ",
+                      "   " + facultyClass.branch + " ",
                       style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     Text(
-                      classData["year"].toString(),
+                      facultyClass.year.toString(),
                       style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     const Spacer(),
                     CircleAvatar(
                         radius: 35,
-                        backgroundImage: NetworkImage(classData["image_link"])),
+                        backgroundImage: NetworkImage(facultyClass.imageLink)),
                   ],
                 ),
                 Text(
-                  "Class code : " + classData["class_code"],
+                  "Class code : " + facultyClass.classCode,
                   style:
                       const TextStyle(color: Colors.blueAccent, fontSize: 12),
                 ),
                 Text(
-                  classData["link"] + "\n",
+                  facultyClass.classLink + "\n",
                   style: const TextStyle(color: Colors.blue, fontSize: 11),
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.only(left: 15, bottom: 10),
                   child: Text(
-                    classData["subject"].toString().toUpperCase(),
+                    facultyClass.subject.toString().toUpperCase(),
                     style: const TextStyle(
                         color: Colors.black,
                         fontSize: 28,
@@ -877,7 +886,7 @@ class _FacultyClassState extends State<FacultyClass> {
           '/addstudent?email=' +
           studentEmailController.text +
           "&class_id=" +
-          classData["class_id"].toString(),
+          facultyClass.classID.toString(),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': "Bearer " + token,
@@ -900,7 +909,7 @@ class _FacultyClassState extends State<FacultyClass> {
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
     final http.Response response1 = await http1.get(
-      url + '/getassignment?class_id=' + classData["class_id"].toString(),
+      url + '/getassignment?class_id=' + facultyClass.classID.toString(),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': "Bearer " + token,
@@ -956,7 +965,7 @@ class _FacultyClassState extends State<FacultyClass> {
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
     final http.Response response1 = await http1.get(
-      url + '/getposts?class_id=' + classData["class_id"].toString(),
+      url + '/getposts?class_id=' + facultyClass.classID.toString(),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': "Bearer " + token,
@@ -1016,7 +1025,7 @@ class _FacultyClassState extends State<FacultyClass> {
         'Authorization': "Bearer " + token,
       },
       body: jsonEncode(<String, dynamic>{
-        "class_id": int.parse(classData["class_id"].toString()),
+        "class_id": int.parse(facultyClass.classID.toString()),
         "description": post,
       }),
     );
@@ -1071,10 +1080,11 @@ class MyQuestion {
 // ignore: must_be_immutable
 class MyDialog extends StatefulWidget {
   Function callback;
-  MyDialog(this.callback, {Key? key}) : super(key: key);
+  var data;
+  MyDialog(this.callback, this.data, {Key? key}) : super(key: key);
   @override
   // ignore: no_logic_in_create_state
-  _MyDialogState createState() => _MyDialogState(callback);
+  _MyDialogState createState() => _MyDialogState(callback, data);
 }
 
 // List of questionAnswer
@@ -1082,7 +1092,8 @@ List<MyVector> questionOptions = [];
 
 class _MyDialogState extends State<MyDialog> {
   Function callback;
-  _MyDialogState(this.callback);
+  MyClasses facultyClass;
+  _MyDialogState(this.callback, this.facultyClass);
   var assignmentDetailsSubmitted = false;
   // ignore: prefer_typing_uninitialized_variables
   var assignmentType;
@@ -1677,7 +1688,7 @@ class _MyDialogState extends State<MyDialog> {
           'Authorization': "Bearer " + token,
         },
         body: jsonEncode(<String, dynamic>{
-          "class_id": int.parse(classData["class_id"].toString()),
+          "class_id": int.parse(facultyClass.classID.toString()),
           "name": assignmentNameController.text,
           "assignment_type": asType,
           "due": dueController.toString(),
@@ -1693,7 +1704,7 @@ class _MyDialogState extends State<MyDialog> {
 
       if (response1.statusCode == 200) {
         var obj = json.decode(res);
-        
+
         return obj.toString();
       }
       // classDetailsError = obj['error'];
@@ -1707,7 +1718,7 @@ class _MyDialogState extends State<MyDialog> {
           'Authorization': "Bearer " + token,
         },
         body: jsonEncode(<String, dynamic>{
-          "class_id": int.parse(classData["class_id"].toString()),
+          "class_id": int.parse(facultyClass.classID.toString()),
           "name": assignmentNameController.text,
           "assignment_type": asType,
           "due": dueController.toString(),
@@ -1718,11 +1729,11 @@ class _MyDialogState extends State<MyDialog> {
           },
         }),
       );
-    
+
       var res = response1.body;
       if (response1.statusCode == 200) {
         var obj = json.decode(res);
-        
+
         return obj.toString();
       }
       // classDetailsError = obj['error'];

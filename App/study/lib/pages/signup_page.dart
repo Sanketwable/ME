@@ -9,7 +9,7 @@ import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 import 'package:study/pages/student_info.dart';
-import 'package:study/pages/teacher_info.dart';
+import 'package:study/pages/faculty_info.dart';
 import '../constants/constants.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';

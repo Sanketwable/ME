@@ -33,141 +33,144 @@ class WelcomePage extends StatefulWidget {
 class _WelcomePage extends State<WelcomePage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Study"),
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.only(top: 60.0, bottom: 50.0),
-              child: Center(
-                  child: Text(
-                "Login",
-                style: TextStyle(color: Colors.grey, fontSize: 32),
-              )),
-            ),
-            incorrectDetails
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 20, vertical: 20),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          title: const Text("Study"),
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              const Padding(
+                padding: EdgeInsets.only(top: 60.0, bottom: 50.0),
+                child: Center(
                     child: Text(
-                      loginError.toString(),
-                      style: const TextStyle(
-                        color: Colors.red,
+                  "Login",
+                  style: TextStyle(color: Colors.grey, fontSize: 32),
+                )),
+              ),
+              incorrectDetails
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 20),
+                      child: Text(
+                        loginError.toString(),
+                        style: const TextStyle(
+                          color: Colors.red,
+                        ),
+                        textAlign: TextAlign.left,
                       ),
-                      textAlign: TextAlign.left,
+                    )
+                  : const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      child: Text(
+                        "Enter your details below to login",
+                        style: TextStyle(color: Colors.black),
+                        textAlign: TextAlign.left,
+                      ),
                     ),
-                  )
-                : const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                    child: Text(
-                      "Enter your details below to login",
-                      style: TextStyle(color: Colors.black),
-                      textAlign: TextAlign.left,
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: TextField(
+                  controller: emailcontroller,
+                  obscureText: false,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Email',
+                      hintText: 'Enter valid Email'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: TextField(
+                  controller: passwordcontroller,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Password',
+                      hintText: 'Enter secure password'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 0),
+                child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width,
+                  margin: const EdgeInsets.all(20),
+                  child: DropdownButtonHideUnderline(
+                    child: GFDropdown(
+                      padding: const EdgeInsets.all(15),
+                      borderRadius: BorderRadius.circular(10),
+                      border: const BorderSide(color: Colors.black12, width: 1),
+                      dropdownButtonColor: Colors.grey[300],
+                      value: dropdownValue,
+                      hint: const Text("Select Login Type"),
+                      onChanged: (newValue) {
+                        setState(() {
+                          dropdownValue = newValue;
+                        });
+                      },
+                      items: ['faculty', 'student']
+                          .map((value) => DropdownMenuItem(
+                                value: value,
+                                child: Text(value),
+                              ))
+                          .toList(),
                     ),
-                  ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15),
-              child: TextField(
-                controller: emailcontroller,
-                obscureText: false,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Email',
-                    hintText: 'Enter valid Email'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: TextField(
-                controller: passwordcontroller,
-                obscureText: true,
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Password',
-                    hintText: 'Enter secure password'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(
-                  left: 15.0, right: 15.0, top: 15, bottom: 0),
-              child: Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width,
-                margin: const EdgeInsets.all(20),
-                child: DropdownButtonHideUnderline(
-                  child: GFDropdown(
-                    padding: const EdgeInsets.all(15),
-                    borderRadius: BorderRadius.circular(10),
-                    border: const BorderSide(color: Colors.black12, width: 1),
-                    dropdownButtonColor: Colors.grey[300],
-                    value: dropdownValue,
-                    hint: const Text("Select Login Type"),
-                    onChanged: (newValue) {
-                      setState(() {
-                        dropdownValue = newValue;
-                      });
-                    },
-                    items: ['faculty', 'student']
-                        .map((value) => DropdownMenuItem(
-                              value: value,
-                              child: Text(value),
-                            ))
-                        .toList(),
                   ),
                 ),
               ),
-            ),
-            TextButton(
-              onPressed: () {},
-              child: const Text(
-                'Forgot Password',
-                style: TextStyle(color: Colors.blue, fontSize: 15),
-              ),
-            ),
-            Container(
-              height: 50,
-              width: 250,
-              decoration: BoxDecoration(
-                  color: Colors.blue, borderRadius: BorderRadius.circular(20)),
-              child: TextButton(
-                onPressed: () async {
-                  var dialogContext = showAlertDialog(context, "Logging IN");
-                  if (await login() == "Error") {
-                    Navigator.pop(dialogContext);
-                    setState(() {
-                      incorrectDetails = true;
-                      Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const WelcomePage()),
-                          ModalRoute.withName("/Home"));
-                    });
-                  } else {
-                    loginSucessfull();
-                  }
-                },
+              TextButton(
+                onPressed: () {},
                 child: const Text(
-                  'Login',
-                  style: TextStyle(color: Colors.white, fontSize: 25),
+                  'Forgot Password',
+                  style: TextStyle(color: Colors.blue, fontSize: 15),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 90,
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => const Signup()));
-              },
-              child: const Text("New User? Create account"),
-            )
-          ],
+              Container(
+                height: 50,
+                width: 250,
+                decoration: BoxDecoration(
+                    color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                child: TextButton(
+                  onPressed: () async {
+                    var dialogContext = showAlertDialog(context, "Logging IN");
+                    if (await login() == "Error") {
+                      Navigator.pop(dialogContext);
+                      setState(() {
+                        incorrectDetails = true;
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const WelcomePage()),
+                            ModalRoute.withName("/Home"));
+                      });
+                    } else {
+                      loginSucessfull();
+                    }
+                  },
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(color: Colors.white, fontSize: 25),
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 90,
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context, MaterialPageRoute(builder: (_) => const Signup()));
+                },
+                child: const Text("New User? Create account"),
+              )
+            ],
+          ),
         ),
       ),
     );

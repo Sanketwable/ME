@@ -10,13 +10,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Study',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: MaterialApp(
+        title: 'Study',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: const Redirect(),
       ),
-      debugShowCheckedModeBanner: false,
-      home: const Redirect(),
     );
   }
 }

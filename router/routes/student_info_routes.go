@@ -24,4 +24,10 @@ var studentRoutes = []Route{
 		Handler:      controllers.UpdateStudentInfo,
 		AuthRequired: true,
 	},
+	{
+		Uri:          "/studentlist",
+		Method:       http.MethodGet,
+		Handler:      controllers.GetStudentList,
+		AuthRequired: true,
+	},
 }

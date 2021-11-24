@@ -37,22 +37,26 @@ func (r *repositoryStudentInfoCRUD) Save(Studentinfo models.StudentInfo) (models
 	return models.StudentInfo{}, err
 }
 
-// FindAll is used to find all students 
-func (r *repositoryStudentInfoCRUD) FindAll() ([]models.StudentInfo, error) {
+// FindAll is used to find all students
+func (r *repositoryStudentInfoCRUD) FindByClassID(studentIDs []uint64) ([]models.StudentInfo, error) {
 	var err error
-	posts := []models.StudentInfo{}
+	studentInfos := []models.StudentInfo{}
 	done := make(chan bool)
 	go func(ch chan<- bool) {
-		err = r.db.Debug().Model(models.StudentInfo{}).Limit(100).Find(&posts).Error
-		if err != nil {
-			ch <- false
-			return
+		for _, pid := range studentIDs {
+			StudentInfo := models.StudentInfo{}
+			err = r.db.Debug().Model(models.StudentInfo{}).Where("user_id = ?", pid).Take(&StudentInfo).Error
+			// if err != nil {
+			// 	ch <- false
+			// 	return
+			// }
+			studentInfos = append(studentInfos, StudentInfo);
 		}
 		ch <- true
 	}(done)
 
 	if channels.OK(done) {
-		return posts, nil
+		return studentInfos, nil
 	}
 	return nil, err
 }

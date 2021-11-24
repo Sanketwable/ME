@@ -24,25 +24,28 @@ class _RedirectState extends State<Redirect> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: finalAttemptoGetToken(),
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        
-        
-        if (snapshot.hasData) {
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: FutureBuilder(
+        future: finalAttemptoGetToken(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
           
           
-          // return WelcomePage();
-          return loginType == "faculty"
-              ? FacultyHomePage(userName)
-              : StudentHomePage(userName);
-          // return StudentInfo("sanket", snapshot.toString());
-        } else {
-          
-          
-          return const WelcomePage();
-        }
-      },
+          if (snapshot.hasData) {
+            
+            
+            // return WelcomePage();
+            return loginType == "faculty"
+                ? FacultyHomePage(userName)
+                : StudentHomePage(userName);
+            // return StudentInfo("sanket", snapshot.toString());
+          } else {
+            
+            
+            return const WelcomePage();
+          }
+        },
+      ),
     );
   }
 }

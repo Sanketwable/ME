@@ -15,8 +15,10 @@ import 'package:http/io_client.dart';
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
+import 'package:study/pages/student_home_page.dart';
 
 var facultyUsername = "";
+List<MyClasses> facultyClasses = [];
 
 class FacultyHomePage extends StatefulWidget {
   FacultyHomePage(String username, {Key? key}) : super(key: key) {
@@ -38,90 +40,94 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Classes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message_sharp),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_box),
-            label: 'Me',
-          ),
-        ],
-        currentIndex: _selectedPage,
-        selectedItemColor: Colors.blue[800],
-        onTap: (index) {
-          _onItemTapped(index);
-        },
-      ),
-      floatingActionButton: _selectedPage != 0
-          ? const SizedBox.shrink()
-          : Container(
-              padding: const EdgeInsets.all(20),
-              child: FittedBox(
-                child: FloatingActionButton(
-                  onPressed: () {
-                    addClass(context);
-                  },
-                  child: const Icon(Icons.add),
-                  isExtended: true,
-                  autofocus: true,
-                ),
-              ),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: 'Classes',
             ),
-      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      appBar: AppBar(
-        title: const Text('Faculty'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Column(
-                children: [
-                  FutureBuilder(
-                    builder: (context, data) {
-                      return CircleAvatar(
-                          radius: 35,
-                          onBackgroundImageError: (object, stackTrace) => {},
-                          backgroundImage: NetworkImage(data.data.toString()));
-                    },
-                    future: getProfilePhotoURL(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(facultyUsername),
-                  ),
-                ],
-              ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message_sharp),
+              label: 'Messages',
             ),
-            ListTile(
-              title: const Text('Sign Out'),
-              onTap: () {
-                delete();
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const Redirect()),
-                    ModalRoute.withName("/Home"));
-              },
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_box),
+              label: 'Me',
             ),
           ],
+          currentIndex: _selectedPage,
+          selectedItemColor: Colors.blue[800],
+          onTap: (index) {
+            _onItemTapped(index);
+          },
         ),
+        floatingActionButton: _selectedPage != 0
+            ? const SizedBox.shrink()
+            : Container(
+                padding: const EdgeInsets.all(20),
+                child: FittedBox(
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      addClass(context);
+                    },
+                    child: const Icon(Icons.add),
+                    isExtended: true,
+                    autofocus: true,
+                  ),
+                ),
+              ),
+        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+        appBar: AppBar(
+          title: const Text('Faculty'),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Column(
+                  children: [
+                    FutureBuilder(
+                      builder: (context, data) {
+                        return CircleAvatar(
+                            radius: 35,
+                            onBackgroundImageError: (object, stackTrace) => {},
+                            backgroundImage:
+                                NetworkImage(data.data.toString()));
+                      },
+                      future: getProfilePhotoURL(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(facultyUsername),
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                title: const Text('Sign Out'),
+                onTap: () {
+                  delete();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const Redirect()),
+                      ModalRoute.withName("/Home"));
+                },
+              ),
+            ],
+          ),
+        ),
+        body: _selectedPage == 0
+            ? classesPage()
+            : (_selectedPage == 1 ? messagesPage() : mePage()),
       ),
-      body: _selectedPage == 0
-          ? classesPage()
-          : (_selectedPage == 1 ? messagesPage() : mePage()),
     );
   }
 
@@ -439,7 +445,13 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
   }
 
   Future<String> updateBasicInfo() async {
-    var imageLink = await uploadImage();
+    var imageLink = "";
+    if (_image != null) {
+      imageLink = await uploadImage();
+      storeProfileURL(imageLink);
+    } else {
+      imageLink = await getProfilePhotoURL();
+    }
     var token = await getValue("token");
     storeProfileURL(imageLink);
 
@@ -514,25 +526,23 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
           flex: 9,
           child: FutureBuilder(
             builder: (context, AsyncSnapshot<List> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.width * 0.40),
-                  child: Column(
-                    children: const [
-                      Center(child: Text('Please wait its loading...')),
-                      Padding(
-                        padding: EdgeInsets.all(15.0),
-                        child: CircularProgressIndicator(),
-                      ),
-                    ],
-                  ),
-                );
+              // snapshot.connectionState == ConnectionState.waiting
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
               } else {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  return snapshot.data!.isEmpty
+                  if (classes.isEmpty &&
+                      snapshot.connectionState == ConnectionState.waiting) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.width * 0.40),
+                      child: const Center(
+                          child: Text('Please wait its loading...')),
+                    );
+                  }
+                  return classes.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
                               vertical:
@@ -544,9 +554,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       : ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
+                          itemCount: facultyClasses.length,
                           itemBuilder: (context, index) {
-                            var datas = snapshot.data![index];
                             return Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Center(
@@ -576,15 +585,16 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (_) =>
-                                                  FacultyClass(datas)));
+                                              builder: (_) => FacultyClass(
+                                                  facultyClasses[index])));
                                     },
                                     child: Column(
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(2.0),
                                           child: Text(
-                                            datas["subject"]
+                                            facultyClasses[index]
+                                                .subject
                                                 .toString()
                                                 .toUpperCase(),
                                             style: const TextStyle(
@@ -595,13 +605,16 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                         Row(
                                           children: [
                                             Text(
-                                              datas["branch"],
+                                              facultyClasses[index].branch,
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 18),
                                             ),
                                             Text(
-                                              " " + datas["year"].toString(),
+                                              " " +
+                                                  facultyClasses[index]
+                                                      .year
+                                                      .toString(),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 18),
@@ -609,23 +622,30 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                             const Spacer(),
                                             CircleAvatar(
                                                 radius: 35,
-                                                onBackgroundImageError:
-                                                    (object, stackTrace) => {},
                                                 backgroundImage: NetworkImage(
-                                                    datas["image_link"])),
+                                                    facultyClasses[index]
+                                                        .imageLink)),
                                           ],
                                         ),
                                         Text(
-                                          "Class code : " + datas["class_code"],
+                                          "Class code : " +
+                                              facultyClasses[index].classCode,
                                           style: const TextStyle(
                                               color: Colors.blueAccent,
                                               fontSize: 12),
                                         ),
                                         Text(
-                                          datas["link"] + "\n",
+                                          facultyClasses[index].classLink +
+                                              "\n",
                                           style: const TextStyle(
                                               color: Colors.blue, fontSize: 11),
                                         ),
+                                        // Text(
+                                        //   "sanket\n\n\n",
+                                        //   style: TextStyle(
+                                        //       color: Colors.white,
+                                        //       fontSize: 11),
+                                        // ),
                                       ],
                                     ),
                                   ),
@@ -637,14 +657,14 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                 }
               }
             },
-            future: getClasses(),
+            future: getfacultyClasses(),
           ),
         ),
       ],
     );
   }
 
-  Future<List<dynamic>> getClasses() async {
+  Future<List<dynamic>> getfacultyClasses() async {
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =
@@ -660,7 +680,12 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
     var res = response1.body;
     var obj = json.decode(res);
     if (response1.statusCode == 200) {
-      return obj;
+      var classesObjsJson = jsonDecode(res) as List;
+      facultyClasses = classesObjsJson
+          .map((tagJson) => MyClasses.fromJson(tagJson))
+          .toList();
+
+      return facultyClasses;
     }
     return Future.value(obj["error"]);
   }

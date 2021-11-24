@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/redirect_page.dart';
@@ -16,6 +18,7 @@ import 'package:image_picker/image_picker.dart';
 import '../controllers/token.dart';
 
 var studentUserName = "";
+List<MyClasses> classes = [];
 
 class StudentHomePage extends StatefulWidget {
   StudentHomePage(String username, {Key? key}) : super(key: key) {
@@ -37,86 +40,90 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Classes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_box),
-            label: 'Me',
-          ),
-        ],
-        currentIndex: _selectedPage,
-        selectedItemColor: Colors.blue[800],
-        onTap: (index) {
-          _onItemTapped(index);
-        },
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-      floatingActionButton: _selectedPage != 0
-          ? const SizedBox.shrink()
-          : Container(
-              padding: const EdgeInsets.all(20),
-              // height: 100,
-              // width: 100,
-              child: FittedBox(
-                child: FloatingActionButton(
-                  onPressed: () {
-                    addClassCode(context);
-                  },
-                  child: const Icon(Icons.add),
-                  isExtended: true,
-                  autofocus: true,
-                ),
-              ),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.calendar_today),
+              label: 'Classes',
             ),
-      floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-      appBar: AppBar(
-        title: const Text('Student'),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                color: Colors.blue,
-              ),
-              child: Column(
-                children: [
-                  FutureBuilder(
-                    builder: (context, data) {
-                      return CircleAvatar(
-                          radius: 35,
-                          onBackgroundImageError: (object, stackTrace) => {},
-                          backgroundImage: NetworkImage(data.data.toString()));
-                    },
-                    future: getProfilePhotoURL(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text(studentUserName),
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              title: const Text('Sign Out'),
-              onTap: () {
-                delete();
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const Redirect()),
-                    ModalRoute.withName("/Home"));
-              },
+            BottomNavigationBarItem(
+              icon: Icon(Icons.account_box),
+              label: 'Me',
             ),
           ],
+          currentIndex: _selectedPage,
+          selectedItemColor: Colors.blue[800],
+          onTap: (index) {
+            _onItemTapped(index);
+          },
+        ), // This trailing comma makes auto-formatting nicer for build methods.
+        floatingActionButton: _selectedPage != 0
+            ? const SizedBox.shrink()
+            : Container(
+                padding: const EdgeInsets.all(20),
+                // height: 100,
+                // width: 100,
+                child: FittedBox(
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      addClassCode(context);
+                    },
+                    child: const Icon(Icons.add),
+                    isExtended: true,
+                    autofocus: true,
+                  ),
+                ),
+              ),
+        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+        appBar: AppBar(
+          title: const Text('Student'),
         ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
+              DrawerHeader(
+                decoration: const BoxDecoration(
+                  color: Colors.blue,
+                ),
+                child: Column(
+                  children: [
+                    FutureBuilder(
+                      builder: (context, data) {
+                        return CircleAvatar(
+                            radius: 35,
+                            onBackgroundImageError: (object, stackTrace) => {},
+                            backgroundImage:
+                                NetworkImage(data.data.toString()));
+                      },
+                      future: getProfilePhotoURL(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Text(studentUserName),
+                    ),
+                  ],
+                ),
+              ),
+              ListTile(
+                title: const Text('Sign Out'),
+                onTap: () {
+                  delete();
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const Redirect()),
+                      ModalRoute.withName("/Home"));
+                },
+              ),
+            ],
+          ),
+        ),
+        body: Container(child: _buildChild(_selectedPage)),
       ),
-      body: Container(child: _buildChild(_selectedPage)),
     );
   }
 
@@ -468,9 +475,15 @@ class _StudentHomePageState extends State<StudentHomePage> {
   }
 
   Future<String> updateBasicInfo() async {
-    var imageLink = await uploadImage();
+    var imageLink = "";
+    if (_image != null) {
+      imageLink = await uploadImage();
+      storeProfileURL(imageLink);
+    } else {
+      imageLink = await getProfilePhotoURL();
+    }
+
     var token = await getValue("token");
-    storeProfileURL(imageLink);
 
     final ioc = HttpClient();
     ioc.badCertificateCallback =
@@ -626,18 +639,23 @@ class _StudentHomePageState extends State<StudentHomePage> {
           flex: 9,
           child: FutureBuilder(
             builder: (context, AsyncSnapshot<List> snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return Padding(
-                  padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.width * 0.40),
-                  child:
-                      const Center(child: Text('Please wait its loading...')),
-                );
+              // snapshot.connectionState == ConnectionState.waiting
+              if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
               } else {
                 if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  return snapshot.data!.isEmpty
+                  if (classes.isEmpty &&
+                      snapshot.connectionState == ConnectionState.waiting) {
+                    return Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: MediaQuery.of(context).size.width * 0.40),
+                      child: const Center(
+                          child: Text('Please wait its loading...')),
+                    );
+                  }
+                  return classes.isEmpty
                       ? Padding(
                           padding: EdgeInsets.symmetric(
                               vertical:
@@ -649,9 +667,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       : ListView.builder(
                           scrollDirection: Axis.vertical,
                           shrinkWrap: true,
-                          itemCount: snapshot.data!.length,
+                          itemCount: classes.length,
                           itemBuilder: (context, index) {
-                            var datas = snapshot.data![index];
+                            var datas = classes[index];
                             return Padding(
                               padding: const EdgeInsets.only(top: 10),
                               child: Center(
@@ -689,7 +707,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                         Padding(
                                           padding: const EdgeInsets.all(2.0),
                                           child: Text(
-                                            datas["subject"]
+                                            datas.subject
                                                 .toString()
                                                 .toUpperCase(),
                                             style: const TextStyle(
@@ -700,13 +718,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                         Row(
                                           children: [
                                             Text(
-                                              datas["branch"],
+                                              datas.branch,
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 18),
                                             ),
                                             Text(
-                                              " " + datas["year"].toString(),
+                                              " " + datas.year.toString(),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 18),
@@ -715,17 +733,17 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                             CircleAvatar(
                                                 radius: 35,
                                                 backgroundImage: NetworkImage(
-                                                    datas["image_link"])),
+                                                    datas.imageLink)),
                                           ],
                                         ),
                                         Text(
-                                          "Class code : " + datas["class_code"],
+                                          "Class code : " + datas.classCode,
                                           style: const TextStyle(
                                               color: Colors.blueAccent,
                                               fontSize: 12),
                                         ),
                                         Text(
-                                          datas["link"] + "\n",
+                                          datas.classLink + "\n",
                                           style: const TextStyle(
                                               color: Colors.blue, fontSize: 11),
                                         ),
@@ -769,7 +787,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
     var res = response1.body;
     var obj = json.decode(res);
     if (response1.statusCode == 200) {
-      return obj;
+      var classesObjsJson = jsonDecode(res) as List;
+      classes = classesObjsJson
+          .map((tagJson) => MyClasses.fromJson(tagJson))
+          .toList();
+      
+      
+      return classes;
     }
     return Future.value(obj["error"]);
   }
@@ -800,3 +824,39 @@ class _StudentHomePageState extends State<StudentHomePage> {
 }
 
 var classCodeController = TextEditingController();
+
+class MyClasses {
+  int classID;
+  String classCode = "";
+  int facultyID;
+  String classLink = "";
+  int year;
+  String branch = "";
+  String subject = "";
+  String imageLink = "";
+
+  Map toJson() => {
+        'class_id': classID,
+        'class_code': classCode,
+        'faculty_id': facultyID,
+        'link': classLink,
+        'year': year,
+        'branch': branch,
+        'subject': subject,
+        'image_link': imageLink,
+      };
+  MyClasses(this.classID, this.classCode, this.facultyID, this.classLink,
+      this.year, this.branch, this.subject, this.imageLink);
+
+  factory MyClasses.fromJson(dynamic json) {
+    return MyClasses(
+        json['class_id'] as int,
+        json['class_code'] as String,
+        json['faculty_id'] as int,
+        json['link'] as String,
+        json['year'] as int,
+        json['branch'] as String,
+        json['subject'] as String,
+        json['image_link'] as String);
+  }
+}

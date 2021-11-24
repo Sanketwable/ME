@@ -1,5 +1,7 @@
 import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
+import 'package:image_picker/image_picker.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
@@ -8,21 +10,21 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
-import 'package:study/pages/student_home_page.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:image_picker/image_picker.dart';
+import 'package:study/pages/faculty_home_page.dart';
 
 final firstNameController = TextEditingController();
 final lastNameController = TextEditingController();
 final phoneNoController = TextEditingController();
-
+final degreeController = TextEditingController();
+final passoutYeatController = TextEditingController();
 // ignore: prefer_typing_uninitialized_variables
-var year;
+var experience;
+
 var userName = "";
 var token = "";
 
-class StudentInfo extends StatefulWidget {
-  StudentInfo(String username, String token, {Key? key}) : super(key: key) {
+class FacultyInfo extends StatefulWidget {
+  FacultyInfo(String username, String token, {Key? key}) : super(key: key) {
     userName = username;
     token = token;
   }
@@ -31,7 +33,7 @@ class StudentInfo extends StatefulWidget {
   _FacultyInfoState createState() => _FacultyInfoState();
 }
 
-class _FacultyInfoState extends State<StudentInfo> {
+class _FacultyInfoState extends State<FacultyInfo> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -39,7 +41,7 @@ class _FacultyInfoState extends State<StudentInfo> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: const Text("Student"),
+          title: const Text("Faculty"),
         ),
         body: SingleChildScrollView(
           child: Column(
@@ -125,10 +127,41 @@ class _FacultyInfoState extends State<StudentInfo> {
               ),
               const Padding(
                 padding:
-                    EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                    EdgeInsets.only(left: 15.0, right: 15.0, top: 5, bottom: 0),
                 child: Center(
                     child: Text(
-                  "Year",
+                  "Qualification",
+                  style: TextStyle(fontSize: 24),
+                )),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                child: TextField(
+                  controller: degreeController,
+                  obscureText: false,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Degree',
+                      hintText: 'Eg. B.Tech, Phd'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                child: TextField(
+                  controller: passoutYeatController,
+                  obscureText: false,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Passout year',
+                      hintText: 'Eg. 2022'),
+                ),
+              ),
+              const Padding(
+                padding:
+                    EdgeInsets.only(left: 15.0, right: 15.0, top: 5, bottom: 0),
+                child: Center(
+                    child: Text(
+                  "Experience",
                   style: TextStyle(fontSize: 24),
                 )),
               ),
@@ -145,14 +178,14 @@ class _FacultyInfoState extends State<StudentInfo> {
                       borderRadius: BorderRadius.circular(10),
                       border: const BorderSide(color: Colors.black12, width: 1),
                       dropdownButtonColor: Colors.grey[300],
-                      value: year,
-                      hint: const Text("Year"),
+                      value: experience,
+                      hint: const Text("Experience"),
                       onChanged: (newValue) {
                         setState(() {
-                          year = newValue;
+                          experience = newValue;
                         });
                       },
-                      items: ['1', '2', '3', '4', '5']
+                      items: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
                           .map((value) => DropdownMenuItem(
                                 value: value,
                                 child: Text(value),
@@ -171,19 +204,22 @@ class _FacultyInfoState extends State<StudentInfo> {
                   onPressed: () async {
                     showAlertDialog(context, "Submitting");
                     if (await submitBasicInfo() == "Submitted") {
+                      
+                      
                       setState(() {
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => StudentHomePage(userName)),
+                                builder: (_) => FacultyHomePage(userName)),
                             ModalRoute.withName("/Home"));
                       });
                     } else {
+                      
                       setState(() {
                         Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => StudentInfo(userName, token)),
+                                builder: (_) => FacultyInfo(userName, token)),
                             ModalRoute.withName("/Home"));
                       });
                     }
@@ -252,13 +288,29 @@ class _FacultyInfoState extends State<StudentInfo> {
     });
   }
 
+  Future uploadImage() async {
+    var uri =
+        Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
+    var request = http.MultipartRequest('POST', uri);
+    
+    request.files.add(await http.MultipartFile.fromPath('image', _image.path));
+    final response = (await request.send());
+    final respStr = await response.stream.bytesToString();
+    
+
+    var obj = json.decode(respStr);
+    if (response.statusCode == 200) {
+      return obj["data"]["image"]["url"];
+    }
+    return "no image";
+  }
+
   showAlertDialog(BuildContext context, String lodingText) {
     AlertDialog alert = AlertDialog(
       content: Row(
         children: [
           const CircularProgressIndicator(),
-          Container(
-              margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
+          Container(margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
         ],
       ),
     );
@@ -271,32 +323,16 @@ class _FacultyInfoState extends State<StudentInfo> {
     );
   }
 
-  Future uploadImage() async {
-    var uri =
-        Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
-    var request = http.MultipartRequest('POST', uri);
-
-    request.files.add(await http.MultipartFile.fromPath('image', _image.path));
-    final response = (await request.send());
-    final respStr = await response.stream.bytesToString();
-
-    var obj = json.decode(respStr);
-    if (response.statusCode == 200) {
-      return obj["data"]["image"]["url"];
-    }
-    return "no image";
-  }
-
   Future<String> submitBasicInfo() async {
     var imageLink = await uploadImage();
     storeProfileURL(imageLink);
-
+  
     final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
     final http.Response response1 = await http1.post(
-      url + '/studentinfo',
+      url + '/facultyinfo',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': "Bearer " + token,
@@ -305,7 +341,11 @@ class _FacultyInfoState extends State<StudentInfo> {
         'first_name': firstNameController.text,
         'last_name': lastNameController.text,
         'phone_no': phoneNoController.text,
-        'year': int.parse(year.toString()),
+        'qualification': {
+          'degree': degreeController.text,
+          'passout_year': passoutYeatController.text,
+        },
+        'experience': double.parse(experience.toString()),
         'profile_photo': imageLink.toString(),
       }),
     );

@@ -9,24 +9,62 @@ import 'package:http/io_client.dart';
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
+import 'package:study/pages/student_home_page.dart';
 import '../pages/student_assignment_page.dart';
 import '../constants/constants.dart';
 
 import '../controllers/token.dart';
 
 // ignore: prefer_typing_uninitialized_variables
-var classData;
 var userID;
 
+class Message {
+  int message_ID = 0;
+  int classID = 0;
+  int userID = 0;
+  String message = "";
+  String firstName = "";
+  String lastName = "";
+  String time = "";
+
+  Map toJson() => {
+        'message_id': message_ID,
+        'class_id': classID,
+        'user_id': userID,
+        'message': message,
+        'first_name': firstName,
+        'last_name': lastName,
+        'time': time,
+      };
+  Message(this.message_ID, this.classID, this.userID, this.message,
+      this.firstName, this.lastName, this.time);
+
+  factory Message.fromJson(dynamic json) {
+    return Message(
+        json['message_id'] as int,
+        json['class_id'] as int,
+        json['user_id'] as int,
+        json['message'] as String,
+        json['first_name'] as String,
+        json['last_name'] as String,
+        json['time'] as String);
+  }
+}
+
 class StudentClass extends StatefulWidget {
+  var classData;
   StudentClass(data, {Key? key}) : super(key: key) {
     classData = data;
   }
   @override
-  _StudentClassState createState() => _StudentClassState();
+  _StudentClassState createState() => _StudentClassState(classData);
 }
 
 class _StudentClassState extends State<StudentClass> {
+  List<Message> messages = [];
+  MyClasses classData;
+  ScrollController _scrollController = ScrollController();
+  _StudentClassState(this.classData);
   int _selectedPage = 0;
   void _onItemTapped(int index) {
     if (_selectedPage != index) {
@@ -38,33 +76,36 @@ class _StudentClassState extends State<StudentClass> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.post_add),
-            label: 'Posts',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.message_sharp),
-            label: 'Messages',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.assignment),
-            label: 'Assignments',
-          ),
-        ],
-        currentIndex: _selectedPage,
-        selectedItemColor: Colors.blue[800],
-        onTap: (index) {
-          _onItemTapped(index);
-        },
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        bottomNavigationBar: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.post_add),
+              label: 'Posts',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.message_sharp),
+              label: 'Messages',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.assignment),
+              label: 'Assignments',
+            ),
+          ],
+          currentIndex: _selectedPage,
+          selectedItemColor: Colors.blue[800],
+          onTap: (index) {
+            _onItemTapped(index);
+          },
+        ),
+        appBar: AppBar(
+          title: const Text('Student'),
+        ),
+        body: Container(child: _buildChild(_selectedPage)),
       ),
-      appBar: AppBar(
-        title: const Text('Student'),
-      ),
-      body: Container(child: _buildChild(_selectedPage)),
     );
   }
 
@@ -84,229 +125,253 @@ class _StudentClassState extends State<StudentClass> {
   }
 
   var messageController = TextEditingController();
-  ScrollController _scrollController = ScrollController();
   Widget messagePage() {
-    // _controller.initialScrollOffset = _controller.position.maxScrollExtent;
-
-    return StreamBuilder(
-      stream: getMessages(),
-      builder: (BuildContext context, AsyncSnapshot<List> snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Padding(
-            padding: EdgeInsets.symmetric(
-                vertical: MediaQuery.of(context).size.width * 0.40),
-            child: const Center(child: Text('Please wait its loading...')),
-          );
-        } else {
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return Container(
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Scaffold(
-                      appBar: AppBar(
-                        elevation: 2,
-                        automaticallyImplyLeading: false,
-                        backgroundColor: Colors.white,
-                        flexibleSpace: SafeArea(
-                          child: Container(
-                            padding: EdgeInsets.only(right: 16, left: 10),
-                            child: Row(
-                              children: <Widget>[
-                                SizedBox(
-                                  width: 2,
-                                ),
-                                CircleAvatar(
-                                  backgroundImage:
-                                      NetworkImage(classData["image_link"]),
-                                  maxRadius: 20,
-                                ),
-                                SizedBox(
-                                  width: 12,
-                                ),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: <Widget>[
-                                      Text(
-                                        classData["subject"],
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w600),
-                                      ),
-                                      SizedBox(
-                                        height: 6,
-                                      ),
-                                      Text(
-                                        classData["branch"] +
-                                            " " +
-                                            classData["year"].toString(),
-                                        style: TextStyle(
-                                            color: Colors.grey.shade600,
-                                            fontSize: 13),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+    return Column(
+      children: [
+        Flexible(
+          flex: 1,
+          fit: FlexFit.tight,
+          child: Scaffold(
+            appBar: AppBar(
+              elevation: 3,
+              automaticallyImplyLeading: false,
+              backgroundColor: Colors.white,
+              flexibleSpace: SafeArea(
+                child: Container(
+                  padding: EdgeInsets.only(right: 16, left: 10),
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 2,
+                      ),
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(classData.imageLink),
+                        maxRadius: 20,
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              classData.subject,
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600),
                             ),
+                            SizedBox(
+                              height: 6,
+                            ),
+                            Text(
+                              classData.branch +
+                                  " " +
+                                  classData.year.toString(),
+                              style: TextStyle(
+                                  color: Colors.grey.shade600, fontSize: 13),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 9,
+          child: Column(
+            children: [
+              Expanded(
+                flex: 9,
+                child: StreamBuilder(
+                  stream: getMessages(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<List> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Padding(
+                        padding: EdgeInsets.symmetric(
+                            vertical: MediaQuery.of(context).size.width * 0.30),
+                        child: const Center(
+                            child: Text('Please wait its loading...')),
+                      );
+                    } else {
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Error: ${snapshot.error}'));
+                      } else {
+                        return Column(
+                          children: [
+                            Expanded(
+                              child: ListView.builder(
+                                itemCount: messages.length,
+                                scrollDirection: Axis.vertical,
+                                shrinkWrap: true,
+                                controller: _scrollController,
+                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                itemBuilder: (context, index) {
+                                  return Container(
+                                    padding: EdgeInsets.only(
+                                        left: 14,
+                                        right: 14,
+                                        top: 10,
+                                        bottom: 0),
+                                    child: Align(
+                                      alignment:
+                                          (messages[index].userID.toString() !=
+                                                  userID
+                                              ? Alignment.topLeft
+                                              : Alignment.topRight),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color: (messages[index]
+                                                      .userID
+                                                      .toString() !=
+                                                  userID
+                                              ? Colors.grey.shade200
+                                              : Colors.blue[200]),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Padding(
+                                                padding: EdgeInsets.only(
+                                                    top: 3, left: 2),
+                                                child: messages[index]
+                                                            .userID
+                                                            .toString() !=
+                                                        userID
+                                                    ? Text(
+                                                        messages[index]
+                                                                .firstName +
+                                                            " " +
+                                                            messages[index]
+                                                                .lastName,
+                                                        style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: Colors.blue),
+                                                        textAlign:
+                                                            TextAlign.left)
+                                                    : SizedBox.shrink()),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 8.0,
+                                                  left: 15,
+                                                  right: 15,
+                                                  top: 8),
+                                              child: Text(
+                                                messages[index].message,
+                                                style: TextStyle(fontSize: 15),
+                                              ),
+                                            ),
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 3.0,
+                                                  left: 15,
+                                                  right: 15),
+                                              child: Text(
+                                                messages[index].time,
+                                                style: TextStyle(fontSize: 9),
+                                              ),
+                                            ),
+                                            // controllScrollView(_scrollController),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                    }
+                  },
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomLeft,
+                child: Container(
+                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                  height: 60,
+                  width: double.infinity,
+                  color: Colors.white,
+                  child: Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {},
+                        child: Container(
+                          height: 30,
+                          width: 30,
+                          decoration: BoxDecoration(
+                            color: Colors.lightBlue,
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                            size: 20,
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 8,
-                    child: ListView.builder(
-                      itemCount: snapshot.data!.length,
-                      scrollDirection: Axis.vertical,
-                      shrinkWrap: true,
-                      controller: ScrollController(
-                          initialScrollOffset: snapshot.data!.length * 35),
-
-                      // reverse: true,
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      // physics: NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        return Container(
-                          padding: EdgeInsets.only(
-                              left: 14, right: 14, top: 10, bottom: 10),
-                          child: Align(
-                            alignment:
-                                (snapshot.data![index]["user_id"].toString() !=
-                                        userID
-                                    ? Alignment.topLeft
-                                    : Alignment.topRight),
-                            child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: (snapshot.data![index]["user_id"]
-                                            .toString() !=
-                                        userID
-                                    ? Colors.grey.shade200
-                                    : Colors.blue[200]),
-                              ),
-                              child: Column(
-                                children: [
-                                  Padding(
-                                      padding: EdgeInsets.only(top: 3, left: 2),
-                                      child: snapshot.data![index]["user_id"]
-                                                  .toString() !=
-                                              userID
-                                          ? Text(
-                                              snapshot.data![index]
-                                                      ["first_name"] +
-                                                  " " +
-                                                  snapshot.data![index]
-                                                      ["last_name"],
-                                              style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: Colors.blue),
-                                              textAlign: TextAlign.left)
-                                          : SizedBox.shrink()),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 8.0, left: 8, right: 8, top: 5),
-                                    child: Text(
-                                      snapshot.data![index]["message"],
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        bottom: 3.0, left: 3, right: 3),
-                                    child: Text(
-                                      snapshot.data![index]["time"],
-                                      style: TextStyle(fontSize: 9),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Stack(
-                      children: <Widget>[
-                        Align(
-                          alignment: Alignment.bottomLeft,
-                          child: Container(
-                            padding:
-                                EdgeInsets.only(left: 10, bottom: 10, top: 10),
-                            height: 60,
-                            width: double.infinity,
-                            color: Colors.white,
-                            child: Row(
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () {},
-                                  child: Container(
-                                    height: 30,
-                                    width: 30,
-                                    decoration: BoxDecoration(
-                                      color: Colors.lightBlue,
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                    child: Icon(
-                                      Icons.add,
-                                      color: Colors.white,
-                                      size: 20,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                Expanded(
-                                  child: TextField(
-                                    controller: messageController,
-                                    decoration: InputDecoration(
-                                        hintText: "Write message...",
-                                        hintStyle:
-                                            TextStyle(color: Colors.black54),
-                                        border: InputBorder.none),
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: 15,
-                                ),
-                                FloatingActionButton(
-                                  onPressed: () async {
-                                    print("button pressed");
-                                    await sendMessage();
-                                    messageController.clear();
-                                  },
-                                  child: Icon(
-                                    Icons.send,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                  backgroundColor: Colors.blue,
-                                  elevation: 0,
-                                ),
-                              ],
-                            ),
-                          ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Expanded(
+                        child: TextField(
+                          controller: messageController,
+                          decoration: InputDecoration(
+                              hintText: "Write message...",
+                              hintStyle: TextStyle(color: Colors.black54),
+                              border: InputBorder.none),
+                          onSubmitted: (String str) async {
+                            await sendMessage();
+                            messageController.clear();
+                            _scrollController.jumpTo(
+                              _scrollController.position.maxScrollExtent,
+                            );
+                          },
                         ),
-                      ],
-                    ),
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      FloatingActionButton(
+                        onPressed: () async {
+                          await sendMessage();
+                          messageController.clear();
+                          _scrollController.jumpTo(
+                            _scrollController.position.maxScrollExtent,
+                          );
+                        },
+                        child: Icon(
+                          Icons.send,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        backgroundColor: Colors.blue,
+                        elevation: 0,
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
-            );
-          }
-        }
-      },
+            ],
+          ),
+        ),
+      ],
     );
+  }
+
+  Widget controllScrollView(ScrollController scc) {
+    scc.jumpTo(
+      scc.position.maxScrollExtent,
+    );
+    return SizedBox.shrink();
   }
 
   Stream<List<dynamic>> getMessages() async* {
@@ -324,8 +389,9 @@ class _StudentClassState extends State<StudentClass> {
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
+
     final http.Response response1 = await http1.get(
-      url + '/message?class_id=' + classData["class_id"].toString(),
+      url + '/message?class_id=' + classData.classID.toString(),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': "Bearer " + token,
@@ -334,9 +400,10 @@ class _StudentClassState extends State<StudentClass> {
     var res = response1.body;
 
     if (response1.statusCode == 200) {
-      var obj = json.decode(res);
-
-      return obj;
+      var classesObjsJson = jsonDecode(res) as List;
+      messages =
+          classesObjsJson.map((tagJson) => Message.fromJson(tagJson)).toList();
+      return classes;
     }
     var obj = json.decode(res);
 
@@ -344,7 +411,6 @@ class _StudentClassState extends State<StudentClass> {
   }
 
   Future<String> sendMessage() async {
-    print("send message called");
     var token = await getValue("token");
 
     final ioc = HttpClient();
@@ -358,13 +424,12 @@ class _StudentClassState extends State<StudentClass> {
         'Authorization': "Bearer " + token,
       },
       body: jsonEncode(<String, dynamic>{
-        "class_id": classData["class_id"],
+        "class_id": classData.classID,
         "message": messageController.text,
       }),
     );
 
     if (response1.statusCode == 200) {
-      print(response1);
       return Future.value("sucessfull");
     }
 
@@ -389,7 +454,7 @@ class _StudentClassState extends State<StudentClass> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Padding(
                   padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.width * 0.40),
+                      vertical: MediaQuery.of(context).size.width * 0.30),
                   child: Column(
                     children: const [
                       Center(child: Text('Please wait its loading...')),
@@ -523,7 +588,7 @@ class _StudentClassState extends State<StudentClass> {
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
     final http.Response response1 = await http1.get(
-      url + '/getassignment?class_id=' + classData["class_id"].toString(),
+      url + '/getassignment?class_id=' + classData.classID.toString(),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': "Bearer " + token,
@@ -572,33 +637,33 @@ class _StudentClassState extends State<StudentClass> {
                 Row(
                   children: [
                     Text(
-                      classData["branch"] + " ",
+                      classData.branch + " ",
                       style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     Text(
-                      classData["year"].toString(),
+                      classData.year.toString(),
                       style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                     const Spacer(),
                     CircleAvatar(
                         radius: 35,
-                        backgroundImage: NetworkImage(classData["image_link"])),
+                        backgroundImage: NetworkImage(classData.imageLink)),
                   ],
                 ),
                 Text(
-                  "Class code : " + classData["class_code"],
+                  "Class code : " + classData.classCode,
                   style:
                       const TextStyle(color: Colors.blueAccent, fontSize: 12),
                 ),
                 Text(
-                  classData["link"] + "\n",
+                  classData.classLink + "\n",
                   style: const TextStyle(color: Colors.blue, fontSize: 11),
                 ),
                 Container(
                   alignment: Alignment.centerLeft,
                   padding: const EdgeInsets.only(left: 15, bottom: 10),
                   child: Text(
-                    classData["subject"].toString().toUpperCase(),
+                    classData.subject.toString().toUpperCase(),
                     style: const TextStyle(
                         color: Colors.black,
                         fontSize: 28,
@@ -616,7 +681,7 @@ class _StudentClassState extends State<StudentClass> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Padding(
                   padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.width * 0.40),
+                      vertical: MediaQuery.of(context).size.width * 0.30),
                   child: Column(
                     children: const [
                       Center(child: Text('Please wait its loading...')),
@@ -757,7 +822,7 @@ class _StudentClassState extends State<StudentClass> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Padding(
                   padding: EdgeInsets.symmetric(
-                      vertical: MediaQuery.of(context).size.width * 0.40),
+                      vertical: MediaQuery.of(context).size.width * 0.30),
                   child: Column(
                     children: const [
                       Center(child: Text('Please wait its loading...')),
@@ -1021,7 +1086,7 @@ class _StudentClassState extends State<StudentClass> {
         (X509Certificate cert, String host, int port) => true;
     final http1 = IOClient(ioc);
     final http.Response response1 = await http1.get(
-      url + '/getposts?class_id=' + classData["class_id"].toString(),
+      url + '/getposts?class_id=' + classData.classID.toString(),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
         'Authorization': "Bearer " + token,

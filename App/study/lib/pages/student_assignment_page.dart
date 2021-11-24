@@ -28,11 +28,14 @@ class StudentAssignment extends StatefulWidget {
 class _StudentAssignmentState extends State<StudentAssignment> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Student"),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Student"),
+        ),
+        body: assignmentBody(),
       ),
-      body: assignmentBody(),
     );
   }
 
