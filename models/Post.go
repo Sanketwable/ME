@@ -14,6 +14,7 @@ type Post struct {
 
 // Comment is used to store comment on any post
 type Comment struct {
+	CommentID uint32 `gorm:"primary_key;auto_increment" json:"comment_id"`
 	PostID    uint32 `gorm:"not null" json:"post_id"`
 	UserID    uint32 `gorm:"not null" json:"user_id"`
 	FirstName string `json:"first_name"`

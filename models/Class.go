@@ -14,6 +14,7 @@ type Class struct {
 
 // ClassStudent is a relation between class and student
 type ClassStudent struct {
+	ClassStudentID   uint32 `gorm:"primary_key;auto_increment" json:"class_student_id"`
 	ClassID uint32 `gorm:"" json:"class_id"`
 	UserID  uint32 `gorm:"" json:"user_id"`
 }
