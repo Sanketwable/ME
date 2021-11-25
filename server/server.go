@@ -15,8 +15,9 @@ import (
 func Run() {
 	config.Load()
 	fmt.Println("config file loaded")
-	auto.Load()
 	database.DBConnect()
+	auto.Load()
+	
 	fmt.Println("DB loaded")
 
 	fmt.Printf("\n\tListening.......[::]:%d \n", config.PORT)
