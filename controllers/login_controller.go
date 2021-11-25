@@ -71,14 +71,14 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		db, err := database.Connect()
-		if err != nil {
-			responses.ERROR(w, http.StatusInternalServerError, err)
-			return
-		}
-		defer db.Close()
+		// db, err := database.Connect()
+		// if err != nil {
+		// 	responses.ERROR(w, http.StatusInternalServerError, err)
+		// 	return
+		// }
+		// defer db.Close()
 
-		repo := crud.NewRepositoryUsersCRUD(db)
+		repo := crud.NewRepositoryUsersCRUD(database.DB)
 
 		func(userRepository repository.UserRepository) {
 			_, err := userRepository.UpdateLastLogin(foundUser.ID, user)
@@ -108,10 +108,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 func findEmail(dummyuser models.User) models.User {
 	var err error
-	db, _ := database.Connect()
-	defer db.Close()
+	// db, _ := database.Connect()
+	// defer db.Close()
 	fmt.Println("i am here to find id")
-	err = db.Debug().Model(models.User{}).Where("email = ?", dummyuser.Email).Take(&dummyuser).Error
+	err = database.DB.Debug().Model(models.User{}).Where("email = ?", dummyuser.Email).Take(&dummyuser).Error
 	if err != nil {
 		fmt.Println("error is ", err)
 		dummyuser.ID = 0

@@ -57,14 +57,14 @@ func CreateFacultyInfo(w http.ResponseWriter, r *http.Request) {
 	smsErr := SendCellularSMS(mobileNo, smsContent)
 	// var smsErr error
 	if smsErr == nil {
-		db, err := database.Connect()
-		if err != nil {
-			responses.ERROR(w, http.StatusInternalServerError, err)
-			return
-		}
-		defer db.Close()
+		// db, err := database.Connect()
+		// if err != nil {
+		// 	responses.ERROR(w, http.StatusInternalServerError, err)
+		// 	return
+		// }
+		// defer db.Close()
 
-		repo := crud.NewRepositoryFacultyInfoCRUD(db)
+		repo := crud.NewRepositoryFacultyInfoCRUD(database.DB)
 
 		func(FacultyInfoRepository repository.FacultyInfoRepository) {
 			FacultyInfo, err = FacultyInfoRepository.Save(FacultyInfo, qualification)
@@ -92,13 +92,13 @@ func GetFacultyInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
-	repo := crud.NewRepositoryFacultyInfoCRUD(db)
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
+	repo := crud.NewRepositoryFacultyInfoCRUD(database.DB)
 
 	func(FacultyInfoRepository repository.FacultyInfoRepository) {
 		FacultyInfo, err := FacultyInfoRepository.FindById(uint64(pid))
@@ -136,14 +136,14 @@ func UpdateFacultyInfo(w http.ResponseWriter, r *http.Request) {
 	FacultyInfo.Qualification.UserID = FacultyInfo.UserID
 	qualification := FacultyInfo.Qualification
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryFacultyInfoCRUD(db)
+	repo := crud.NewRepositoryFacultyInfoCRUD(database.DB)
 
 	func(FacultyInfoRepository repository.FacultyInfoRepository) {
 		_, err = FacultyInfoRepository.Update(uint64(pid), FacultyInfo, qualification)
@@ -161,9 +161,9 @@ func UpdateFacultyInfo(w http.ResponseWriter, r *http.Request) {
 func findPhoneNoFaculty(dummyuser models.FacultyInfo) models.FacultyInfo {
 
 	var err error
-	db, _ := database.Connect()
-	defer db.Close()
-	err = db.Debug().Model(models.FacultyInfo{}).Where("phone_no = ? and otp_verified = ?", dummyuser.PhoneNo, true).Take(&dummyuser).Error
+	// db, _ := database.Connect()
+	// defer db.Close()
+	err = database.DB.Debug().Model(models.FacultyInfo{}).Where("phone_no = ? and otp_verified = ?", dummyuser.PhoneNo, true).Take(&dummyuser).Error
 	if err != nil {
 		dummyuser.PhoneNo = "0"
 		return dummyuser

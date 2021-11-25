@@ -5,24 +5,23 @@ import (
 	"api/models"
 	"api/security"
 	"api/utils/channels"
-	"github.com/jinzhu/gorm"
 )
 
 //SignIn is func to check password's hash to password by user
 func SignIn(email, password string) (string, error) {
 	user := models.User{}
 	var err error
-	var db *gorm.DB
+	db := database.DB
 	done := make(chan bool)
 
 	go func(ch chan<- bool) {
 		defer close(ch)
-		db, err = database.Connect()
-		if err != nil {
-			ch <- false
-			return
-		}
-		defer db.Close()
+		// db, err = database.Connect()
+		// if err != nil {
+		// 	ch <- false
+		// 	return
+		// }
+		// defer db.Close()
 		err = db.Debug().Model(models.User{}).Where("email = ?", email).Take(&user).Error
 		if err != nil {
 			ch <- false

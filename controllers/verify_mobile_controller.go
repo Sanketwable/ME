@@ -22,15 +22,15 @@ func VerifyMobile(w http.ResponseWriter, r *http.Request) {
 	message := []byte("verified")
 	
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
 	if user.ID != 0 && user.LoginType == "faculty" {
-		repo := crud.NewRepositoryFacultyInfoCRUD(db)
+		repo := crud.NewRepositoryFacultyInfoCRUD(database.DB)
 
 		func(FacultyInfoRepository repository.FacultyInfoRepository) {
 			err := FacultyInfoRepository.FacultyMobileVerify(uint64(id))
@@ -42,7 +42,7 @@ func VerifyMobile(w http.ResponseWriter, r *http.Request) {
 			w.Write(message)
 		}(repo)
 	} else if user.ID != 0 && user.LoginType == "student" {
-		repo := crud.NewRepositoryStudentInfoCRUD(db)
+		repo := crud.NewRepositoryStudentInfoCRUD(database.DB)
 
 		func(StudentInfoRepository repository.StudentInfoRepository) {
 			err := StudentInfoRepository.StudentMobileVerify(uint64(id))

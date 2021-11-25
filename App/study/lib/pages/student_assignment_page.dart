@@ -5,7 +5,6 @@ import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/faculty_class.dart';
 
-
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 // ignore: import_of_legacy_library_into_null_safe
@@ -26,6 +25,8 @@ class StudentAssignment extends StatefulWidget {
 }
 
 class _StudentAssignmentState extends State<StudentAssignment> {
+  bool submit = true;
+  int totalQuestions = 0;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -88,17 +89,40 @@ class _StudentAssignmentState extends State<StudentAssignment> {
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8),
+          padding: const EdgeInsets.all(12),
           child: Container(
             alignment: Alignment.centerLeft,
             child: Text("Description : " + description),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.all(8),
-          child: Container(
-            alignment: Alignment.centerLeft,
-            child: Text("Points : " + points.toString()),
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text("Points : " + points.toString()),
+                  ),
+                ),
+              ),
+              Expanded(
+                  child: Padding(
+                padding: const EdgeInsets.all(10.0),
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        borderRadius: BorderRadius.circular(40)),
+                    child: TextButton(
+                        onPressed: null,
+                        child: Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.white),
+                        ))),
+              )),
+            ],
           ),
         ),
         assignmentData["assignment_type"] == 0
@@ -135,7 +159,8 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                 flex: 9,
                 child: FutureBuilder(
                   builder: (context, AsyncSnapshot<List> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
+                    if (questions.isEmpty &&
+                        snapshot.connectionState == ConnectionState.waiting) {
                       return Padding(
                         padding: EdgeInsets.symmetric(
                             vertical: MediaQuery.of(context).size.width * 0.40),
@@ -158,7 +183,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                       if (snapshot.hasError) {
                         return Center(child: Text('Error: ${snapshot.error}'));
                       } else {
-                        return snapshot.data!.isEmpty
+                        return questions.isEmpty
                             ? Padding(
                                 padding: EdgeInsets.symmetric(
                                     vertical:
@@ -193,7 +218,8 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                                 "Q" +
                                                     (index + 1).toString() +
                                                     ". " +
-                                                    datas.question
+                                                    questions[index]
+                                                        .question
                                                         .toString()
                                                         .toUpperCase(),
                                                 style: const TextStyle(
@@ -207,13 +233,27 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                             padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
-                                                top: 5,
-                                                bottom: 5),
-                                            child: Text(
-                                              "a. " + datas.option1,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15),
+                                                top: 1,
+                                                bottom: 1),
+                                            child: Row(
+                                              children: [
+                                                Radio(
+                                                    value: answers[index],
+                                                    groupValue: 1,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        value = 1;
+                                                        answers[index] = 1;
+                                                      });
+                                                    }),
+                                                Text(
+                                                  "a. " +
+                                                      questions[index].option1,
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 15),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                           Container(
@@ -221,13 +261,28 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                             padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
-                                                top: 5,
-                                                bottom: 5),
-                                            child: Text(
-                                              "b. " + datas.option2.toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15),
+                                                top: 1,
+                                                bottom: 1),
+                                            child: Row(
+                                              children: [
+                                                Radio(
+                                                    value: answers[index],
+                                                    groupValue: 2,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        answers[index] = 2;
+                                                      });
+                                                    }),
+                                                Text(
+                                                  "b. " +
+                                                      questions[index]
+                                                          .option2
+                                                          .toString(),
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 15),
+                                                ),
+                                              ],
                                             ),
                                           ),
 
@@ -236,13 +291,26 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                             padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
-                                                top: 5,
-                                                bottom: 5),
-                                            child: Text(
-                                              "c. " + datas.option3,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15),
+                                                top: 1,
+                                                bottom: 1),
+                                            child: Row(
+                                              children: [
+                                                Radio(
+                                                    value: answers[index],
+                                                    groupValue: 3,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        answers[index] = 3;
+                                                      });
+                                                    }),
+                                                Text(
+                                                  "c. " +
+                                                      questions[index].option3,
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 15),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                           Container(
@@ -250,13 +318,26 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                             padding: const EdgeInsets.only(
                                                 left: 40,
                                                 right: 20,
-                                                top: 5,
-                                                bottom: 5),
-                                            child: Text(
-                                              "d. " + datas.option4,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 15),
+                                                top: 1,
+                                                bottom: 1),
+                                            child: Row(
+                                              children: [
+                                                Radio(
+                                                    value: answers[index],
+                                                    groupValue: 4,
+                                                    onChanged: (value) {
+                                                      setState(() {
+                                                        answers[index] = 4;
+                                                      });
+                                                    }),
+                                                Text(
+                                                  "d. " +
+                                                      questions[index].option4,
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 15),
+                                                ),
+                                              ],
                                             ),
                                           ),
                                           // Text(
@@ -281,12 +362,25 @@ class _StudentAssignmentState extends State<StudentAssignment> {
     );
   }
 
+  List<int> answers = [];
+  List<MyQuestion> questions = [];
+  bool questionsLoaded = false;
+
   String description = "";
   int points = 0;
+  int score = 0;
+  bool submitted = false;
+
   String attachmentLink = "";
 
   Future<List<dynamic>> getFormAssignment() async {
-    
+    for (int i = 0; i < answers.length; i++) {
+      print(answers[i]);
+    }
+    if (questionsLoaded == true) {
+      print("questions already loaded");
+      return questions;
+    }
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =
@@ -313,22 +407,29 @@ class _StudentAssignmentState extends State<StudentAssignment> {
       }
 
       var tagObjsJson = jsonDecode(res)['questions'] as List;
-      
+
       // print(tagObjsJson);
-      List<MyQuestion> tagObjs =
+      questions =
           tagObjsJson.map((tagJson) => MyQuestion.fromJson(tagJson)).toList();
-      
-      
 
       // print(tagObjs[0].question);
-      return tagObjs;
+      totalQuestions = questions.length;
+      if (questionsLoaded == false) {
+        print("questions loaded");
+        answers.clear();
+        for (int i = 0; i < totalQuestions; i++) {
+          answers.add(-1);
+        }
+        questionsLoaded = true;
+      }
+
+      return questions;
     }
     var obj = json.decode(res);
     return Future.value(obj["error"]);
   }
 
   Future<List> getFileAssignment() async {
-    
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =

@@ -26,14 +26,14 @@ func GetMessages(w http.ResponseWriter, r *http.Request) {
 	class_id, err := strconv.Atoi(classid)
 	messages := []models.Message{}
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryMessageCRUD(db)
+	repo := crud.NewRepositoryMessageCRUD(database.DB)
 
 	func(messageRepository repository.MessageRepository) {
 		messages, err = messageRepository.FindByClassID(uint64(class_id))
@@ -64,14 +64,14 @@ func AddMessages(w http.ResponseWriter, r *http.Request) {
 	message.UserID = userID
 	message.Time = time.Now().String()[:20]
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo1 := crud.NewRepositoryStudentInfoCRUD(db)
+	repo1 := crud.NewRepositoryStudentInfoCRUD(database.DB)
 	studentinfo, err := repo1.FindById(uint64(message.UserID))
 	if err != nil {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
@@ -80,7 +80,7 @@ func AddMessages(w http.ResponseWriter, r *http.Request) {
 	message.FirstName = studentinfo.FirstName
 	message.LastName = studentinfo.LastName
 
-	repo := crud.NewRepositoryMessageCRUD(db)
+	repo := crud.NewRepositoryMessageCRUD(database.DB)
 
 	func(messageRepository repository.MessageRepository) {
 		message, err = messageRepository.Save(message)

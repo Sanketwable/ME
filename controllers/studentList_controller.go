@@ -32,14 +32,14 @@ func GetStudentList(w http.ResponseWriter, r *http.Request) {
 
 	studentList := []StudentList{}
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 	classStudents := []models.ClassStudent{}
-	_ = db.Debug().Model(models.ClassStudent{}).Where("class_id = ?", classID).Limit(100).Find(&classStudents).Error
+	_ = database.DB.Debug().Model(models.ClassStudent{}).Where("class_id = ?", classID).Limit(100).Find(&classStudents).Error
 
 	var studentsIDs []uint64
 	var mp = make(map[int]int)
@@ -50,7 +50,7 @@ func GetStudentList(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	repo := crud.NewRepositoryStudentInfoCRUD(db)
+	repo := crud.NewRepositoryStudentInfoCRUD(database.DB)
 
 	func(studentInfoRepository repository.StudentInfoRepository) {
 		students, err := studentInfoRepository.FindByClassID(studentsIDs)

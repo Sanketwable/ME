@@ -89,14 +89,14 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 			user.LastLogin = time.Now()
 			user.CreatedAt = time.Now()
 
-			db, err := database.Connect()
-			if err != nil {
-				responses.ERROR(w, http.StatusInternalServerError, err)
-				return
-			}
-			defer db.Close()
+			// db, err := database.Connect()
+			// if err != nil {
+			// 	responses.ERROR(w, http.StatusInternalServerError, err)
+			// 	return
+			// }
+			// defer db.Close()
 
-			repo := crud.NewRepositoryUsersCRUD(db)
+			repo := crud.NewRepositoryUsersCRUD(database.DB)
 
 			func(usersRepository repository.UserRepository) {
 				user, err = usersRepository.Save(user)

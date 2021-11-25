@@ -26,14 +26,14 @@ type UserInfo struct {
 
 //GetUsers is a func
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryUsersCRUD(db)
+	repo := crud.NewRepositoryUsersCRUD(database.DB)
 
 	func(usersRepository repository.UserRepository) {
 		users, err := usersRepository.FindAll()
@@ -95,14 +95,14 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	var userInfo UserInfo
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryUsersCRUD(db)
+	repo := crud.NewRepositoryUsersCRUD(database.DB)
 
 	func(usersRepository repository.UserRepository) {
 		user, err = usersRepository.FindById(uint32(user_id))
@@ -117,7 +117,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	userInfo.LoginType = user.LoginType
 
 	if user.LoginType == "student" {
-		repo1 := crud.NewRepositoryStudentInfoCRUD(db)
+		repo1 := crud.NewRepositoryStudentInfoCRUD(database.DB)
 
 		func(StudentInfoRepository repository.StudentInfoRepository) {
 			StudentInfo, err := StudentInfoRepository.FindById(uint64(user_id))
@@ -129,7 +129,7 @@ func GetUserInfo(w http.ResponseWriter, r *http.Request) {
 			userInfo.LastName = StudentInfo.LastName
 		}(repo1)
 	} else {
-		repo2:= crud.NewRepositoryFacultyInfoCRUD(db)
+		repo2:= crud.NewRepositoryFacultyInfoCRUD(database.DB)
 
 		func(FacultyInfoRepository repository.FacultyInfoRepository) {
 			FacultyInfo, err := FacultyInfoRepository.FindById(uint64(user_id))
@@ -203,14 +203,14 @@ func UpdatePassword(w http.ResponseWriter, r *http.Request) {
 	res := Response{}
 	res.Message = "Password Updated"
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryUsersCRUD(db)
+	repo := crud.NewRepositoryUsersCRUD(database.DB)
 
 	func(usersRepository repository.UserRepository) {
 		_, err := usersRepository.UpdatePassword(uint32(uid), user)
@@ -237,14 +237,14 @@ func UpdateForgettedPassword(email string, password string, uid uint32, w http.R
 	}
 	user.Password = string(hashedPass)
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryUsersCRUD(db)
+	repo := crud.NewRepositoryUsersCRUD(database.DB)
 
 	func(usersRepository repository.UserRepository) {
 		_, err := usersRepository.UpdatePassword(uint32(uid), user)
@@ -259,14 +259,14 @@ func UpdateForgettedPassword(email string, password string, uid uint32, w http.R
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	email := r.URL.Query().Get("email")
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	err = db.Debug().Model(models.User{}).Where("email = ?", email).Take(&models.User{}).Delete(&models.User{}).Error
+	err := database.DB.Debug().Model(models.User{}).Where("email = ?", email).Take(&models.User{}).Delete(&models.User{}).Error
 	if err != nil {
 		responses.ERROR(w, http.StatusBadRequest, err)
 		return
@@ -287,9 +287,9 @@ func ConfirmOldPassword(password string, email string) (uint32, bool) {
 	}
 	fmt.Println(password)
 	hashPwd1 := string(hashPwd)
-	db, _ := database.Connect()
-	defer db.Close()
-	err = db.Debug().Model(models.User{}).Where("email = ?", dummyuser.Email).Take(&dummyuser).Error
+	// db, _ := database.Connect()
+	// defer db.Close()
+	err = database.DB.Debug().Model(models.User{}).Where("email = ?", dummyuser.Email).Take(&dummyuser).Error
 	if err != nil {
 		return 0, false
 	}

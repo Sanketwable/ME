@@ -52,14 +52,14 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 	post.UserID = faculty_id
 	post.Time = time.Now().String()[:20]
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryPostCRUD(db)
+	repo := crud.NewRepositoryPostCRUD(database.DB)
 
 	func(postRepository repository.PostRepository) {
 		post, err = postRepository.SavePost(post)
@@ -90,14 +90,14 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 	comment.Time = time.Now().String()[:20]
 	comment.UserID = user_id
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryPostCRUD(db)
+	repo := crud.NewRepositoryPostCRUD(database.DB)
 
 	func(postRepository repository.PostRepository) {
 		comment, err = postRepository.SaveComment(comment)
@@ -121,14 +121,14 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 	class_id, err := strconv.Atoi(classid)	
 	posts := []models.Post{}
 	
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryPostCRUD(db)
+	repo := crud.NewRepositoryPostCRUD(database.DB)
 
 	func(postRepository repository.PostRepository) {
 		posts, err = postRepository.FindPosts(uint32(class_id))
@@ -143,10 +143,10 @@ func GetPosts(w http.ResponseWriter, r *http.Request) {
 			pr.Description = post.Description
 			pr.PostID = post.PostID
 			pr.Time = post.Time
-			repo1 := crud.NewRepositoryStudentInfoCRUD(db)
+			repo1 := crud.NewRepositoryStudentInfoCRUD(database.DB)
 			studentinfo, err := repo1.FindById(uint64(post.UserID))
 			if err != nil {
-				repo1 := crud.NewRepositoryFacultyInfoCRUD(db)
+				repo1 := crud.NewRepositoryFacultyInfoCRUD(database.DB)
 				facultyinfo, _ := repo1.FindById(uint64(post.UserID))
 				pr.FirstName = facultyinfo.FirstName
 				pr.LastName = facultyinfo.LastName
@@ -173,14 +173,14 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 	post_id, err := strconv.Atoi(postid)	
 	comments := []models.Comment{}
 	commentresponse := []CommentsResponse{}
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryPostCRUD(db)
+	repo := crud.NewRepositoryPostCRUD(database.DB)
 
 	func(postRepository repository.PostRepository) {
 		comments, err = postRepository.FindComments(uint32(post_id))
@@ -195,10 +195,10 @@ func GetComments(w http.ResponseWriter, r *http.Request) {
 			c.Time = comment.Time
 			c.UserID = comment.UserID
 
-			repo1 := crud.NewRepositoryStudentInfoCRUD(db)
+			repo1 := crud.NewRepositoryStudentInfoCRUD(database.DB)
 			studentinfo, err := repo1.FindById(uint64(comment.UserID))
 			if err != nil {
-				repo1 := crud.NewRepositoryFacultyInfoCRUD(db)
+				repo1 := crud.NewRepositoryFacultyInfoCRUD(database.DB)
 				facultyinfo, _ := repo1.FindById(uint64(comment.UserID))
 				c.FirstName = facultyinfo.FirstName
 				c.LastName = facultyinfo.LastName

@@ -15,11 +15,11 @@ type Assignment struct {
 
 // FileAssignment is a file assignment struct
 type FileAssignment struct {
-	AssignmentID   uint32    `gorm:"not null" json:"assignment_id"`
-	Description    string    `gorm:"" json:"description"`
-	AttachmentLink string    `gorm:"" json:"attachment_link"`
-	Points         uint32    `gorm:"not null" json:"points"`
-	CreatedAt      string`gorm:"" json:"created_at"`
+	AssignmentID   uint32 `gorm:"not null" json:"assignment_id"`
+	Description    string `gorm:"" json:"description"`
+	AttachmentLink string `gorm:"" json:"attachment_link"`
+	Points         uint32 `gorm:"not null" json:"points"`
+	CreatedAt      string `gorm:"" json:"created_at"`
 }
 
 // FormAssignment is a file assignment struct
@@ -46,4 +46,5 @@ type Question struct {
 type StudentAssignment struct {
 	AssignmentID uint32 `gorm:"not null" json:"assignment_id"`
 	StudentID    uint32 `gorm:"not null" json:"student_id"`
+	Points       uint32 `gorm:"" json:"points"`
 }

@@ -12,13 +12,13 @@ import (
 //SaveTemp is func
 func SaveTemp(tempotp models.TempOTP) error {
 
-	db, err := database.Connect()
-	if err != nil {
-		return err
-	}
-	defer db.Close()
-
-	repo := crud.NewRepositoryTempOTPCRUD(db)
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	return err
+	// }
+	// defer db.Close()
+	var err error
+	repo := crud.NewRepositoryTempOTPCRUD(database.DB)
 
 	func(tempOTPRepository repository.TempOTPRepository) {
 		_, err1 := tempOTPRepository.Save(tempotp)
@@ -35,14 +35,14 @@ func SaveTemp(tempotp models.TempOTP) error {
 func UpdateTemp(tempotp models.TempOTP) {
 	email := tempotp.Email
 
-	db, err := database.Connect()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryTempOTPCRUD(db)
+	repo := crud.NewRepositoryTempOTPCRUD(database.DB)
 
 	func(tempOTPRepository repository.TempOTPRepository) {
 		_, err := tempOTPRepository.UpdateTempOTP(email, tempotp)
@@ -55,14 +55,14 @@ func UpdateTemp(tempotp models.TempOTP) {
 
 // DeleteTemp is a func
 func DeleteTemp(email string, tempotp models.TempOTP) {
-	db, err := database.Connect()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryTempOTPCRUD(db)
+	repo := crud.NewRepositoryTempOTPCRUD(database.DB)
 
 	func(tempOTPRepository repository.TempOTPRepository) {
 		_, err := tempOTPRepository.Delete(email, tempotp)
@@ -78,14 +78,14 @@ func DeleteTemp(email string, tempotp models.TempOTP) {
 func GetTempOTP(tempUser models.TempOTP) (models.TempOTP, error) {
 	var err error
 	returntemp := models.TempOTP{}
-	db, err := database.Connect()
-	if err != nil {
-		fmt.Println("error is ", err)
-		return tempUser, err
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	fmt.Println("error is ", err)
+	// 	return tempUser, err
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryTempOTPCRUD(db)
+	repo := crud.NewRepositoryTempOTPCRUD(database.DB)
 
 	func(tempOTPRepository repository.TempOTPRepository) {
 		tempotp, errw := tempOTPRepository.FindByEmail(tempUser.Email, tempUser)

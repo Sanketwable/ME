@@ -54,14 +54,14 @@ func CreateStudentInfo(w http.ResponseWriter, r *http.Request) {
 	smsContent := `Click on the URL to verify your mobile number for Study App URL : ` + herokuURL +`/verifymobile?token=` + token
 	smsErr := SendCellularSMS(mobileNo, smsContent)
 	if smsErr == nil {
-		db, err := database.Connect()
-		if err != nil {
-			responses.ERROR(w, http.StatusInternalServerError, err)
-			return
-		}
-		defer db.Close()
+		// db, err := database.Connect()
+		// if err != nil {
+		// 	responses.ERROR(w, http.StatusInternalServerError, err)
+		// 	return
+		// }
+		// defer db.Close()
 
-		repo := crud.NewRepositoryStudentInfoCRUD(db)
+		repo := crud.NewRepositoryStudentInfoCRUD(database.DB)
 
 		func(StudentInfoRepository repository.StudentInfoRepository) {
 			studentInfo, err = StudentInfoRepository.Save(studentInfo)
@@ -87,13 +87,13 @@ func GetStudentInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
-	repo := crud.NewRepositoryStudentInfoCRUD(db)
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
+	repo := crud.NewRepositoryStudentInfoCRUD(database.DB)
 
 	func(StudentInfoRepository repository.StudentInfoRepository) {
 		StudentInfo, err := StudentInfoRepository.FindById(uint64(pid))
@@ -128,14 +128,14 @@ func UpdateStudentInfo(w http.ResponseWriter, r *http.Request) {
 
 	StudentInfo.UserID = pid
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryStudentInfoCRUD(db)
+	repo := crud.NewRepositoryStudentInfoCRUD(database.DB)
 
 	func(StudentInfoRepository repository.StudentInfoRepository) {
 		_, err = StudentInfoRepository.Update(uint64(pid), StudentInfo)
@@ -152,9 +152,9 @@ func UpdateStudentInfo(w http.ResponseWriter, r *http.Request) {
 
 func findPhoneNo(dummyuser models.StudentInfo) models.StudentInfo {
 	var err error
-	db, _ := database.Connect()
-	defer db.Close()
-	err = db.Debug().Model(models.StudentInfo{}).Where("phone_no = ? and otp_verified = ?", dummyuser.PhoneNo, true).Take(&dummyuser).Error
+	// db, _ := database.Connect()
+	// defer db.Close()
+	err = database.DB.Debug().Model(models.StudentInfo{}).Where("phone_no = ? and otp_verified = ?", dummyuser.PhoneNo, true).Take(&dummyuser).Error
 	if err != nil {
 		dummyuser.PhoneNo = "0"
 		return dummyuser

@@ -43,14 +43,14 @@ func CreateClass(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryClassCRUD(db)
+	repo := crud.NewRepositoryClassCRUD(database.DB)
 
 	func(classRepository repository.ClassRepository) {
 		class, err = classRepository.Save(class)
@@ -77,14 +77,14 @@ func GetClass(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnprocessableEntity, err)
 		return
 	}
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryClassCRUD(db)
+	repo := crud.NewRepositoryClassCRUD(database.DB)
 
 	func(classRepository repository.ClassRepository) {
 		class, err := classRepository.FindById(uint32(classID))
@@ -119,14 +119,14 @@ func AddClassWithEmail(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryClassCRUD(db)
+	repo := crud.NewRepositoryClassCRUD(database.DB)
 	classstudent := models.ClassStudent{}
 	classstudent.ClassID = uint32(classID)
 	classstudent.UserID = dummyuser.ID
@@ -157,18 +157,18 @@ func AddClassWithClassCode(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusUnauthorized, err)
 		return
 	}
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
 	classstudent := models.ClassStudent{}
 	classstudent.ClassID = uint32(dummyclass.ClassID)
 	classstudent.UserID = userID
 
-	repo := crud.NewRepositoryClassCRUD(db)
+	repo := crud.NewRepositoryClassCRUD(database.DB)
 
 	func(classRepository repository.ClassRepository) {
 		err := classRepository.AddStudent(classstudent)
@@ -193,14 +193,14 @@ func GetClasses(w http.ResponseWriter, r *http.Request) {
 
 	dummyfaculty = findUser(dummyfaculty)
 	classes := []models.Class{}
-	db, err := database.Connect()
-	if err != nil {
-		responses.ERROR(w, http.StatusInternalServerError, err)
-		return
-	}
-	defer db.Close()
+	// db, err := database.Connect()
+	// if err != nil {
+	// 	responses.ERROR(w, http.StatusInternalServerError, err)
+	// 	return
+	// }
+	// defer db.Close()
 
-	repo := crud.NewRepositoryClassCRUD(db)
+	repo := crud.NewRepositoryClassCRUD(database.DB)
 
 	func(classRepository repository.ClassRepository) {
 		if dummyfaculty.LoginType == "faculty" {
@@ -238,9 +238,9 @@ func UpdateClass(w http.ResponseWriter, r *http.Request) {
 
 func findClass(dummyclass models.Class) models.Class {
 	var err error
-	db, _ := database.Connect()
-	defer db.Close()
-	err = db.Debug().Model(models.Class{}).Where("class_code = ?", dummyclass.ClassCode).Take(&dummyclass).Error
+	// db, _ := database.Connect()
+	// defer db.Close()
+	err = database.DB.Debug().Model(models.Class{}).Where("class_code = ?", dummyclass.ClassCode).Take(&dummyclass).Error
 	if err != nil {
 		dummyclass.ClassID = 0
 	}
@@ -248,9 +248,9 @@ func findClass(dummyclass models.Class) models.Class {
 }
 func findUser(dummyuser models.User) models.User {
 	var err error
-	db, _ := database.Connect()
-	defer db.Close()
-	err = db.Debug().Model(models.User{}).Where("id = ?", dummyuser.ID).Take(&dummyuser).Error
+	// db, _ := database.Connect()
+	// defer db.Close()
+	err = database.DB.Debug().Model(models.User{}).Where("id = ?", dummyuser.ID).Take(&dummyuser).Error
 	if err != nil {
 		dummyuser.ID = 0
 		return dummyuser

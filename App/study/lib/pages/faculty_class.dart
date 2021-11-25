@@ -914,7 +914,8 @@ class _FacultyClassState extends State<FacultyClass> {
                           itemBuilder: (context, index) {
                             var datas = studentlist[index];
                             return Padding(
-                              padding: const EdgeInsets.only(left:10, right: 10, top:4, bottom:4),
+                              padding: const EdgeInsets.only(
+                                  left: 10, right: 10, top: 4, bottom: 4),
                               child: Center(
                                 child: Container(
                                   // width:
@@ -938,7 +939,8 @@ class _FacultyClassState extends State<FacultyClass> {
                                   //     color: Colors.white,
                                   //     borderRadius: BorderRadius.circular(10)),
                                   child: Padding(
-                                    padding: const EdgeInsets.only(left:8, right: 8, top:4, bottom: 4),
+                                    padding: const EdgeInsets.only(
+                                        left: 8, right: 8, top: 4, bottom: 4),
                                     child: Row(
                                       children: [
                                         CircleAvatar(
@@ -946,13 +948,16 @@ class _FacultyClassState extends State<FacultyClass> {
                                             backgroundImage: NetworkImage(
                                                 studentlist[index].profileUrl)),
                                         Padding(
-                                          padding: const EdgeInsets.only(left : 8.0),
+                                          padding:
+                                              const EdgeInsets.only(left: 8.0),
                                           child: Text(
                                             studentlist[index].firstName +
                                                 " " +
                                                 studentlist[index].lastName,
                                             style: const TextStyle(
-                                                color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500),
+                                                color: Colors.black,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.w500),
                                           ),
                                         ),
                                       ],
@@ -1666,49 +1671,18 @@ class _MyDialogState extends State<MyDialog> {
                               ],
                             )
                           : (assignmentType.toString() == "File"
-                              ? Column(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      child: TextField(
-                                        controller: descriptionController,
-                                        obscureText: false,
-                                        decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Description',
-                                            hintText: 'Description'),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      child: TextField(
-                                        controller: attachmentLinkController,
-                                        obscureText: false,
-                                        decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Attachment Link',
-                                            hintText: 'Attachment Link'),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 5),
-                                      child: TextField(
-                                        controller: pointsController,
-                                        obscureText: false,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly
-                                        ],
-                                        decoration: const InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            labelText: 'Points',
-                                            hintText: 'Points'),
-                                      ),
-                                    ),
-                                  ],
-                                )
+                              ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
+                                child: TextField(
+                                  controller: attachmentLinkController,
+                                  obscureText: false,
+                                  decoration: const InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      labelText: 'Attachment Link',
+                                      hintText: 'Attachment Link'),
+                                ),
+                              )
                               : const Padding(
                                   padding: EdgeInsets.only(bottom: 8.0),
                                   child: Text(
