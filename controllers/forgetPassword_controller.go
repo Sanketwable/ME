@@ -87,10 +87,10 @@ func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 func EmailPresent(req ForgotPasswordRequest) (string, uint32) {
 	dummyuser := models.User{}
 	dummyuser.Email = req.Email
-	var err error
+	// var err error
 	// db, _ := database.Connect()
 	// defer db.Close()
-	err = database.DB.Debug().Model(models.User{}).Where("email = ?", dummyuser.Email).Take(&dummyuser).Error
+	err := database.DB.Debug().Model(models.User{}).Where("email = ?", dummyuser.Email).Take(&dummyuser).Error
 	if err != nil {
 		return "", 0
 	}

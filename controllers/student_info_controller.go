@@ -151,10 +151,10 @@ func UpdateStudentInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func findPhoneNo(dummyuser models.StudentInfo) models.StudentInfo {
-	var err error
+	// var err error
 	// db, _ := database.Connect()
 	// defer db.Close()
-	err = database.DB.Debug().Model(models.StudentInfo{}).Where("phone_no = ? and otp_verified = ?", dummyuser.PhoneNo, true).Take(&dummyuser).Error
+	err := database.DB.Debug().Model(models.StudentInfo{}).Where("phone_no = ? and otp_verified = ?", dummyuser.PhoneNo, true).Take(&dummyuser).Error
 	if err != nil {
 		dummyuser.PhoneNo = "0"
 		return dummyuser
