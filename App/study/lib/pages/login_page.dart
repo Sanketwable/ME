@@ -38,13 +38,15 @@ class _WelcomePage extends State<WelcomePage> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          // backgroundColor: Colors.white,
+          
           title: const Text("Study"),
         ),
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
               const Padding(
-                padding: EdgeInsets.only(top: 60.0, bottom: 50.0),
+                padding: EdgeInsets.only(top: 40.0, bottom: 40.0),
                 child: Center(
                     child: Text(
                   "Login",
@@ -64,7 +66,8 @@ class _WelcomePage extends State<WelcomePage> {
                       ),
                     )
                   : const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                       child: Text(
                         "Enter your details below to login",
                         style: TextStyle(color: Colors.black),
@@ -135,7 +138,8 @@ class _WelcomePage extends State<WelcomePage> {
                 height: 50,
                 width: 250,
                 decoration: BoxDecoration(
-                    color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(20)),
                 child: TextButton(
                   onPressed: () async {
                     var dialogContext = showAlertDialog(context, "Logging IN");
@@ -160,12 +164,12 @@ class _WelcomePage extends State<WelcomePage> {
                 ),
               ),
               const SizedBox(
-                height: 90,
+                height: 30,
               ),
               TextButton(
                 onPressed: () {
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (_) => const Signup()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const Signup()));
                 },
                 child: const Text("New User? Create account"),
               )
@@ -232,6 +236,9 @@ class _WelcomePage extends State<WelcomePage> {
   }
 
   void loginSucessfull() {
+    incorrectDetails = false;
+    loginError = "";
+    
     store('token', token, dropdownValue.toString(), userName, userID);
     emailcontroller.clear();
     passwordcontroller.clear();

@@ -326,6 +326,7 @@ class _FacultyInfoState extends State<FacultyInfo> {
   Future<String> submitBasicInfo() async {
     var imageLink = await uploadImage();
     storeProfileURL(imageLink);
+    var token = await getValue("token");
   
     final ioc = HttpClient();
     ioc.badCertificateCallback =

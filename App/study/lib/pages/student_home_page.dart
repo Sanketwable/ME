@@ -81,6 +81,20 @@ class _StudentHomePageState extends State<StudentHomePage> {
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         appBar: AppBar(
           title: const Text('Student'),
+          actions: [
+            Container(
+              padding: EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
+              child: FutureBuilder(
+                builder: (context, data) {
+                  return CircleAvatar(
+                      radius: 20,
+                      onBackgroundImageError: (object, stackTrace) => {},
+                      backgroundImage: NetworkImage(data.data.toString()));
+                },
+                future: getProfilePhotoURL(),
+              ),
+            ),
+          ],
         ),
         drawer: Drawer(
           child: ListView(
@@ -109,15 +123,32 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   ],
                 ),
               ),
-              ListTile(
-                title: const Text('Sign Out'),
-                onTap: () {
-                  delete();
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const Redirect()),
-                      ModalRoute.withName("/Home"));
-                },
+              Row(
+                children: [
+                  Expanded(
+                      flex: 1,
+                      child: IconButton(
+                          onPressed: null, icon: Icon(Icons.logout))),
+                  Expanded(
+                    flex: 9,
+                    child: ListTile(
+                      title: const Text('Sign Out'),
+                      subtitle: Text("Logout from Study App"),
+                      onTap: () {
+                        delete();
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(builder: (_) => const Redirect()),
+                            ModalRoute.withName("/Home"));
+                      },
+                    ),
+                  ),
+                  Expanded(
+                      flex: 1,
+                      child: Container(
+                        child: SizedBox.shrink(),
+                      )),
+                ],
               ),
             ],
           ),
@@ -531,6 +562,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
     var obj = json.decode(res);
     if (statusCode == 200) {
+      storeProfileURL(obj["profile_photo"]);
       return obj;
     }
     List<int> l = [];
@@ -671,90 +703,112 @@ class _StudentHomePageState extends State<StudentHomePage> {
                           itemBuilder: (context, index) {
                             var datas = classes[index];
                             return Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Center(
-                                child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.95,
-                                  decoration: BoxDecoration(
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.grey,
-                                          offset: Offset(
-                                            5.0,
-                                            5.0,
-                                          ),
-                                          blurRadius: 10.0,
-                                          spreadRadius: 2.0,
-                                        ), //BoxShadow
-                                      ],
-                                      border: Border.all(
-                                          color: Colors.black,
-                                          width: 0.5,
-                                          style: BorderStyle.none),
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (_) =>
-                                                  StudentClass(datas)));
-                                    },
-                                    child: Column(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(2.0),
-                                          child: Text(
-                                            datas.subject
-                                                .toString()
-                                                .toUpperCase(),
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 20),
-                                          ),
+                              padding: const EdgeInsets.only(
+                                  top: 10, left: 10, right: 10),
+                              child: Container(
+                                width: MediaQuery.of(context).size.width * 0.95,
+                                decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      colorFilter: ColorFilter.mode(
+                                          Colors.black.withOpacity(0.9),
+                                          BlendMode.dstATop),
+                                      image: NetworkImage(
+                                        "https://i.ibb.co/2sqgCND/overhead-view-laptop-with-stationeries-study-text-white-background-23-2147875675-jpg.webp",
+                                      ),
+                                    ),
+                                    boxShadow: const [
+                                      BoxShadow(
+                                        color: Colors.grey,
+                                        offset: Offset(
+                                          5.0,
+                                          5.0,
                                         ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              datas.branch,
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 18),
-                                            ),
-                                            Text(
-                                              " " + datas.year.toString(),
-                                              style: const TextStyle(
-                                                  color: Colors.black,
-                                                  fontSize: 18),
-                                            ),
-                                            const Spacer(),
-                                            CircleAvatar(
-                                                radius: 35,
+                                        blurRadius: 10.0,
+                                        spreadRadius: 2.0,
+                                      ), //BoxShadow
+                                    ],
+                                    border: Border.all(
+                                        color: Colors.black,
+                                        width: 0.5,
+                                        style: BorderStyle.none),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: TextButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (_) =>
+                                                StudentClass(datas)));
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.all(10),
+                                            child: CircleAvatar(
+                                                radius: 45,
                                                 backgroundImage: NetworkImage(
                                                     datas.imageLink)),
-                                          ],
-                                        ),
-                                        Text(
-                                          "Class code : " + datas.classCode,
-                                          style: const TextStyle(
-                                              color: Colors.blueAccent,
-                                              fontSize: 12),
-                                        ),
-                                        Text(
-                                          datas.classLink + "\n",
-                                          style: const TextStyle(
-                                              color: Colors.blue, fontSize: 11),
-                                        ),
-                                        // Text(
-                                        //   "sanket\n\n\n",
-                                        //   style: TextStyle(
-                                        //       color: Colors.white,
-                                        //       fontSize: 11),
-                                        // ),
-                                      ],
-                                    ),
+                                          ),
+                                          const Spacer(),
+                                          Column(
+                                            children: [
+                                              Container(
+                                                alignment: Alignment.topLeft,
+                                                padding:
+                                                    const EdgeInsets.all(2.0),
+                                                child: Text(
+                                                  datas.subject
+                                                      .toString()
+                                                      .toUpperCase(),
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 24,
+                                                      fontWeight:
+                                                          FontWeight.w700),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  datas.branch +
+                                                      " " +
+                                                      datas.year.toString(),
+                                                  style: const TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 18),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  "Class code : " +
+                                                      datas.classCode,
+                                                  style: const TextStyle(
+                                                      color: Colors.blueAccent,
+                                                      fontSize: 12),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding:
+                                                    const EdgeInsets.all(8.0),
+                                                child: Text(
+                                                  datas.classLink + "\n",
+                                                  style: const TextStyle(
+                                                      color: Colors.blue,
+                                                      fontSize: 11),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -791,8 +845,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
       classes = classesObjsJson
           .map((tagJson) => MyClasses.fromJson(tagJson))
           .toList();
-      
-      
+
       return classes;
     }
     return Future.value(obj["error"]);

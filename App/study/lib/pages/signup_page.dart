@@ -19,15 +19,6 @@ final signUpEmailController = TextEditingController();
 final signUpPasswordController = TextEditingController();
 var token = "";
 // ignore: prefer_typing_uninitialized_variables
-var loginType;
-var otpRequested = false;
-var validOtp = true;
-var incorrectOTP = false;
-var userName = "";
-var userID = "";
-var signUpError = "";
-var signUpErrorWithOTP = "";
-var incorrectDetails = false;
 
 class Signup extends StatefulWidget {
   const Signup({Key? key}) : super(key: key);
@@ -37,6 +28,17 @@ class Signup extends StatefulWidget {
 }
 
 class _SignupState extends State<Signup> {
+  final signUpEmailController = TextEditingController();
+  final signUpPasswordController = TextEditingController();
+  var loginType;
+  var otpRequested = false;
+  var validOtp = true;
+  var incorrectOTP = false;
+  var userName = "";
+  var userID = "";
+  var signUpError = "";
+  var signUpErrorWithOTP = "";
+  var incorrectDetails = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(

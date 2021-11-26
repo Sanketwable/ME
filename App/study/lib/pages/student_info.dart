@@ -28,10 +28,10 @@ class StudentInfo extends StatefulWidget {
   }
 
   @override
-  _FacultyInfoState createState() => _FacultyInfoState();
+  _StudentInfoState createState() => _StudentInfoState();
 }
 
-class _FacultyInfoState extends State<StudentInfo> {
+class _StudentInfoState extends State<StudentInfo> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -91,7 +91,8 @@ class _FacultyInfoState extends State<StudentInfo> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                 child: TextField(
                   controller: firstNameController,
                   obscureText: false,
@@ -102,7 +103,8 @@ class _FacultyInfoState extends State<StudentInfo> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                 child: TextField(
                   controller: lastNameController,
                   obscureText: false,
@@ -113,7 +115,8 @@ class _FacultyInfoState extends State<StudentInfo> {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
                 child: TextField(
                   controller: phoneNoController,
                   obscureText: false,
@@ -124,8 +127,8 @@ class _FacultyInfoState extends State<StudentInfo> {
                 ),
               ),
               const Padding(
-                padding:
-                    EdgeInsets.only(left: 15.0, right: 15.0, top: 15, bottom: 0),
+                padding: EdgeInsets.only(
+                    left: 15.0, right: 15.0, top: 15, bottom: 0),
                 child: Center(
                     child: Text(
                   "Year",
@@ -166,7 +169,8 @@ class _FacultyInfoState extends State<StudentInfo> {
                 height: 50,
                 width: 250,
                 decoration: BoxDecoration(
-                    color: Colors.blue, borderRadius: BorderRadius.circular(20)),
+                    color: Colors.blue,
+                    borderRadius: BorderRadius.circular(20)),
                 child: TextButton(
                   onPressed: () async {
                     showAlertDialog(context, "Submitting");
@@ -289,6 +293,7 @@ class _FacultyInfoState extends State<StudentInfo> {
 
   Future<String> submitBasicInfo() async {
     var imageLink = await uploadImage();
+    var token = await getValue("token");
     storeProfileURL(imageLink);
 
     final ioc = HttpClient();
@@ -311,12 +316,9 @@ class _FacultyInfoState extends State<StudentInfo> {
     );
 
     if (response1.statusCode == 201) {
-      
-      
-      
       return Future.value("Submitted");
     }
-    
+
     return Future.value("Error");
   }
 }
