@@ -6,19 +6,16 @@ import 'package:study/pages/student_home_page.dart';
 
 import 'package:study/pages/welcome_page.dart';
 import '../controllers/token.dart';
-import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_svg/svg.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
-import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 
 import './faculty_home_page.dart';
 import './student_home_page.dart';
 import '../constants/constants.dart';
-import './signup_page.dart';
 
 var loginType = "";
 var userName = "";
@@ -31,8 +28,7 @@ class Redirect extends StatefulWidget {
 }
 
 class _RedirectState extends State<Redirect> {
-
-  Future<String> finalAttemptoGetToken() async {
+  Future finalAttemptoGetToken() async {
     var tkn = await getValue("token");
 
     final ioc = HttpClient();
@@ -43,16 +39,17 @@ class _RedirectState extends State<Redirect> {
       url + '/verifyuser',
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + token,
+        'Authorization': "Bearer " + tkn,
       },
     );
-    
+
     if (response1.statusCode == 200) {
       loginType = await getLoginType();
       userName = await getUserName();
       return tkn;
     }
-    return "";
+
+    Future;
   }
 
   @override
@@ -62,16 +59,51 @@ class _RedirectState extends State<Redirect> {
       child: FutureBuilder(
         future: finalAttemptoGetToken(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.hasData) {
-            // return WelcomePage();
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return MainPage();
+          } else if (snapshot.hasData) {
             return loginType == "faculty"
                 ? FacultyHomePage(userName)
                 : StudentHomePage(userName);
-            // return StudentInfo("sanket", snapshot.toString());
           } else {
+            // return MainPage();
             return const WelcomePage();
           }
         },
+      ),
+    );
+  }
+
+  Widget MainPage() {
+    Size size = MediaQuery.of(context).size;
+    return Scaffold(
+      body: Container(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(
+                  top: size.height * 0.30,
+                  left: size.width * 0.1,
+                  right: size.width * 0.1),
+              child: Center(
+                child: SvgPicture.asset(
+                  "assets/icons/teacher.svg",
+                  height: size.height * 0.30,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: size.height * 0.2),
+              child: Center(
+                child: Text(
+                  "Study",
+                  style: TextStyle(
+                      color: Colors.grey, fontSize: size.width * 0.15),
+                ),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }

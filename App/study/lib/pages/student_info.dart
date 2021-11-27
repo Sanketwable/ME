@@ -13,6 +13,7 @@ import 'package:study/controllers/token.dart';
 import 'package:study/pages/student_home_page.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
 
 final firstNameController = TextEditingController();
 final lastNameController = TextEditingController();
@@ -106,6 +107,10 @@ class _StudentInfoState extends State<StudentInfo> {
               RoundedInputField(
                 hintText: "Phone No.",
                 textController: phoneNoController,
+                inputFormatter: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(10),
+                ],
                 onChanged: (value) {},
                 icon: Icons.phone,
               ),
@@ -241,7 +246,6 @@ class _StudentInfoState extends State<StudentInfo> {
     });
   }
 
-  
   showAlertDialog(BuildContext context, String lodingText) {
     AlertDialog alert = AlertDialog(
       backgroundColor: kPrimaryLightColor,

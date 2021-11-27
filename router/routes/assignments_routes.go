@@ -30,4 +30,16 @@ var assignmentRoutes = []Route {
 		Handler: controllers.GetFormAssignment,
 		AuthRequired: true,
 	},
+	{
+		Uri: "/submitassignment",
+		Method: http.MethodPost,
+		Handler: controllers.SubmitFormAssignment,
+		AuthRequired: true,
+	},
+	{
+		Uri: "/getassignmentstatus",
+		Method: http.MethodGet,
+		Handler: controllers.GetAssignmentStatus,
+		AuthRequired: true,
+	},
 }

@@ -38,7 +38,7 @@ func CreateFacultyInfo(w http.ResponseWriter, r *http.Request) {
 
 	FacultyInfo.Qualification.UserID = FacultyInfo.UserID
 	qualification := FacultyInfo.Qualification
-
+	FacultyInfo.PhoneNo =  "+91" + FacultyInfo.PhoneNo
 	mobileNo := FacultyInfo.PhoneNo
 	fmt.Println(mobileNo)
 

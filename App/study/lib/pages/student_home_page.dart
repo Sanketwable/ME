@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:study/components/rounded_button.dart';
 import 'package:study/components/rounded_input_field.dart';
@@ -19,6 +17,10 @@ import '../constants/constants.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../controllers/token.dart';
+
+import 'dart:ui';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 
 var studentUserName = "";
 List<MyClasses> classes = [];
@@ -88,7 +90,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
           title: const Text('Student'),
           actions: [
             Container(
-              padding: const EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
+              padding:
+                  const EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
               child: FutureBuilder(
                 builder: (context, data) {
                   return CircleAvatar(
@@ -153,9 +156,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       },
                     ),
                   ),
-                  const Expanded(
-                      flex: 1,
-                      child: SizedBox.shrink()),
+                  const Expanded(flex: 1, child: SizedBox.shrink()),
                 ],
               ),
             ],
@@ -335,12 +336,17 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     hintText: "Phone No",
                     onChanged: (str) {},
                     textController: phoneNoController,
+                    inputFormatter: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                     readOnly: !edit,
                     icon: Icons.phone,
                   ),
                   RoundedInputField(
                     hintText: "Year",
                     onChanged: (str) {},
+                    inputFormatter: [FilteringTextInputFormatter.digitsOnly],
                     textController: yearController,
                     readOnly: !edit,
                     icon: Icons.calendar_today,
@@ -686,9 +692,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                       colorFilter: ColorFilter.mode(
                                           Colors.black.withOpacity(0.9),
                                           BlendMode.dstATop),
-                                      image: const NetworkImage(
-                                        "https://i.ibb.co/2sqgCND/overhead-view-laptop-with-stationeries-study-text-white-background-23-2147875675-jpg.webp",
-                                      ),
+                                      image: const AssetImage(
+                                          "assets/images/class.jpg"),
                                     ),
                                     boxShadow: const [
                                       BoxShadow(

@@ -25,17 +25,17 @@ type FileAssignment struct {
 
 // FormAssignment is a file assignment struct
 type FormAssignment struct {
-	FormAssignmentID uint32 `gorm:"primary_key;auto_increment" json:"form_assignment_id"`
-	AssignmentID uint32     `gorm:"not null" json:"assignment_id"`
-	Description  string     `gorm:"" json:"description"`
-	Points       uint32     `gorm:"not null" json:"points"`
-	Questions    []Question `json:"questions"`
-	CreatedAt    time.Time  `gorm:"" json:"created_at"`
+	FormAssignmentID uint32     `gorm:"primary_key;auto_increment" json:"form_assignment_id"`
+	AssignmentID     uint32     `gorm:"not null" json:"assignment_id"`
+	Description      string     `gorm:"" json:"description"`
+	Points           uint32     `gorm:"not null" json:"points"`
+	Questions        []Question `json:"questions"`
+	CreatedAt        time.Time  `gorm:"" json:"created_at"`
 }
 
 // Question is structure to show question for form assignment
 type Question struct {
-	QuestionID uint32 `gorm:"primary_key;auto_increment" json:"question_id"`
+	QuestionID   uint32 `gorm:"primary_key;auto_increment" json:"question_id"`
 	AssignmentID uint32 `gorm:"" json:"assignment_id"`
 	Question     string `gorm:"" json:"question"`
 	Option1      string `gorm:"" json:"option1"`
@@ -48,7 +48,8 @@ type Question struct {
 // StudentAssignment is a relation between student and assignment
 type StudentAssignment struct {
 	StudentAssignmentID uint32 `gorm:"primary_key;auto_increment" json:"student_assignment_id"`
-	AssignmentID uint32 `gorm:"not null" json:"assignment_id"`
-	StudentID    uint32 `gorm:"not null" json:"student_id"`
-	Points       uint32 `gorm:"" json:"points"`
+	AssignmentID        uint32 `gorm:"not null" json:"assignment_id"`
+	StudentID           uint32 `gorm:"not null" json:"student_id"`
+	Time                string `gorm:"" json:"time"`
+	Points              string `gorm:"" json:"points"`
 }

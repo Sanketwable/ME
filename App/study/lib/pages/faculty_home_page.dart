@@ -155,9 +155,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       },
                     ),
                   ),
-                  const Expanded(
-                      flex: 1,
-                      child: SizedBox.shrink()),
+                  const Expanded(flex: 1, child: SizedBox.shrink()),
                 ],
               ),
             ],
@@ -232,13 +230,14 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                           child: edit
                               ? CircleAvatar(
                                   radius: 51,
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: kPrimaryLightColor,
                                   child: _image != null
                                       ? ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(50),
                                           child: Image.file(
                                             File(_image.path),
+                                            color: kPrimaryLightColor,
                                             width: 100,
                                             height: 100,
                                             fit: BoxFit.fitHeight,
@@ -251,6 +250,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                             profilePhoto,
                                             height: 100,
                                             width: 100,
+                                            color: kPrimaryLightColor,
                                             fit: BoxFit.fitHeight,
                                             errorBuilder: (context, obj, st) {
                                               return Container(
@@ -261,9 +261,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                                             50)),
                                                 width: 100,
                                                 height: 100,
-                                                child: Icon(
+                                                color: kPrimaryLightColor,
+                                                child: const Icon(
                                                   Icons.person,
-                                                  color: Colors.grey[800],
+                                                  color: kPrimaryLightColor,
                                                 ),
                                               );
                                             },
@@ -350,6 +351,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       onChanged: (str) {},
                       textController: phoneNoController,
                       readOnly: !edit,
+                      inputFormatter: [
+                            FilteringTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(10),
+                          ],
                       icon: Icons.phone,
                     ),
 
@@ -358,6 +363,9 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                         onChanged: (str) {},
                         textController: experienceController,
                         readOnly: !edit,
+                        inputFormatter: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                         icon: Icons.date_range),
 
                     const Padding(
@@ -376,6 +384,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       onChanged: (str) {},
                       textController: passoutYearController,
                       readOnly: !edit,
+                      inputFormatter: [FilteringTextInputFormatter.digitsOnly],
                       icon: Icons.calendar_today,
                     ),
 
@@ -618,9 +627,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                       colorFilter: ColorFilter.mode(
                                           Colors.black.withOpacity(0.9),
                                           BlendMode.dstATop),
-                                      image: const NetworkImage(
-                                        "https://i.ibb.co/2sqgCND/overhead-view-laptop-with-stationeries-study-text-white-background-23-2147875675-jpg.webp",
-                                      ),
+                                      image: const AssetImage(
+                                          "assets/images/class.jpg"),
                                     ),
                                     boxShadow: const [
                                       BoxShadow(

@@ -636,9 +636,7 @@ class _StudentClassState extends State<StudentClass> {
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                     Colors.black.withOpacity(0.3), BlendMode.dstATop),
-                image: NetworkImage(
-                  "https://i.ibb.co/k59FBsY/class-Background.jpg",
-                ),
+               image: const AssetImage("assets/images/classes.jpg"),
               ),
 
               color: kPrimaryLightColor,

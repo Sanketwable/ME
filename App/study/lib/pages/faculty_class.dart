@@ -242,9 +242,7 @@ class _FacultyClassState extends State<FacultyClass> {
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                     Colors.black.withOpacity(0.3), BlendMode.dstATop),
-                image: const NetworkImage(
-                  "https://i.ibb.co/k59FBsY/class-Background.jpg",
-                ),
+                image: const AssetImage("assets/images/classes.jpg"),
               ),
 
               color: kPrimaryLightColor,

@@ -8,4 +8,6 @@ type AssignmentRepository interface {
 	FindAssignment(uint32) ([]models.Assignment, error)
 	FindFileAssignment(assignmentID uint32) (models.FileAssignment, error)
 	FindFormAssignment(assignmentID uint32) (models.FormAssignment, error)
+	GetAssignmentStatus(uint32, uint32) (models.StudentAssignment, error) 
+	SaveAssignmentStatus(models.StudentAssignment) (models.StudentAssignment, error) 
 }

@@ -103,7 +103,7 @@ func (r *repositoryAssignmentCRUD) FindAssignment(classID uint32) ([]models.Assi
 	return nil, err
 }
 
-// FindFormAssignment is used to find form assignment 
+// FindFormAssignment is used to find form assignment
 func (r *repositoryAssignmentCRUD) FindFormAssignment(assignmentID uint32) (models.FormAssignment, error) {
 	var err error
 
@@ -150,4 +150,42 @@ func (r *repositoryAssignmentCRUD) FindFileAssignment(assignmentID uint32) (mode
 		return fileassignment, nil
 	}
 	return fileassignment, err
+}
+
+func (r *repositoryAssignmentCRUD) SaveAssignmentStatus(sa models.StudentAssignment) (models.StudentAssignment, error) {
+	var err error
+	done := make(chan bool)
+	go func(ch chan<- bool) {
+		err = r.db.Debug().Model(models.Assignment{}).Create(&sa).Error
+		if err != nil {
+			ch <- false
+			return
+		}
+		ch <- true
+	}(done)
+
+	if channels.OK(done) {
+		return sa, nil
+	}
+	return models.StudentAssignment{}, err
+}
+
+func (r *repositoryAssignmentCRUD) GetAssignmentStatus(assignmentID uint32, studentID uint32) (models.StudentAssignment, error) {
+	sa := models.StudentAssignment{}
+	var err error
+
+	done := make(chan bool)
+	go func(ch chan<- bool) {
+		err = r.db.Debug().Model(models.StudentAssignment{}).Where("assignment_id = ? AND student_id = ?", assignmentID, studentID).Find(&sa).Error
+		if err != nil {
+			ch <- false
+			return
+		}
+		ch <- true
+	}(done)
+
+	if channels.OK(done) {
+		return sa, nil
+	}
+	return models.StudentAssignment{}, err
 }

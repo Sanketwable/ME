@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // CreateAssignment is Handler Func to create new assignment
@@ -161,5 +162,62 @@ func GetFileAssignment(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		responses.JSON(w, http.StatusOK, fileassignment)
+	}(repo)
+}
+
+func SubmitFormAssignment(w http.ResponseWriter, r *http.Request) {
+	sID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+	sa := models.StudentAssignment{}
+	err = json.Unmarshal(body, &sa)
+	sa.StudentID = sID
+	sa.Time = time.Now().String()
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	repo := crud.NewRepositoryAssignmentCRUD(database.DB)
+
+	func(assignmentRepository repository.AssignmentRepository) {
+		sa, err = assignmentRepository.SaveAssignmentStatus(sa)
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+		responses.JSON(w, http.StatusOK, sa)
+	}(repo)
+}
+
+func GetAssignmentStatus(w http.ResponseWriter, r *http.Request) {
+	sID, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	cID := r.URL.Query().Get("assignment_id")
+	assignmentID, err := strconv.Atoi(cID)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+		return
+	}
+
+	repo := crud.NewRepositoryAssignmentCRUD(database.DB)
+
+	func(assignmentRepository repository.AssignmentRepository) {
+		sa, err := assignmentRepository.GetAssignmentStatus(uint32(assignmentID), sID)
+		if err != nil {
+			responses.ERROR(w, http.StatusUnprocessableEntity, err)
+			return
+		}
+		responses.JSON(w, http.StatusOK, sa)
 	}(repo)
 }

@@ -111,14 +111,36 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                 ),
               ),
               Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: submitted
+                      ? Text("score : " + score.toString())
+                      : SizedBox.shrink(),
+                ),
+              ),
+              Expanded(
                   child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Container(
                     decoration: BoxDecoration(
                         color: kPrimaryColor,
                         borderRadius: BorderRadius.circular(40)),
-                    child: const TextButton(
-                        onPressed: null,
+                    child: TextButton(
+                        onPressed: () async {
+                          if (submitted) {
+                          } else {
+                            var alert = showAlertDialog(context, "Submitting");
+                            if (await submitFormAssignment(
+                                    assignmentData["assignment_id"]) ==
+                                "submitted") {
+                              Navigator.pop(alert);
+
+                              setState(() {
+                                submitted = true;
+                              });
+                            }
+                          }
+                        },
                         child: Text(
                           "Submit",
                           style: TextStyle(color: Colors.white),
@@ -373,6 +395,26 @@ class _StudentAssignmentState extends State<StudentAssignment> {
     );
   }
 
+  BuildContext showAlertDialog(BuildContext context, String lodingText) {
+    AlertDialog alert = AlertDialog(
+      content: Row(
+        children: [
+          const CircularProgressIndicator(),
+          Container(
+              margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+    return context;
+  }
+
   List<int> answers = [];
   List<MyQuestion> questions = [];
   bool questionsLoaded = false;
@@ -384,10 +426,67 @@ class _StudentAssignmentState extends State<StudentAssignment> {
 
   String attachmentLink = "";
 
-  Future<List<dynamic>> getFormAssignment() async {
-    for (int i = 0; i < answers.length; i++) {
-      print(answers[i]);
+  Future<dynamic> submitFormAssignment(int assignmentId) async {
+    int points = 0;
+    for (int i = 0; i < questions.length; i++) {
+      if (answers[i] == questions[i].answer) {
+        points++;
+      }
     }
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.post(
+      url + '/submitassignment',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        'assignment_id': assignmentId.toString(),
+        'points': points.toString(),
+      }),
+    );
+    print(response1.body);
+    if (response1.statusCode == 200) {
+      submitted = true;
+
+      return Future.value("submitted");
+    }
+
+    return Future.value("Error");
+  }
+
+  Future getAssignmentStatus() async {
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.get(
+      url +
+          '/getassignmentstatus?assignment_id=' +
+          assignmentData["assignment_id"].toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    var res = response1.body;
+    if (response1.statusCode == 200) {
+      var obj = json.decode(res);
+      setState(() {
+        submitted = true;
+        score = int.parse(obj["points"].toString());
+        print(score);
+      });
+    }
+  }
+
+  Future<List<dynamic>> getFormAssignment() async {
+    getAssignmentStatus();
     if (questionsLoaded == true) {
       print("questions already loaded");
       return questions;
