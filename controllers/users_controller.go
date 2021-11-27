@@ -24,6 +24,15 @@ type UserInfo struct {
 	LoginType string `json:"login_type"`
 }
 
+
+func VerifyUser(w http.ResponseWriter, r *http.Request) {
+	_, err := auth.ExtractTokenID(r)
+	if err != nil {
+		responses.ERROR(w, http.StatusUnauthorized, err)
+		return
+	}
+	responses.JSON(w, http.StatusOK, "userExists")
+}
 //GetUsers is a func
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	// db, err := database.Connect()

@@ -80,6 +80,8 @@ class _StudentClassState extends State<StudentClass> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
+          selectedFontSize: 15,
+          selectedIconTheme: IconThemeData(color: kPrimaryColor),
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -96,12 +98,13 @@ class _StudentClassState extends State<StudentClass> {
             ),
           ],
           currentIndex: _selectedPage,
-          selectedItemColor: Colors.blue[800],
+          selectedItemColor: kPrimaryColor,
           onTap: (index) {
             _onItemTapped(index);
           },
         ),
         appBar: AppBar(
+          backgroundColor: kPrimaryColor,
           title: const Text('Student'),
         ),
         body: Container(child: _buildChild(_selectedPage)),
@@ -212,76 +215,86 @@ class _StudentClassState extends State<StudentClass> {
                                 controller: _scrollController,
                                 padding: EdgeInsets.only(top: 10, bottom: 10),
                                 itemBuilder: (context, index) {
-                                  return Container(
-                                    padding: EdgeInsets.only(
-                                        left: 14,
-                                        right: 14,
-                                        top: 10,
-                                        bottom: 0),
-                                    child: Align(
-                                      alignment:
-                                          (messages[index].userID.toString() !=
-                                                  userID
-                                              ? Alignment.topLeft
-                                              : Alignment.topRight),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color: (messages[index]
+                                  return Column(
+                                    children: [
+                                      Container(
+                                        padding: EdgeInsets.only(
+                                            left: 14,
+                                            right: 14,
+                                            top: 10,
+                                            bottom: 0),
+                                        child: Align(
+                                          alignment: (messages[index]
                                                       .userID
                                                       .toString() !=
                                                   userID
-                                              ? Colors.grey.shade200
-                                              : Colors.blue[200]),
-                                        ),
-                                        child: Column(
-                                          children: [
-                                            Padding(
-                                                padding: EdgeInsets.only(
-                                                    top: 3, left: 2),
-                                                child: messages[index]
-                                                            .userID
-                                                            .toString() !=
-                                                        userID
-                                                    ? Text(
-                                                        messages[index]
-                                                                .firstName +
-                                                            " " +
+                                              ? Alignment.topLeft
+                                              : Alignment.topRight),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                              color: (messages[index]
+                                                          .userID
+                                                          .toString() !=
+                                                      userID
+                                                  ? Colors.grey.shade200
+                                                  : kPrimaryLightColor),
+                                            ),
+                                            child: Column(
+                                              children: [
+                                                Padding(
+                                                    padding: EdgeInsets.only(
+                                                        top: 3, left: 2),
+                                                    child: messages[index]
+                                                                .userID
+                                                                .toString() !=
+                                                            userID
+                                                        ? Text(
                                                             messages[index]
-                                                                .lastName,
-                                                        style: TextStyle(
-                                                            fontSize: 10,
-                                                            color: Colors.blue),
-                                                        textAlign:
-                                                            TextAlign.left)
-                                                    : SizedBox.shrink()),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 8.0,
-                                                  left: 15,
-                                                  right: 15,
-                                                  top: 8),
-                                              child: Text(
-                                                messages[index].message,
-                                                style: TextStyle(fontSize: 15),
-                                              ),
+                                                                    .firstName +
+                                                                " " +
+                                                                messages[index]
+                                                                    .lastName,
+                                                            style: TextStyle(
+                                                                fontSize: 10,
+                                                                color: Colors
+                                                                    .black),
+                                                            textAlign:
+                                                                TextAlign.left)
+                                                        : SizedBox.shrink()),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 8.0,
+                                                          left: 15,
+                                                          right: 15,
+                                                          top: 8),
+                                                  child: Text(
+                                                    messages[index].message,
+                                                    style:
+                                                        TextStyle(fontSize: 15),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          bottom: 3.0,
+                                                          left: 15,
+                                                          right: 15),
+                                                  child: Text(
+                                                    messages[index].time,
+                                                    style:
+                                                        TextStyle(fontSize: 9),
+                                                  ),
+                                                ),
+                                                // controllScrollView(_scrollController),
+                                              ],
                                             ),
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 3.0,
-                                                  left: 15,
-                                                  right: 15),
-                                              child: Text(
-                                                messages[index].time,
-                                                style: TextStyle(fontSize: 9),
-                                              ),
-                                            ),
-                                            // controllScrollView(_scrollController),
-                                          ],
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ],
                                   );
                                 },
                               ),
@@ -308,7 +321,7 @@ class _StudentClassState extends State<StudentClass> {
                           height: 30,
                           width: 30,
                           decoration: BoxDecoration(
-                            color: Colors.lightBlue,
+                            color: kPrimaryColor,
                             borderRadius: BorderRadius.circular(30),
                           ),
                           child: Icon(
@@ -324,6 +337,7 @@ class _StudentClassState extends State<StudentClass> {
                       Expanded(
                         child: TextField(
                           controller: messageController,
+                          cursorColor: kPrimaryColor,
                           decoration: InputDecoration(
                               hintText: "Write message...",
                               hintStyle: TextStyle(color: Colors.black54),
@@ -353,7 +367,7 @@ class _StudentClassState extends State<StudentClass> {
                           color: Colors.white,
                           size: 18,
                         ),
-                        backgroundColor: Colors.blue,
+                        backgroundColor: kPrimaryColor,
                         elevation: 0,
                       ),
                     ],
@@ -376,9 +390,12 @@ class _StudentClassState extends State<StudentClass> {
 
   Stream<List<dynamic>> getMessages() async* {
     while (true) {
+      int len = messages.length;
       await Future.delayed(const Duration(milliseconds: 500));
       var someProduct = await getMessagesAPI();
+      // if (someProduct.length > len) {
       yield someProduct;
+      // }
     }
   }
 
@@ -403,7 +420,7 @@ class _StudentClassState extends State<StudentClass> {
       var classesObjsJson = jsonDecode(res) as List;
       messages =
           classesObjsJson.map((tagJson) => Message.fromJson(tagJson)).toList();
-      return classes;
+      return messages;
     }
     var obj = json.decode(res);
 
@@ -492,7 +509,7 @@ class _StudentClassState extends State<StudentClass> {
                                   decoration: BoxDecoration(
                                       boxShadow: const [
                                         BoxShadow(
-                                          color: Colors.grey,
+                                          color: kPrimaryLightColor,
                                           offset: Offset(
                                             5.0,
                                             5.0,
@@ -615,14 +632,23 @@ class _StudentClassState extends State<StudentClass> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             decoration: BoxDecoration(
-              color: Colors.white,
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.3), BlendMode.dstATop),
+                image: NetworkImage(
+                  "https://i.ibb.co/k59FBsY/class-Background.jpg",
+                ),
+              ),
+
+              color: kPrimaryLightColor,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(10),
               // border: Border.all(
               //     color: Colors.white, width: 0.5, style: BorderStyle.solid),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.blueGrey,
+                  color: kPrimaryLightColor,
                   offset: Offset(
                     5.0,
                     5.0,
@@ -632,42 +658,54 @@ class _StudentClassState extends State<StudentClass> {
                 ), //BoxShadow
               ],
             ),
-            child: Column(
+            child: Row(
               children: [
-                Row(
+                Column(
                   children: [
-                    Text(
-                      classData.branch + " ",
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        classData.branch + " " + classData.year.toString(),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 18),
+                      ),
                     ),
-                    Text(
-                      classData.year.toString(),
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Class code : " + classData.classCode,
+                        style: const TextStyle(
+                            color: Colors.blueAccent, fontSize: 12),
+                      ),
                     ),
-                    const Spacer(),
-                    CircleAvatar(
-                        radius: 35,
-                        backgroundImage: NetworkImage(classData.imageLink)),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Class Link : " + classData.classLink + "\n",
+                        style:
+                            const TextStyle(color: Colors.blue, fontSize: 11),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(left: 15, bottom: 10),
+                      child: Text(
+                        classData.subject.toString().toUpperCase(),
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
                 ),
-                Text(
-                  "Class code : " + classData.classCode,
-                  style:
-                      const TextStyle(color: Colors.blueAccent, fontSize: 12),
-                ),
-                Text(
-                  classData.classLink + "\n",
-                  style: const TextStyle(color: Colors.blue, fontSize: 11),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(left: 15, bottom: 10),
-                  child: Text(
-                    classData.subject.toString().toUpperCase(),
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    foregroundImage: NetworkImage(classData.imageLink),
+                    radius: 35,
+                    backgroundColor: kPrimaryLightColor,
                   ),
                 ),
               ],
@@ -715,19 +753,23 @@ class _StudentClassState extends State<StudentClass> {
                               child: Container(
                                 padding: const EdgeInsets.all(5),
                                 decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: const Color(0x332980b9)),
-                                    color: Colors.white,
+                                    border:
+                                        Border.all(color: kPrimaryLightColor),
+                                    color: kPrimaryLightColor.withOpacity(0.3),
+                                    // backgroundBlendMode: BlendMode.,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: Column(
                                   children: [
                                     Row(
                                       children: [
-                                        const CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          radius: 25,
-                                          backgroundImage: NetworkImage(
-                                              "https://i.ibb.co/4Jf3Qk6/Screenshot-2021-11-21-at-5-18-27-PM.jpg"),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: const CircleAvatar(
+                                            backgroundColor: Colors.white,
+                                            radius: 25,
+                                            backgroundImage: NetworkImage(
+                                                "https://i.ibb.co/4Jf3Qk6/Screenshot-2021-11-21-at-5-18-27-PM.jpg"),
+                                          ),
                                         ),
                                         Flexible(
                                           child: Container(
@@ -776,24 +818,21 @@ class _StudentClassState extends State<StudentClass> {
                                             ),
                                           ),
                                         ),
-
-                                        // Text(
-                                        //   "sanket\n\n\n",
-                                        //   style: TextStyle(
-                                        //       color: Colors.white,
-                                        //       fontSize: 11),
-                                        // ),
                                       ],
                                     ),
                                     const Divider(
-                                      color: Color(0x332980b9),
+                                      color: kPrimaryColor,
                                     ),
                                     Center(
                                       child: TextButton(
                                           onPressed: () {
                                             comments(context, datas["post_id"]);
                                           },
-                                          child: const Text("Comments")),
+                                          child: const Text(
+                                            "Comments",
+                                            style: (TextStyle(
+                                                color: kPrimaryColor)),
+                                          )),
                                     )
                                   ],
                                 ),
@@ -1034,7 +1073,10 @@ class _StudentClassState extends State<StudentClass> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: const Text("close")),
+                            child: const Text(
+                              "close",
+                              style: TextStyle(color: kPrimaryColor),
+                            )),
                       )
                     ],
                   );

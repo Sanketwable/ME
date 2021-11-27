@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:study/components/rounded_button.dart';
+import 'package:study/components/rounded_input_field.dart';
 import 'package:study/controllers/token.dart';
 import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
@@ -18,15 +20,16 @@ import 'package:getwidget/getwidget.dart';
 import '../controllers/token.dart';
 import 'faculty_assignment_page.dart';
 
-// ignore: prefer_typing_uninitialized_variables
-
+// ignore: must_be_immutable
 class FacultyClass extends StatefulWidget {
+  // ignore: prefer_typing_uninitialized_variables
   var classData;
   FacultyClass(data, {Key? key}) : super(key: key) {
     classData = data;
   }
 
   @override
+  // ignore: no_logic_in_create_state
   _FacultyClassState createState() => _FacultyClassState(classData);
 }
 
@@ -46,6 +49,8 @@ class _FacultyClassState extends State<FacultyClass> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
+          selectedFontSize: 15,
+          selectedIconTheme: const IconThemeData(color: kPrimaryColor),
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -62,12 +67,13 @@ class _FacultyClassState extends State<FacultyClass> {
             ),
           ],
           currentIndex: _selectedPage,
-          selectedItemColor: Colors.blue[800],
+          selectedItemColor: kPrimaryColor,
           onTap: (index) {
             _onItemTapped(index);
           },
         ),
         appBar: AppBar(
+          backgroundColor: kPrimaryColor,
           title: const Text('Faculty'),
         ),
         floatingActionButton: _selectedPage == 0
@@ -88,6 +94,7 @@ class _FacultyClassState extends State<FacultyClass> {
                       }
                     },
                     child: const Icon(Icons.add),
+                    backgroundColor: kPrimaryColor,
                     tooltip: "Add Student to Class",
                     isExtended: true,
                     autofocus: true,
@@ -148,13 +155,19 @@ class _FacultyClassState extends State<FacultyClass> {
                           style: const TextStyle(color: Colors.red),
                         ),
                   SizedBox(
-                    child: TextField(
-                      controller: studentEmailController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Email',
-                          hintText: 'Enter student mailID'),
+                    child: RoundedInputField(
+                      textController: studentEmailController,
+                      hintText: 'Enter student email',
+                      icon: Icons.email,
+                      onChanged: (str) {},
                     ),
+                    // child: TextField(
+                    //   controller: studentEmailController,
+                    //   decoration: const InputDecoration(
+                    //       border: OutlineInputBorder(),
+                    //       labelText: 'Email',
+                    //       hintText: 'Enter student mailID'),
+                    // ),
                   ),
                   Row(
                     children: [
@@ -182,7 +195,8 @@ class _FacultyClassState extends State<FacultyClass> {
                           },
                           child: const Text(
                             'Submit',
-                            style: TextStyle(color: Colors.blue, fontSize: 18),
+                            style:
+                                TextStyle(color: kPrimaryColor, fontSize: 18),
                           ),
                         ),
                       ),
@@ -194,7 +208,8 @@ class _FacultyClassState extends State<FacultyClass> {
                           },
                           child: const Text(
                             'Close',
-                            style: TextStyle(color: Colors.blue, fontSize: 18),
+                            style:
+                                TextStyle(color: kPrimaryColor, fontSize: 18),
                           ),
                         ),
                       ),
@@ -223,59 +238,82 @@ class _FacultyClassState extends State<FacultyClass> {
           child: Container(
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
             decoration: BoxDecoration(
-              color: Colors.white,
+              image: DecorationImage(
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(
+                    Colors.black.withOpacity(0.3), BlendMode.dstATop),
+                image: const NetworkImage(
+                  "https://i.ibb.co/k59FBsY/class-Background.jpg",
+                ),
+              ),
+
+              color: kPrimaryLightColor,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(10),
               // border: Border.all(
               //     color: Colors.white, width: 0.5, style: BorderStyle.solid),
               boxShadow: const [
                 BoxShadow(
-                  color: Colors.grey,
+                  color: kPrimaryLightColor,
                   offset: Offset(
-                    2.0,
-                    2.0,
+                    5.0,
+                    5.0,
                   ),
-                  blurRadius: 2.0,
+                  blurRadius: 10.0,
                   spreadRadius: 2.0,
                 ), //BoxShadow
               ],
             ),
-            child: Column(
+            child: Row(
               children: [
-                Row(
+                Column(
                   children: [
-                    Text(
-                      "   " + facultyClass.branch + " ",
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        facultyClass.branch +
+                            " " +
+                            facultyClass.year.toString(),
+                        style:
+                            const TextStyle(color: Colors.black, fontSize: 18),
+                      ),
                     ),
-                    Text(
-                      facultyClass.year.toString(),
-                      style: const TextStyle(color: Colors.black, fontSize: 18),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Class code : " + facultyClass.classCode,
+                        style: const TextStyle(
+                            color: Colors.blueAccent, fontSize: 12),
+                      ),
                     ),
-                    const Spacer(),
-                    CircleAvatar(
-                        radius: 35,
-                        backgroundImage: NetworkImage(facultyClass.imageLink)),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        "Class Link : " + facultyClass.classLink + "\n",
+                        style:
+                            const TextStyle(color: Colors.blue, fontSize: 11),
+                      ),
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.only(left: 15, bottom: 10),
+                      child: Text(
+                        facultyClass.subject.toString().toUpperCase(),
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ],
                 ),
-                Text(
-                  "Class code : " + facultyClass.classCode,
-                  style:
-                      const TextStyle(color: Colors.blueAccent, fontSize: 12),
-                ),
-                Text(
-                  facultyClass.classLink + "\n",
-                  style: const TextStyle(color: Colors.blue, fontSize: 11),
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(left: 15, bottom: 10),
-                  child: Text(
-                    facultyClass.subject.toString().toUpperCase(),
-                    style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold),
+                const Spacer(),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: CircleAvatar(
+                    foregroundImage: NetworkImage(facultyClass.imageLink),
+                    radius: 35,
+                    backgroundColor: kPrimaryLightColor,
                   ),
                 ),
               ],
@@ -287,7 +325,7 @@ class _FacultyClassState extends State<FacultyClass> {
           child: Container(
             padding: const EdgeInsets.all(5),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: kPrimaryLightColor,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(10),
               // border: Border.all(
@@ -309,7 +347,7 @@ class _FacultyClassState extends State<FacultyClass> {
                 const Expanded(
                   flex: 2,
                   child: CircleAvatar(
-                    backgroundColor: Colors.white,
+                    backgroundColor: kPrimaryLightColor,
                     radius: 25,
                     backgroundImage: NetworkImage(
                         "https://i.ibb.co/xSk0BBy/mindset-converted-vector-hand-drawn-illustration-lettering-phrases-new-post-idea-poster-postcard-189.jpg"),
@@ -391,7 +429,7 @@ class _FacultyClassState extends State<FacultyClass> {
                                     Row(
                                       children: [
                                         const CircleAvatar(
-                                          backgroundColor: Colors.white,
+                                          backgroundColor: kPrimaryLightColor,
                                           radius: 25,
                                           backgroundImage: NetworkImage(
                                               "https://i.ibb.co/4Jf3Qk6/Screenshot-2021-11-21-at-5-18-27-PM.jpg"),
@@ -443,24 +481,19 @@ class _FacultyClassState extends State<FacultyClass> {
                                             ),
                                           ),
                                         ),
-
-                                        // Text(
-                                        //   "sanket\n\n\n",
-                                        //   style: TextStyle(
-                                        //       color: Colors.white,
-                                        //       fontSize: 11),
-                                        // ),
                                       ],
                                     ),
                                     const Divider(
-                                      color: Color(0x332980b9),
+                                      color: kPrimaryLightColor,
                                     ),
                                     Center(
                                       child: TextButton(
                                           onPressed: () {
                                             comments(context, datas["post_id"]);
                                           },
-                                          child: const Text("Comments")),
+                                          child: const Text("Comments",
+                                              style: TextStyle(
+                                                  color: kPrimaryColor))),
                                     )
                                   ],
                                 ),
@@ -679,13 +712,6 @@ class _FacultyClassState extends State<FacultyClass> {
                                                   ),
                                                 ),
                                               ),
-
-                                              // Text(
-                                              //   "sanket\n\n\n",
-                                              //   style: TextStyle(
-                                              //       color: Colors.white,
-                                              //       fontSize: 11),
-                                              // ),
                                             ],
                                           ),
                                         ],
@@ -701,7 +727,10 @@ class _FacultyClassState extends State<FacultyClass> {
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            child: const Text("close")),
+                            child: const Text(
+                              "close",
+                              style: TextStyle(color: kPrimaryColor),
+                            )),
                       )
                     ],
                   );
@@ -816,23 +845,26 @@ class _FacultyClassState extends State<FacultyClass> {
                                         Row(
                                           children: [
                                             Text(
-                                              "Due : " + datas["due"],
+                                              "Due : " +
+                                                  datas["due"].substring(0, 11),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 11),
                                             ),
                                             const Spacer(),
                                             CircleAvatar(
-                                                radius: 20,
+                                                radius: 30,
+                                                backgroundColor:
+                                                    kPrimaryLightColor,
                                                 onBackgroundImageError:
                                                     (object, stackTrace) => {},
                                                 backgroundImage: datas[
                                                             "assignment_type"] ==
                                                         0
                                                     ? const NetworkImage(
-                                                        "https://i.ibb.co/6bnkDz6/file-png.jpg")
+                                                        "https://i.ibb.co/64MbTYL/assignment-file-folder-500x500.png")
                                                     : const NetworkImage(
-                                                        "https://i.ibb.co/64MbTYL/assignment-file-folder-500x500.png")),
+                                                        "https://i.ibb.co/6bnkDz6/file-png.jpg")),
                                           ],
                                         ),
                                         datas["assignment_type"] == 0
@@ -912,56 +944,34 @@ class _FacultyClassState extends State<FacultyClass> {
                           shrinkWrap: true,
                           itemCount: studentlist.length,
                           itemBuilder: (context, index) {
-                            var datas = studentlist[index];
                             return Padding(
                               padding: const EdgeInsets.only(
                                   left: 10, right: 10, top: 4, bottom: 4),
                               child: Center(
-                                child: Container(
-                                  // width:
-                                  //     MediaQuery.of(context).size.width * 0.95,
-                                  // decoration: BoxDecoration(
-                                  //     boxShadow: const [
-                                  //       BoxShadow(
-                                  //         color: Colors.grey,
-                                  //         offset: Offset(
-                                  //           5.0,
-                                  //           5.0,
-                                  //         ),
-                                  //         blurRadius: 10.0,
-                                  //         spreadRadius: 2.0,
-                                  //       ), //BoxShadow
-                                  //     ],
-                                  //     border: Border.all(
-                                  //         color: Colors.black,
-                                  //         width: 0.5,
-                                  //         style: BorderStyle.none),
-                                  //     color: Colors.white,
-                                  //     borderRadius: BorderRadius.circular(10)),
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8, right: 8, top: 4, bottom: 4),
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                            radius: 20,
-                                            backgroundImage: NetworkImage(
-                                                studentlist[index].profileUrl)),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 8.0),
-                                          child: Text(
-                                            studentlist[index].firstName +
-                                                " " +
-                                                studentlist[index].lastName,
-                                            style: const TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w500),
-                                          ),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 8, right: 8, top: 4, bottom: 4),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                          radius: 20,
+                                          backgroundColor: kPrimaryLightColor,
+                                          backgroundImage: NetworkImage(
+                                              studentlist[index].profileUrl)),
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(left: 8.0),
+                                        child: Text(
+                                          studentlist[index].firstName +
+                                              " " +
+                                              studentlist[index].lastName,
+                                          style: const TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w500),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -1231,6 +1241,7 @@ class MyQuestion {
 // ignore: must_be_immutable
 class MyDialog extends StatefulWidget {
   Function callback;
+  // ignore: prefer_typing_uninitialized_variables
   var data;
   MyDialog(this.callback, this.data, {Key? key}) : super(key: key);
   @override
@@ -1267,474 +1278,533 @@ class _MyDialogState extends State<MyDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Faculty'),
-      ),
-      body: Container(
-        child: assignmentDetailsSubmitted
-            ? SizedBox(
-                width: MediaQuery.of(context).size.width * 0.2,
-                height: MediaQuery.of(context).size.width * 0.2,
-                child: const Center(child: CircularProgressIndicator()),
-              )
-            : SizedBox(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: <Widget>[
-                      assignmentDetailsError == ""
-                          ? const Text("")
-                          : Text(
-                              assignmentDetailsError,
-                              style: const TextStyle(color: Colors.red),
-                            ),
-                      const Padding(
-                          padding: EdgeInsets.only(top: 5.0, bottom: 10.0),
-                          child: Text(
-                            "Enter assignment details",
-                            style: TextStyle(color: Colors.blue, fontSize: 10),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
-                        child: TextField(
-                          controller: assignmentNameController,
-                          obscureText: false,
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Assignment Name',
-                              hintText: 'Assignment Name'),
+    return GestureDetector(
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: kPrimaryColor,
+          title: const Text('Faculty'),
+        ),
+        body: Container(
+          child: assignmentDetailsSubmitted
+              ? SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.2,
+                  height: MediaQuery.of(context).size.width * 0.2,
+                  child: const Center(child: CircularProgressIndicator()),
+                )
+              : SizedBox(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: <Widget>[
+                        assignmentDetailsError == ""
+                            ? const Text("")
+                            : Text(
+                                assignmentDetailsError,
+                                style: const TextStyle(color: Colors.red),
+                              ),
+                        const Padding(
+                            padding: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                            child: Text(
+                              "Enter assignment details",
+                              style:
+                                  TextStyle(color: kPrimaryColor, fontSize: 10),
+                            )),
+                        RoundedInputField(
+                          hintText: 'Assignment Name',
+                          onChanged: (str) {},
+                          textController: assignmentNameController,
+                          icon: Icons.assignment,
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 5),
-                        child: TextField(
-                          controller: descriptionController,
-                          obscureText: false,
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Description',
-                              hintText: 'Description'),
+
+                        RoundedInputField(
+                          hintText: 'Description',
+                          onChanged: (str) {},
+                          textController: descriptionController,
+                          icon: Icons.description,
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 15, vertical: 5),
-                        child: TextField(
-                          controller: pointsController,
-                          obscureText: false,
-                          inputFormatters: [
+                        RoundedInputField(
+                          hintText: 'Points',
+                          onChanged: (str) {},
+                          textController: pointsController,
+                          icon: Icons.poll_rounded,
+                          inputFormatter: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
-                          decoration: const InputDecoration(
-                              border: OutlineInputBorder(),
-                              labelText: 'Points',
-                              hintText: 'Points'),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(3.0),
-                        child: Container(
-                          // height: 50,
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.all(20),
-                          child: DropdownButtonHideUnderline(
-                            child: GFDropdown(
-                              padding: const EdgeInsets.all(10),
-                              borderRadius: BorderRadius.circular(10),
-                              border: const BorderSide(
-                                  color: Colors.black12, width: 1),
-                              dropdownButtonColor: Colors.grey[300],
-                              value: assignmentType,
-                              hint: const Text("Assignment Type"),
-                              onChanged: (newValue) {
-                                setState(() {
-                                  assignmentType = newValue;
-                                });
-                              },
-                              items: ['Form', 'File']
-                                  .map((value) => DropdownMenuItem(
-                                        value: value,
-                                        child: Text(value),
-                                      ))
-                                  .toList(),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(horizontal: 15),
+                        //   child: TextField(
+                        //     controller: assignmentNameController,
+                        //     obscureText: false,
+                        //     decoration: const InputDecoration(
+                        //         border: OutlineInputBorder(),
+                        //         labelText: 'Assignment Name',
+                        //         hintText: 'Assignment Name'),
+                        //   ),
+                        // ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(
+                        //       horizontal: 15, vertical: 5),
+                        //   child: TextField(
+                        //     controller: descriptionController,
+                        //     obscureText: false,
+                        //     decoration: const InputDecoration(
+                        //         border: OutlineInputBorder(),
+                        //         labelText: 'Description',
+                        //         hintText: 'Description'),
+                        //   ),
+                        // ),
+                        // Padding(
+                        //   padding: const EdgeInsets.symmetric(
+                        //       horizontal: 15, vertical: 5),
+                        //   child: TextField(
+                        //     controller: pointsController,
+                        //     obscureText: false,
+                        //     inputFormatters: [
+                        //       FilteringTextInputFormatter.digitsOnly
+                        //     ],
+                        //     decoration: const InputDecoration(
+                        //         border: OutlineInputBorder(),
+                        //         labelText: 'Points',
+                        //         hintText: 'Points'),
+                        //   ),
+                        // ),
+                        Padding(
+                          padding: const EdgeInsets.all(3.0),
+                          child: Container(
+                            height: 50,
+                            // width: MediaQuery.of(context).size.width,
+                            margin: const EdgeInsets.all(20),
+                            // color:kPrimaryLightColor,
+                            child: DropdownButtonHideUnderline(
+                              child: GFDropdown(
+                                padding: const EdgeInsets.all(10),
+                                borderRadius: BorderRadius.circular(40),
+                                border: const BorderSide(
+                                    color: Colors.black12, width: 1),
+                                dropdownButtonColor: kPrimaryLightColor,
+                                value: assignmentType,
+                                hint: const Text("Assignment Type"),
+                                onChanged: (newValue) {
+                                  setState(() {
+                                    assignmentType = newValue;
+                                  });
+                                },
+                                items: ['Form', 'File']
+                                    .map((value) => DropdownMenuItem(
+                                          value: value,
+                                          child: Container(
+                                              padding: const EdgeInsets.all(5),
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    value == 'Form'
+                                                        ? Icons
+                                                            .format_align_justify_outlined
+                                                        : Icons
+                                                            .file_present_sharp,
+                                                    color: kPrimaryColor,
+                                                  ),
+                                                  Text(" " + value),
+                                                ],
+                                              )),
+                                        ))
+                                    .toList(),
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      assignmentType.toString() == "Form"
-                          ? Column(
-                              children: [
-                                Center(
-                                  child: Container(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: TextButton(
-                                        onPressed: () => {increaseQuestion()},
-                                        child: const Text("add")),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.height * 0.41,
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.70,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    itemCount: totalQuestions,
-                                    itemBuilder: (context, index) {
-                                      return Column(
-                                        children: [
-                                          Row(
-                                            children: [
-                                              Text(
-                                                "Q" + (index + 1).toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 11),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5,
-                                                          vertical: 1),
-                                                      child: TextField(
-                                                        selectionHeightStyle:
-                                                            BoxHeightStyle
-                                                                .tight,
-                                                        style: const TextStyle(
-                                                            fontSize: 11),
-                                                        controller:
-                                                            questionOptions[
-                                                                    index]
-                                                                .question,
-                                                        obscureText: false,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                                // border: OutlineInputBorder(),
-                                                                constraints:
-                                                                    BoxConstraints(
-                                                                  maxHeight: 50,
-                                                                  minHeight: 40,
-                                                                ),
-                                                                labelText:
-                                                                    'Question',
-                                                                hintText:
-                                                                    'Add question'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                "a.",
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5,
-                                                          vertical: 1),
-                                                      child: TextField(
-                                                        selectionHeightStyle:
-                                                            BoxHeightStyle
-                                                                .tight,
-                                                        style: const TextStyle(
-                                                            fontSize: 11),
-                                                        controller:
-                                                            questionOptions[
-                                                                    index]
-                                                                .option1,
-                                                        obscureText: false,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(),
-                                                                constraints:
-                                                                    BoxConstraints(
-                                                                  maxHeight: 40,
-                                                                  minHeight: 30,
-                                                                ),
-                                                                hintText:
-                                                                    'option'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                "b.",
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5,
-                                                          vertical: 1),
-                                                      child: TextField(
-                                                        selectionHeightStyle:
-                                                            BoxHeightStyle
-                                                                .tight,
-                                                        style: const TextStyle(
-                                                            fontSize: 11),
-                                                        controller:
-                                                            questionOptions[
-                                                                    index]
-                                                                .option2,
-                                                        obscureText: false,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(),
-                                                                constraints:
-                                                                    BoxConstraints(
-                                                                  maxHeight: 40,
-                                                                  minHeight: 30,
-                                                                ),
-                                                                hintText:
-                                                                    'option'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                "c.",
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5,
-                                                          vertical: 1),
-                                                      child: TextField(
-                                                        selectionHeightStyle:
-                                                            BoxHeightStyle
-                                                                .tight,
-                                                        style: const TextStyle(
-                                                            fontSize: 11),
-                                                        controller:
-                                                            questionOptions[
-                                                                    index]
-                                                                .option3,
-                                                        obscureText: false,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(),
-                                                                constraints:
-                                                                    BoxConstraints(
-                                                                  maxHeight: 40,
-                                                                  minHeight: 30,
-                                                                ),
-                                                                hintText:
-                                                                    'option'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              const Text(
-                                                "d.",
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                              Expanded(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5,
-                                                          vertical: 1),
-                                                      child: TextField(
-                                                        selectionHeightStyle:
-                                                            BoxHeightStyle
-                                                                .tight,
-                                                        style: const TextStyle(
-                                                            fontSize: 11),
-                                                        controller:
-                                                            questionOptions[
-                                                                    index]
-                                                                .option4,
-                                                        obscureText: false,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(),
-                                                                constraints:
-                                                                    BoxConstraints(
-                                                                  maxHeight: 40,
-                                                                  minHeight: 30,
-                                                                ),
-                                                                hintText:
-                                                                    'option'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Expanded(
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2),
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 5,
-                                                          vertical: 1),
-                                                      child: TextField(
-                                                        inputFormatters: [
-                                                          FilteringTextInputFormatter
-                                                              .digitsOnly
-                                                        ],
-                                                        selectionHeightStyle:
-                                                            BoxHeightStyle
-                                                                .tight,
-                                                        style: const TextStyle(
-                                                            fontSize: 11),
-                                                        controller:
-                                                            questionOptions[
-                                                                    index]
-                                                                .answer,
-                                                        obscureText: false,
-                                                        decoration:
-                                                            const InputDecoration(
-                                                                border:
-                                                                    OutlineInputBorder(),
-                                                                constraints:
-                                                                    BoxConstraints(
-                                                                  maxHeight: 40,
-                                                                  minHeight: 30,
-                                                                ),
-                                                                hintText:
-                                                                    'answer'),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            )
-                          : (assignmentType.toString() == "File"
-                              ? Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 5),
-                                child: TextField(
-                                  controller: attachmentLinkController,
-                                  obscureText: false,
-                                  decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'Attachment Link',
-                                      hintText: 'Attachment Link'),
-                                ),
-                              )
-                              : const Padding(
-                                  padding: EdgeInsets.only(bottom: 8.0),
-                                  child: Text(
-                                    "please select the assignment type",
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.red,
+                        assignmentType.toString() == "Form"
+                            ? Column(
+                                children: [
+                                  Center(
+                                    child: Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: TextButton(
+                                          onPressed: () => {increaseQuestion()},
+                                          child: const Text(
+                                            "add",
+                                            style:
+                                                TextStyle(color: kPrimaryColor),
+                                          )),
                                     ),
-                                  ))),
-                      const Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Center(child: Text("Due Date")),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: const BoxDecoration(
-                              // border:
-                              //     Border.all(color: Colors.blueAccent)
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.height *
+                                        0.41,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.70,
+                                    child: ListView.builder(
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      itemCount: totalQuestions,
+                                      itemBuilder: (context, index) {
+                                        return Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  "Q" + (index + 1).toString(),
+                                                  style: const TextStyle(
+                                                      fontSize: 11),
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 2),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 1),
+                                                        child: TextField(
+                                                          selectionHeightStyle:
+                                                              BoxHeightStyle
+                                                                  .tight,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 11),
+                                                          controller:
+                                                              questionOptions[
+                                                                      index]
+                                                                  .question,
+                                                          obscureText: false,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                                  // border: OutlineInputBorder(),
+                                                                  constraints:
+                                                                      BoxConstraints(
+                                                                    maxHeight:
+                                                                        50,
+                                                                    minHeight:
+                                                                        40,
+                                                                  ),
+                                                                  // labelText:
+                                                                  //     'Question',
+                                                                  hintText:
+                                                                      'Add question'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  "a.",
+                                                  style:
+                                                      TextStyle(fontSize: 11),
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 2),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 1),
+                                                        child: TextField(
+                                                          selectionHeightStyle:
+                                                              BoxHeightStyle
+                                                                  .tight,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 11),
+                                                          controller:
+                                                              questionOptions[
+                                                                      index]
+                                                                  .option1,
+                                                          obscureText: false,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  constraints:
+                                                                      BoxConstraints(
+                                                                    maxHeight:
+                                                                        40,
+                                                                    minHeight:
+                                                                        30,
+                                                                  ),
+                                                                  hintText:
+                                                                      'option'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  "b.",
+                                                  style:
+                                                      TextStyle(fontSize: 11),
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 2),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 1),
+                                                        child: TextField(
+                                                          selectionHeightStyle:
+                                                              BoxHeightStyle
+                                                                  .tight,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 11),
+                                                          controller:
+                                                              questionOptions[
+                                                                      index]
+                                                                  .option2,
+                                                          obscureText: false,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  constraints:
+                                                                      BoxConstraints(
+                                                                    maxHeight:
+                                                                        40,
+                                                                    minHeight:
+                                                                        30,
+                                                                  ),
+                                                                  hintText:
+                                                                      'option'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  "c.",
+                                                  style:
+                                                      TextStyle(fontSize: 11),
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 2),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 1),
+                                                        child: TextField(
+                                                          selectionHeightStyle:
+                                                              BoxHeightStyle
+                                                                  .tight,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 11),
+                                                          controller:
+                                                              questionOptions[
+                                                                      index]
+                                                                  .option3,
+                                                          obscureText: false,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  constraints:
+                                                                      BoxConstraints(
+                                                                    maxHeight:
+                                                                        40,
+                                                                    minHeight:
+                                                                        30,
+                                                                  ),
+                                                                  hintText:
+                                                                      'option'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                const Text(
+                                                  "d.",
+                                                  style:
+                                                      TextStyle(fontSize: 11),
+                                                ),
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 2),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 1),
+                                                        child: TextField(
+                                                          selectionHeightStyle:
+                                                              BoxHeightStyle
+                                                                  .tight,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 11),
+                                                          controller:
+                                                              questionOptions[
+                                                                      index]
+                                                                  .option4,
+                                                          obscureText: false,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  constraints:
+                                                                      BoxConstraints(
+                                                                    maxHeight:
+                                                                        40,
+                                                                    minHeight:
+                                                                        30,
+                                                                  ),
+                                                                  hintText:
+                                                                      'option'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 2),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .symmetric(
+                                                                horizontal: 5,
+                                                                vertical: 1),
+                                                        child: TextField(
+                                                          inputFormatters: [
+                                                            FilteringTextInputFormatter
+                                                                .digitsOnly
+                                                          ],
+                                                          selectionHeightStyle:
+                                                              BoxHeightStyle
+                                                                  .tight,
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize: 11),
+                                                          controller:
+                                                              questionOptions[
+                                                                      index]
+                                                                  .answer,
+                                                          obscureText: false,
+                                                          decoration:
+                                                              const InputDecoration(
+                                                                  border:
+                                                                      OutlineInputBorder(),
+                                                                  constraints:
+                                                                      BoxConstraints(
+                                                                    maxHeight:
+                                                                        40,
+                                                                    minHeight:
+                                                                        30,
+                                                                  ),
+                                                                  hintText:
+                                                                      'answer'),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : (assignmentType.toString() == "File"
+                                ? RoundedInputField(
+                                    hintText: 'Attachment Link',
+                                    onChanged: (str) {},
+                                    textController: attachmentLinkController,
+                                    icon: Icons.link,
+                                  )
+                                : const Padding(
+                                    padding: EdgeInsets.only(bottom: 8.0),
+                                    child: Text(
+                                      "please select the assignment type",
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.red,
+                                      ),
+                                    ))),
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Center(child: Text("Due Date")),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            height: 55,
+                            width: double.maxFinite,
+                            child: CupertinoTheme(
+                              data: const CupertinoThemeData(
+                                textTheme: CupertinoTextThemeData(
+                                  primaryColor: kPrimaryLightColor,
+                                  dateTimePickerTextStyle: TextStyle(
+                                      fontSize: 15, color: kPrimaryColor),
+                                ),
+                                brightness: Brightness.light,
                               ),
-                          height: 55,
-                          width: double.maxFinite,
-                          child: CupertinoTheme(
-                            data: const CupertinoThemeData(
-                              textTheme: CupertinoTextThemeData(
-                                dateTimePickerTextStyle:
-                                    TextStyle(fontSize: 15),
+                              child: CupertinoDatePicker(
+                                // backgroundColor: kPrimaryLightColor,
+                                mode: CupertinoDatePickerMode.date,
+                                initialDateTime:
+                                    DateTime(now.year, now.month, now.day),
+                                onDateTimeChanged: (DateTime newDateTime) {
+                                  dueController = newDateTime;
+                                },
                               ),
-                              brightness: Brightness.light,
-                            ),
-                            child: CupertinoDatePicker(
-                              backgroundColor: Colors.white,
-                              mode: CupertinoDatePickerMode.date,
-                              initialDateTime:
-                                  DateTime(now.year, now.month, now.day),
-                              onDateTimeChanged: (DateTime newDateTime) {
-                                dueController = newDateTime;
-                              },
                             ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 38.0, bottom: 8.0),
-                        child: Container(
-                          height: 50,
-                          width: 250,
-                          decoration: BoxDecoration(
-                              color: Colors.blue,
-                              borderRadius: BorderRadius.circular(20)),
-                          child: TextButton(
-                            onPressed: () async {
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: RoundedButton(
+                            text: "Submit",
+                            press: () async {
                               setState(() {
                                 assignmentDetailsSubmitted = true;
                               });
@@ -1758,21 +1828,17 @@ class _MyDialogState extends State<MyDialog> {
                                 });
                               }
                             },
-                            child: const Text(
-                              'Submit',
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 25),
-                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(
-                        height: 90,
-                      ),
-                    ],
+
+                        const SizedBox(
+                          height: 90,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+        ),
       ),
     );
   }

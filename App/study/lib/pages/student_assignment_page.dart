@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:study/components/rounded_input_field.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/faculty_class.dart';
@@ -33,6 +34,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: kPrimaryColor,
           title: const Text("Student"),
         ),
         body: assignmentBody(),
@@ -113,9 +115,9 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                 padding: const EdgeInsets.all(10.0),
                 child: Container(
                     decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: kPrimaryColor,
                         borderRadius: BorderRadius.circular(40)),
-                    child: TextButton(
+                    child: const TextButton(
                         onPressed: null,
                         child: Text(
                           "Submit",
@@ -144,12 +146,22 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                       ),
                     );
                   } else {
-                    return Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text("Attachment Link : " + attachmentLink),
-                      ),
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Container(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Attachment Link : " + attachmentLink),
+                          ),
+                        ),
+                        RoundedInputField(
+                          icon: Icons.link,
+                          textController: TextEditingController(),
+                          onChanged: (str) {},
+                          hintText: "Submission Link",
+                        )
+                      ],
                     );
                   }
                 },
@@ -198,7 +210,6 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                 shrinkWrap: true,
                                 itemCount: snapshot.data!.length,
                                 itemBuilder: (context, index) {
-                                  var datas = snapshot.data![index];
                                   return Padding(
                                     padding: const EdgeInsets.only(top: 10),
                                     child: SizedBox(

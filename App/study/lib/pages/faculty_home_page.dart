@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:study/components/rounded_button.dart';
+import 'package:study/components/rounded_input_field.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/faculty_class.dart';
@@ -44,6 +46,8 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
+          selectedFontSize: 15,
+          selectedIconTheme: const IconThemeData(color: kPrimaryColor),
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -60,7 +64,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             ),
           ],
           currentIndex: _selectedPage,
-          selectedItemColor: Colors.blue[800],
+          selectedItemColor: kPrimaryColor,
           onTap: (index) {
             _onItemTapped(index);
           },
@@ -74,6 +78,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                     onPressed: () {
                       addClass(context);
                     },
+                    backgroundColor: kPrimaryColor,
                     child: const Icon(Icons.add),
                     isExtended: true,
                     autofocus: true,
@@ -82,13 +87,16 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
               ),
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         appBar: AppBar(
+          backgroundColor: kPrimaryColor,
           title: const Text('Faculty'),
           actions: [
             Container(
-              padding: EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
+              padding:
+                  const EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
               child: FutureBuilder(
                 builder: (context, data) {
                   return CircleAvatar(
+                      backgroundColor: kPrimaryColor,
                       radius: 20,
                       onBackgroundImageError: (object, stackTrace) => {},
                       backgroundImage: NetworkImage(data.data.toString()));
@@ -104,7 +112,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
             children: [
               DrawerHeader(
                 decoration: const BoxDecoration(
-                  color: Colors.blue,
+                  color: kPrimaryColor,
                 ),
                 child: Column(
                   children: [
@@ -112,6 +120,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       builder: (context, data) {
                         return CircleAvatar(
                             radius: 35,
+                            backgroundColor: kPrimaryColor,
                             onBackgroundImageError: (object, stackTrace) => {},
                             backgroundImage:
                                 NetworkImage(data.data.toString()));
@@ -120,14 +129,15 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: Text(facultyUsername),
+                      child: Text(facultyUsername,
+                          style: const TextStyle(color: Colors.white)),
                     ),
                   ],
                 ),
               ),
               Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                       flex: 1,
                       child: IconButton(
                           onPressed: null, icon: Icon(Icons.logout))),
@@ -135,7 +145,7 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                     flex: 9,
                     child: ListTile(
                       title: const Text('Sign Out'),
-                      subtitle: Text("Logout from Study App"),
+                      subtitle: const Text("Logout from Study App"),
                       onTap: () {
                         delete();
                         Navigator.pushAndRemoveUntil(
@@ -145,11 +155,9 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                       },
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                       flex: 1,
-                      child: Container(
-                        child: SizedBox.shrink(),
-                      )),
+                      child: SizedBox.shrink()),
                 ],
               ),
             ],
@@ -311,140 +319,151 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                         : Text(updateError,
                             style: const TextStyle(
                                 color: Colors.red, fontSize: 11)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 8),
-                      child: TextField(
-                        controller: firstNameController,
-                        obscureText: false,
-                        readOnly: !edit,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'First Name',
-                            hintText: 'Enter your First Name'),
-                      ),
+                    RoundedInputField(
+                      hintText: 'First Name',
+                      onChanged: (str) {},
+                      textController: firstNameController,
+                      readOnly: !edit,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 8),
-                      child: TextField(
-                        controller: lastNameController,
-                        obscureText: false,
-                        readOnly: !edit,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Last Name',
-                            hintText: 'Enter your Last Name'),
-                      ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(
+                    //       horizontal: 15, vertical: 8),
+                    //   child: TextField(
+                    //     controller: firstNameController,
+                    //     obscureText: false,
+                    //     readOnly: !edit,
+                    //     decoration: const InputDecoration(
+                    //         border: OutlineInputBorder(),
+                    //         labelText: 'First Name',
+                    //         hintText: 'Enter your First Name'),
+                    //   ),
+                    // ),
+                    RoundedInputField(
+                      hintText: 'Last Name',
+                      onChanged: (str) {},
+                      textController: lastNameController,
+                      readOnly: !edit,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 8),
-                      child: TextField(
-                        controller: phoneNoController,
-                        obscureText: false,
-                        readOnly: !edit,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Phone No',
-                            hintText: '+919372615111'),
-                      ),
+
+                    RoundedInputField(
+                      hintText: 'Phone No',
+                      onChanged: (str) {},
+                      textController: phoneNoController,
+                      readOnly: !edit,
+                      icon: Icons.phone,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 8),
-                      child: TextField(
-                        controller: experienceController,
-                        obscureText: false,
+
+                    RoundedInputField(
+                        hintText: 'Experience',
+                        onChanged: (str) {},
+                        textController: experienceController,
                         readOnly: !edit,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Experience',
-                            hintText: 'eg. 1, 2.5'),
-                      ),
-                    ),
+                        icon: Icons.date_range),
+
                     const Padding(
                       padding: EdgeInsets.all(8),
                       child: Center(child: Text("Qualification")),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 8),
-                      child: TextField(
-                        controller: degreeController,
-                        obscureText: false,
+                    RoundedInputField(
+                        hintText: 'Degree',
+                        onChanged: (str) {},
+                        textController: degreeController,
                         readOnly: !edit,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Degree',
-                            hintText: 'eg. B.Tech'),
-                      ),
+                        icon: Icons.book),
+
+                    RoundedInputField(
+                      hintText: 'Passout Year',
+                      onChanged: (str) {},
+                      textController: passoutYearController,
+                      readOnly: !edit,
+                      icon: Icons.calendar_today,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 8),
-                      child: TextField(
-                        controller: passoutYearController,
-                        obscureText: false,
-                        readOnly: !edit,
-                        decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Passout Year',
-                            hintText: 'eg. 2022'),
-                      ),
+
+                    RoundedButton(
+                      press: () async {
+                        if (edit == false) {
+                          setState(() {
+                            edit = !edit;
+                          });
+                        } else {
+                          showAlertDialog(context, "Submitting");
+                          // var message = await updateBacisInfo();
+                          if (await updateBasicInfo() == "Submitted") {
+                            firstNameController.clear();
+                            lastNameController.clear();
+                            phoneNoController.clear();
+                            experienceController.clear();
+                            _image = null;
+                            degreeController.clear();
+                            passoutYearController.clear();
+                            updateError = "";
+                            Navigator.pop(context);
+                            setState(() {
+                              edit = !edit;
+                            });
+                          } else {
+                            Navigator.pop(context);
+                            setState(() {
+                              updateError = "error updating data";
+                            });
+                          }
+                        }
+                      },
+                      text: edit ? 'Submit' : 'Edit',
                     ),
-                    Container(
-                      // height: 50,
-                      // width: 250,
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: TextButton(
-                          onPressed: () async {
-                            if (edit == false) {
-                              setState(() {
-                                edit = !edit;
-                              });
-                            } else {
-                              showAlertDialog(context, "Submitting");
-                              // var message = await updateBacisInfo();
-                              if (await updateBasicInfo() == "Submitted") {
-                                firstNameController.clear();
-                                lastNameController.clear();
-                                phoneNoController.clear();
-                                experienceController.clear();
-                                _image = null;
-                                degreeController.clear();
-                                passoutYearController.clear();
-                                updateError = "";
-                                Navigator.pop(context);
-                                setState(() {
-                                  edit = !edit;
-                                });
-                              } else {
-                                Navigator.pop(context);
-                                setState(() {
-                                  updateError = "error updating data";
-                                });
-                              }
-                            }
-                          },
-                          child: edit
-                              ? const Text(
-                                  'Submit',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18),
-                                )
-                              : const Text(
-                                  'Edit',
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 18),
-                                )),
-                    ),
-                    // const SizedBox(
-                    //   height: 90,
+
+                    // Container(
+                    //   // height: 50,
+                    //   // width: 250,
+                    //   padding: const EdgeInsets.all(8),
+                    //   decoration: BoxDecoration(
+                    //       color: Colors.blue,
+                    //       borderRadius: BorderRadius.circular(20)),
+                    //   child: TextButton(
+                    //       onPressed: () async {
+                    //         if (edit == false) {
+                    //           setState(() {
+                    //             edit = !edit;
+                    //           });
+                    //         } else {
+                    //           showAlertDialog(context, "Submitting");
+                    //           // var message = await updateBacisInfo();
+                    //           if (await updateBasicInfo() == "Submitted") {
+                    //             firstNameController.clear();
+                    //             lastNameController.clear();
+                    //             phoneNoController.clear();
+                    //             experienceController.clear();
+                    //             _image = null;
+                    //             degreeController.clear();
+                    //             passoutYearController.clear();
+                    //             updateError = "";
+                    //             Navigator.pop(context);
+                    //             setState(() {
+                    //               edit = !edit;
+                    //             });
+                    //           } else {
+                    //             Navigator.pop(context);
+                    //             setState(() {
+                    //               updateError = "error updating data";
+                    //             });
+                    //           }
+                    //         }
+                    //       },
+                    //       child: edit
+                    //           ? const Text(
+                    //               'Submit',
+                    //               style: TextStyle(
+                    //                   color: Colors.white, fontSize: 18),
+                    //             )
+                    //           : const Text(
+                    //               'Edit',
+                    //               style: TextStyle(
+                    //                   color: Colors.white, fontSize: 18),
+                    //             )),
                     // ),
+                    const SizedBox(
+                      height: 90,
+                    ),
                   ],
                 ),
               );
@@ -599,13 +618,13 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                       colorFilter: ColorFilter.mode(
                                           Colors.black.withOpacity(0.9),
                                           BlendMode.dstATop),
-                                      image: NetworkImage(
+                                      image: const NetworkImage(
                                         "https://i.ibb.co/2sqgCND/overhead-view-laptop-with-stationeries-study-text-white-background-23-2147875675-jpg.webp",
                                       ),
                                     ),
                                     boxShadow: const [
                                       BoxShadow(
-                                        color: Colors.grey,
+                                        color: kPrimaryLightColor,
                                         offset: Offset(
                                           5.0,
                                           5.0,
@@ -615,10 +634,10 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                       ), //BoxShadow
                                     ],
                                     border: Border.all(
-                                        color: Colors.black,
+                                        color: kPrimaryColor,
                                         width: 0.5,
                                         style: BorderStyle.none),
-                                    color: Colors.white,
+                                    color: kPrimaryColor,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: TextButton(
                                   onPressed: () {
@@ -633,9 +652,11 @@ class _FacultyHomePageState extends State<FacultyHomePage> {
                                       Row(
                                         children: [
                                           Container(
-                                            padding: EdgeInsets.all(10),
+                                            padding: const EdgeInsets.all(10),
                                             child: CircleAvatar(
-                                                radius: 35,
+                                                backgroundColor:
+                                                    kPrimaryLightColor,
+                                                radius: 45,
                                                 backgroundImage: NetworkImage(
                                                     facultyClasses[index]
                                                         .imageLink)),

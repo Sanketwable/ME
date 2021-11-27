@@ -29,8 +29,6 @@ Future<String> getUserName() async {
 }
 
 Future<String> getProfilePhotoURL() async {
-  print("profile phtot url");
-  print(await storage.read(key: "profile_photo"));
   return await storage.read(key: "profile_photo");
 }
 

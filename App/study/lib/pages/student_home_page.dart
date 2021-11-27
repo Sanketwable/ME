@@ -1,6 +1,8 @@
-import 'dart:ffi';
+
 
 import 'package:flutter/material.dart';
+import 'package:study/components/rounded_button.dart';
+import 'package:study/components/rounded_input_field.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/redirect_page.dart';
 import 'dart:io';
@@ -11,6 +13,7 @@ import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 import 'package:study/pages/student_class.dart';
+
 import '../constants/constants.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:image_picker/image_picker.dart';
@@ -44,6 +47,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
+          selectedFontSize: 15,
+          selectedIconTheme: const IconThemeData(color: kPrimaryColor),
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -56,7 +61,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
             ),
           ],
           currentIndex: _selectedPage,
-          selectedItemColor: Colors.blue[800],
+          selectedItemColor: kPrimaryColor,
           onTap: (index) {
             _onItemTapped(index);
           },
@@ -65,13 +70,12 @@ class _StudentHomePageState extends State<StudentHomePage> {
             ? const SizedBox.shrink()
             : Container(
                 padding: const EdgeInsets.all(20),
-                // height: 100,
-                // width: 100,
                 child: FittedBox(
                   child: FloatingActionButton(
                     onPressed: () {
                       addClassCode(context);
                     },
+                    backgroundColor: kPrimaryColor,
                     child: const Icon(Icons.add),
                     isExtended: true,
                     autofocus: true,
@@ -80,13 +84,15 @@ class _StudentHomePageState extends State<StudentHomePage> {
               ),
         floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
         appBar: AppBar(
+          backgroundColor: kPrimaryColor,
           title: const Text('Student'),
           actions: [
             Container(
-              padding: EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
+              padding: const EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
               child: FutureBuilder(
                 builder: (context, data) {
                   return CircleAvatar(
+                      backgroundColor: kPrimaryColor,
                       radius: 20,
                       onBackgroundImageError: (object, stackTrace) => {},
                       backgroundImage: NetworkImage(data.data.toString()));
@@ -102,7 +108,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
             children: [
               DrawerHeader(
                 decoration: const BoxDecoration(
-                  color: Colors.blue,
+                  color: kPrimaryColor,
                 ),
                 child: Column(
                   children: [
@@ -110,6 +116,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       builder: (context, data) {
                         return CircleAvatar(
                             radius: 35,
+                            backgroundColor: kPrimaryColor,
                             onBackgroundImageError: (object, stackTrace) => {},
                             backgroundImage:
                                 NetworkImage(data.data.toString()));
@@ -118,14 +125,17 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     ),
                     Padding(
                       padding: const EdgeInsets.all(10.0),
-                      child: Text(studentUserName),
+                      child: Text(
+                        studentUserName,
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     ),
                   ],
                 ),
               ),
               Row(
                 children: [
-                  Expanded(
+                  const Expanded(
                       flex: 1,
                       child: IconButton(
                           onPressed: null, icon: Icon(Icons.logout))),
@@ -133,7 +143,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     flex: 9,
                     child: ListTile(
                       title: const Text('Sign Out'),
-                      subtitle: Text("Logout from Study App"),
+                      subtitle: const Text("Logout from Study App"),
                       onTap: () {
                         delete();
                         Navigator.pushAndRemoveUntil(
@@ -143,11 +153,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       },
                     ),
                   ),
-                  Expanded(
+                  const Expanded(
                       flex: 1,
-                      child: Container(
-                        child: SizedBox.shrink(),
-                      )),
+                      child: SizedBox.shrink()),
                 ],
               ),
             ],
@@ -229,7 +237,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                         child: edit
                             ? CircleAvatar(
                                 radius: 51,
-                                backgroundColor: Colors.red,
+                                backgroundColor: kPrimaryLightColor,
                                 child: _image != null
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(50),
@@ -250,7 +258,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                           errorBuilder: (context, obj, st) {
                                             return Container(
                                               decoration: BoxDecoration(
-                                                  color: Colors.grey[200],
+                                                  color: kPrimaryLightColor,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           50)),
@@ -265,7 +273,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                         )))
                             : CircleAvatar(
                                 radius: 51,
-                                backgroundColor: Colors.blue,
+                                backgroundColor: kPrimaryLightColor,
                                 child: (profilePhoto != ""
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(50),
@@ -277,29 +285,29 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                           errorBuilder: (context, obj, st) {
                                             return Container(
                                               decoration: BoxDecoration(
-                                                  color: Colors.grey[200],
+                                                  color: kPrimaryLightColor,
                                                   borderRadius:
                                                       BorderRadius.circular(
                                                           50)),
                                               width: 100,
                                               height: 100,
-                                              child: Icon(
+                                              child: const Icon(
                                                 Icons.person,
-                                                color: Colors.grey[800],
+                                                color: kPrimaryLightColor,
                                               ),
                                             );
                                           },
                                         ))
                                     : Container(
                                         decoration: BoxDecoration(
-                                            color: Colors.grey[200],
+                                            color: kPrimaryLightColor,
                                             borderRadius:
                                                 BorderRadius.circular(50)),
                                         width: 100,
                                         height: 100,
-                                        child: Icon(
+                                        child: const Icon(
                                           Icons.person,
-                                          color: Colors.grey[800],
+                                          color: kPrimaryLightColor,
                                         ),
                                       )),
                               ),
@@ -311,105 +319,62 @@ class _StudentHomePageState extends State<StudentHomePage> {
                       : Text(updateError,
                           style:
                               const TextStyle(color: Colors.red, fontSize: 11)),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                    child: TextField(
-                      controller: firstNameController,
-                      obscureText: false,
-                      readOnly: !edit,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'First Name',
-                          hintText: 'Enter your First Name'),
-                    ),
+                  RoundedInputField(
+                    hintText: "First Name",
+                    onChanged: (str) {},
+                    textController: firstNameController,
+                    readOnly: !edit,
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                    child: TextField(
-                      controller: lastNameController,
-                      obscureText: false,
-                      readOnly: !edit,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Last Name',
-                          hintText: 'Enter your Last Name'),
-                    ),
+                  RoundedInputField(
+                    hintText: "Last Name",
+                    onChanged: (str) {},
+                    textController: lastNameController,
+                    readOnly: !edit,
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                    child: TextField(
-                      controller: phoneNoController,
-                      obscureText: false,
-                      readOnly: !edit,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Phone No',
-                          hintText: 'Enter your Phone'),
-                    ),
+                  RoundedInputField(
+                    hintText: "Phone No",
+                    onChanged: (str) {},
+                    textController: phoneNoController,
+                    readOnly: !edit,
+                    icon: Icons.phone,
                   ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                    child: TextField(
-                      controller: yearController,
-                      obscureText: false,
-                      readOnly: !edit,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Year',
-                          hintText: 'Year'),
-                    ),
+                  RoundedInputField(
+                    hintText: "Year",
+                    onChanged: (str) {},
+                    textController: yearController,
+                    readOnly: !edit,
+                    icon: Icons.calendar_today,
                   ),
-                  Container(
-                    // height: 50,
-                    // width: 250,
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                        color: Colors.blue,
-                        borderRadius: BorderRadius.circular(20)),
-                    child: TextButton(
-                        onPressed: () async {
-                          if (edit == false) {
-                            setState(() {
-                              edit = !edit;
-                            });
-                          } else {
-                            showAlertDialog(context, "Submitting");
-                            // var message = await updateBacisInfo();
-                            if (await updateBasicInfo() == "Submitted") {
-                              firstNameController.clear();
-                              lastNameController.clear();
-                              phoneNoController.clear();
-                              yearController.clear();
-                              _image = null;
+                  RoundedButton(
+                    text: edit ? 'Submit' : 'Edit',
+                    press: () async {
+                      if (edit == false) {
+                        setState(() {
+                          edit = !edit;
+                        });
+                      } else {
+                        showAlertDialog(context, "Submitting");
+                        // var message = await updateBacisInfo();
+                        if (await updateBasicInfo() == "Submitted") {
+                          firstNameController.clear();
+                          lastNameController.clear();
+                          phoneNoController.clear();
+                          yearController.clear();
+                          _image = null;
 
-                              updateError = "";
-                              Navigator.pop(context);
-                              setState(() {
-                                edit = !edit;
-                              });
-                            } else {
-                              Navigator.pop(context);
-                              setState(() {
-                                updateError = "error updating data";
-                              });
-                            }
-                          }
-                        },
-                        child: edit
-                            ? const Text(
-                                'Submit',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18),
-                              )
-                            : const Text(
-                                'Edit',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 18),
-                              )),
+                          updateError = "";
+                          Navigator.pop(context);
+                          setState(() {
+                            edit = !edit;
+                          });
+                        } else {
+                          Navigator.pop(context);
+                          setState(() {
+                            updateError = "error updating data";
+                          });
+                        }
+                      }
+                    },
                   ),
                   const SizedBox(
                     height: 90,
@@ -428,25 +393,32 @@ class _StudentHomePageState extends State<StudentHomePage> {
     showModalBottomSheet(
         context: context,
         builder: (BuildContext bc) {
-          return SafeArea(
-            child: Wrap(
-              children: <Widget>[
-                ListTile(
-                    leading: const Icon(Icons.photo_library),
-                    title: const Text('Photo Library'),
+          return Container(
+            color: kPrimaryLightColor,
+            child: SafeArea(
+              child: Wrap(
+                children: <Widget>[
+                  ListTile(
+                      leading:
+                          const Icon(Icons.photo_library, color: kPrimaryColor),
+                      title: const Text(
+                        'Photo Library',
+                      ),
+                      onTap: () {
+                        _imgFromGallery();
+                        Navigator.of(context).pop();
+                      }),
+                  ListTile(
+                    leading:
+                        const Icon(Icons.photo_camera, color: kPrimaryColor),
+                    title: const Text('Camera'),
                     onTap: () {
-                      _imgFromGallery();
+                      _imgFromCamera();
                       Navigator.of(context).pop();
-                    }),
-                ListTile(
-                  leading: const Icon(Icons.photo_camera),
-                  title: const Text('Camera'),
-                  onTap: () {
-                    _imgFromCamera();
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         });
@@ -590,12 +562,11 @@ class _StudentHomePageState extends State<StudentHomePage> {
                           style: const TextStyle(color: Colors.red),
                         ),
                   SizedBox(
-                    child: TextField(
-                      controller: classCodeController,
-                      decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Code',
-                          hintText: 'Enter class code'),
+                    child: RoundedInputField(
+                      textController: classCodeController,
+                      hintText: 'Enter class code',
+                      onChanged: (str) {},
+                      icon: Icons.code,
                     ),
                   ),
                   Row(
@@ -624,7 +595,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
                           },
                           child: const Text(
                             'Submit',
-                            style: TextStyle(color: Colors.blue, fontSize: 18),
+                            style:
+                                TextStyle(color: kPrimaryColor, fontSize: 18),
                           ),
                         ),
                       ),
@@ -636,7 +608,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
                           },
                           child: const Text(
                             'Close',
-                            style: TextStyle(color: Colors.blue, fontSize: 18),
+                            style:
+                                TextStyle(color: kPrimaryColor, fontSize: 18),
                           ),
                         ),
                       ),
@@ -713,13 +686,13 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                       colorFilter: ColorFilter.mode(
                                           Colors.black.withOpacity(0.9),
                                           BlendMode.dstATop),
-                                      image: NetworkImage(
+                                      image: const NetworkImage(
                                         "https://i.ibb.co/2sqgCND/overhead-view-laptop-with-stationeries-study-text-white-background-23-2147875675-jpg.webp",
                                       ),
                                     ),
                                     boxShadow: const [
                                       BoxShadow(
-                                        color: Colors.grey,
+                                        color: kPrimaryLightColor,
                                         offset: Offset(
                                           5.0,
                                           5.0,
@@ -729,10 +702,10 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                       ), //BoxShadow
                                     ],
                                     border: Border.all(
-                                        color: Colors.black,
+                                        color: kPrimaryColor,
                                         width: 0.5,
                                         style: BorderStyle.none),
-                                    color: Colors.white,
+                                    color: kPrimaryColor,
                                     borderRadius: BorderRadius.circular(10)),
                                 child: TextButton(
                                   onPressed: () {
@@ -747,8 +720,10 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                       Row(
                                         children: [
                                           Container(
-                                            padding: EdgeInsets.all(10),
+                                            padding: const EdgeInsets.all(10),
                                             child: CircleAvatar(
+                                                backgroundColor:
+                                                    kPrimaryLightColor,
                                                 radius: 45,
                                                 backgroundImage: NetworkImage(
                                                     datas.imageLink)),

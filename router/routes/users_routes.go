@@ -12,12 +12,12 @@ var usersRoutes = []Route {
 		Handler: controllers.GetUsers,
 		AuthRequired: false,
 	},
-	// {
-	// 	Uri: "/users",
-	// 	Method: http.MethodPost ,
-	// 	Handler: controllers.CreateUser,
-	// 	AuthRequired: false,
-	// },
+	{
+		Uri: "/verifyuser",
+		Method: http.MethodGet ,
+		Handler: controllers.VerifyUser,
+		AuthRequired: true,
+	},
 	// {
 	// 	Uri: "/users/{id}",
 	// 	Method: http.MethodGet,

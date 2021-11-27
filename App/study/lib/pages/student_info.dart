@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
+import 'package:study/components/rounded_button.dart';
+import 'package:study/components/rounded_input_field.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
 import 'package:study/pages/student_home_page.dart';
@@ -39,6 +41,7 @@ class _StudentInfoState extends State<StudentInfo> {
       child: Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
+          backgroundColor: kPrimaryColor,
           title: const Text("Student"),
         ),
         body: SingleChildScrollView(
@@ -48,13 +51,13 @@ class _StudentInfoState extends State<StudentInfo> {
                   padding: const EdgeInsets.only(top: 30.0, bottom: 10.0),
                   child: Text(
                     "congrats " + userName + " your accout is created ",
-                    style: const TextStyle(color: Colors.blue, fontSize: 10),
+                    style: const TextStyle(color: kPrimaryColor, fontSize: 10),
                   )),
               Padding(
-                padding: const EdgeInsets.only(top: 40.0, bottom: 40.0),
+                padding: const EdgeInsets.only(top: 10.0, bottom: 30.0),
                 child: Center(
                     child: Text(
-                  "    Hi " + userName + "\nEnter your basic Info ",
+                  "\nEnter your basic Info ",
                   style: const TextStyle(color: Colors.grey, fontSize: 20),
                 )),
               ),
@@ -65,7 +68,7 @@ class _StudentInfoState extends State<StudentInfo> {
                   },
                   child: CircleAvatar(
                     radius: 55,
-                    backgroundColor: const Color(0xffFDCF09),
+                    backgroundColor: kPrimaryLightColor,
                     child: _image != null
                         ? ClipRRect(
                             borderRadius: BorderRadius.circular(50),
@@ -90,41 +93,21 @@ class _StudentInfoState extends State<StudentInfo> {
                   ),
                 ),
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                child: TextField(
-                  controller: firstNameController,
-                  obscureText: false,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'First Name',
-                      hintText: 'Enter your First Name'),
-                ),
+              RoundedInputField(
+                hintText: "First Name",
+                textController: firstNameController,
+                onChanged: (value) {},
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                child: TextField(
-                  controller: lastNameController,
-                  obscureText: false,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Last Name',
-                      hintText: 'Enter your Last Name'),
-                ),
+              RoundedInputField(
+                hintText: "Last Name",
+                textController: lastNameController,
+                onChanged: (value) {},
               ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                child: TextField(
-                  controller: phoneNoController,
-                  obscureText: false,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Phone No',
-                      hintText: 'Enter your Phone'),
-                ),
+              RoundedInputField(
+                hintText: "Phone No.",
+                textController: phoneNoController,
+                onChanged: (value) {},
+                icon: Icons.phone,
               ),
               const Padding(
                 padding: EdgeInsets.only(
@@ -140,14 +123,14 @@ class _StudentInfoState extends State<StudentInfo> {
                     left: 15.0, right: 15.0, top: 5, bottom: 0),
                 child: Container(
                   height: 50,
-                  width: MediaQuery.of(context).size.width,
+                  // width: MediaQuery.of(context).size.width,
                   margin: const EdgeInsets.all(20),
                   child: DropdownButtonHideUnderline(
                     child: GFDropdown(
+                      dropdownColor: kPrimaryLightColor,
                       padding: const EdgeInsets.all(15),
-                      borderRadius: BorderRadius.circular(10),
-                      border: const BorderSide(color: Colors.black12, width: 1),
-                      dropdownButtonColor: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(50),
+                      dropdownButtonColor: kPrimaryLightColor,
                       value: year,
                       hint: const Text("Year"),
                       onChanged: (newValue) {
@@ -158,45 +141,47 @@ class _StudentInfoState extends State<StudentInfo> {
                       items: ['1', '2', '3', '4', '5']
                           .map((value) => DropdownMenuItem(
                                 value: value,
-                                child: Text(value),
+                                child: Container(
+                                    child: Row(
+                                  children: [
+                                    // Icon(Icons.present_to_all_rounded),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: Text(
+                                        value,
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ),
+                                  ],
+                                )),
                               ))
                           .toList(),
                     ),
                   ),
                 ),
               ),
-              Container(
-                height: 50,
-                width: 250,
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(20)),
-                child: TextButton(
-                  onPressed: () async {
-                    showAlertDialog(context, "Submitting");
-                    if (await submitBasicInfo() == "Submitted") {
-                      setState(() {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => StudentHomePage(userName)),
-                            ModalRoute.withName("/Home"));
-                      });
-                    } else {
-                      setState(() {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => StudentInfo(userName, token)),
-                            ModalRoute.withName("/Home"));
-                      });
-                    }
-                  },
-                  child: const Text(
-                    'Submit',
-                    style: TextStyle(color: Colors.white, fontSize: 25),
-                  ),
-                ),
+              RoundedButton(
+                text: "SUBMIT",
+                press: () async {
+                  showAlertDialog(context, "Submitting");
+                  if (await submitBasicInfo() == "Submitted") {
+                    setState(() {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => StudentHomePage(userName)),
+                          ModalRoute.withName("/Home"));
+                    });
+                  } else {
+                    setState(() {
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => StudentInfo(userName, token)),
+                          ModalRoute.withName("/Home"));
+                    });
+                  }
+                },
               ),
               const SizedBox(
                 height: 90,
@@ -256,8 +241,10 @@ class _StudentInfoState extends State<StudentInfo> {
     });
   }
 
+  
   showAlertDialog(BuildContext context, String lodingText) {
     AlertDialog alert = AlertDialog(
+      backgroundColor: kPrimaryLightColor,
       content: Row(
         children: [
           const CircularProgressIndicator(),
