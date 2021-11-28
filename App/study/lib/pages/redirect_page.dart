@@ -30,7 +30,7 @@ class Redirect extends StatefulWidget {
 class _RedirectState extends State<Redirect> {
   Future finalAttemptoGetToken() async {
     var tkn = await getValue("token");
-
+    await Future.delayed(Duration(seconds: 1));
     final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;

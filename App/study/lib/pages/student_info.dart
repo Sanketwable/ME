@@ -171,6 +171,9 @@ class _StudentInfoState extends State<StudentInfo> {
                 press: () async {
                   showAlertDialog(context, "Submitting");
                   if (await submitBasicInfo() == "Submitted") {
+                    firstNameController.clear();
+                    lastNameController.clear();
+                    phoneNoController.clear();
                     setState(() {
                       Navigator.pushAndRemoveUntil(
                           context,
