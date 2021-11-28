@@ -61,6 +61,10 @@ func AddMessages(w http.ResponseWriter, r *http.Request) {
 	}
 	message := models.Message{}
 	err = json.Unmarshal(body, &message)
+
+	if err != nil {
+		responses.ERROR(w, http.StatusUnprocessableEntity, err)
+	}
 	message.UserID = userID
 	message.Time = time.Now().String()[:20]
 

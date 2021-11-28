@@ -46,7 +46,17 @@ class _RedirectState extends State<Redirect> {
     if (response1.statusCode == 200) {
       loginType = await getLoginType();
       userName = await getUserName();
-      return tkn;
+      if (loginType == "faculty") {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => FacultyHomePage(userName)),
+            ModalRoute.withName("/Home"));
+      } else {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => StudentHomePage(userName)),
+            ModalRoute.withName("/Home"));
+      }
     }
 
     Future;
@@ -54,56 +64,46 @@ class _RedirectState extends State<Redirect> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: FutureBuilder(
-        future: finalAttemptoGetToken(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return MainPage();
-          } else if (snapshot.hasData) {
-            return loginType == "faculty"
-                ? FacultyHomePage(userName)
-                : StudentHomePage(userName);
-          } else {
-            // return MainPage();
-            return const WelcomePage();
-          }
-        },
-      ),
+    return FutureBuilder(
+      future: finalAttemptoGetToken(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return mainPage();
+        } else {
+          return const WelcomePage();
+        }
+      },
     );
   }
 
-  Widget MainPage() {
+  Widget mainPage() {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      body: Container(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(
-                  top: size.height * 0.30,
-                  left: size.width * 0.1,
-                  right: size.width * 0.1),
-              child: Center(
-                child: SvgPicture.asset(
-                  "assets/icons/teacher.svg",
-                  height: size.height * 0.30,
-                ),
+      body: Column(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(
+                top: size.height * 0.30,
+                left: size.width * 0.1,
+                right: size.width * 0.1),
+            child: Center(
+              child: SvgPicture.asset(
+                "assets/icons/teacher.svg",
+                height: size.height * 0.30,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: size.height * 0.2),
-              child: Center(
-                child: Text(
-                  "Study",
-                  style: TextStyle(
-                      color: Colors.grey, fontSize: size.width * 0.15),
-                ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: size.height * 0.2),
+            child: Center(
+              child: Text(
+                "Study",
+                style:
+                    TextStyle(color: Colors.grey, fontSize: size.width * 0.15),
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
   }

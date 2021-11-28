@@ -53,7 +53,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	foundUser := findEmail(dummyUser)
 	if foundUser.ID == 0 {
 		if tempuser.OTP == "" {
-			OTP(tempuser.Email, w, "Verification Code for Nursd")
+			OTP(tempuser.Email, w, "Verification Code for Study")
 			return
 		}
 

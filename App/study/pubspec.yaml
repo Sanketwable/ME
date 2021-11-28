@@ -35,7 +35,7 @@ dependencies:
   shared_preferences: ^0.5.12
   getwidget: ^2.0.4
   cupertino_icons: ^0.1.2
-  flutter_svg: ^0.19.1
+  flutter_svg: ^0.23.0+1
   shimmer: ^2.0.0
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,6 +45,7 @@ dependencies:
   image_picker: ^0.6.7+22
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.9.2
   flutter_test:
     sdk: flutter
 
@@ -54,6 +55,10 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^1.0.0
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_svg/svg.dart';
 import 'package:study/components/rounded_button.dart';
 import 'package:study/constants/constants.dart';
@@ -18,8 +19,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
-      
-      body: Container(
+      body: SizedBox(
         height: size.height,
         width: double.infinity,
         child: Stack(
@@ -45,7 +45,7 @@ class _WelcomePageState extends State<WelcomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Text(
+                  const Text(
                     "WELCOME TO STUDY",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
@@ -62,7 +62,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return LoginPage();
+                            return const LoginPage();
                           },
                         ),
                       );
@@ -77,7 +77,7 @@ class _WelcomePageState extends State<WelcomePage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) {
-                            return Signup();
+                            return const Signup();
                           },
                         ),
                       );

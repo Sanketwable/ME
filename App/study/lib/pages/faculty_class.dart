@@ -571,15 +571,6 @@ class _FacultyClassState extends State<FacultyClass> {
                             ),
                             child: Row(
                               children: [
-                                const Expanded(
-                                  flex: 2,
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.white,
-                                    radius: 25,
-                                    backgroundImage: NetworkImage(
-                                        "https://i.ibb.co/5nmxwtY/2186059.png"),
-                                  ),
-                                ),
                                 Expanded(
                                   flex: 8,
                                   child: Padding(
@@ -1313,7 +1304,6 @@ class _MyDialogState extends State<MyDialog> {
                           textController: assignmentNameController,
                           icon: Icons.assignment,
                         ),
-
                         RoundedInputField(
                           hintText: 'Description',
                           onChanged: (str) {},
@@ -1325,48 +1315,11 @@ class _MyDialogState extends State<MyDialog> {
                           onChanged: (str) {},
                           textController: pointsController,
                           icon: Icons.poll_rounded,
+                          keyboardType: TextInputType.number,
                           inputFormatter: [
                             FilteringTextInputFormatter.digitsOnly
                           ],
                         ),
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(horizontal: 15),
-                        //   child: TextField(
-                        //     controller: assignmentNameController,
-                        //     obscureText: false,
-                        //     decoration: const InputDecoration(
-                        //         border: OutlineInputBorder(),
-                        //         labelText: 'Assignment Name',
-                        //         hintText: 'Assignment Name'),
-                        //   ),
-                        // ),
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(
-                        //       horizontal: 15, vertical: 5),
-                        //   child: TextField(
-                        //     controller: descriptionController,
-                        //     obscureText: false,
-                        //     decoration: const InputDecoration(
-                        //         border: OutlineInputBorder(),
-                        //         labelText: 'Description',
-                        //         hintText: 'Description'),
-                        //   ),
-                        // ),
-                        // Padding(
-                        //   padding: const EdgeInsets.symmetric(
-                        //       horizontal: 15, vertical: 5),
-                        //   child: TextField(
-                        //     controller: pointsController,
-                        //     obscureText: false,
-                        //     inputFormatters: [
-                        //       FilteringTextInputFormatter.digitsOnly
-                        //     ],
-                        //     decoration: const InputDecoration(
-                        //         border: OutlineInputBorder(),
-                        //         labelText: 'Points',
-                        //         hintText: 'Points'),
-                        //   ),
-                        // ),
                         Padding(
                           padding: const EdgeInsets.all(3.0),
                           child: Container(
@@ -1828,7 +1781,6 @@ class _MyDialogState extends State<MyDialog> {
                             },
                           ),
                         ),
-
                         const SizedBox(
                           height: 90,
                         ),
@@ -1855,12 +1807,13 @@ class _MyDialogState extends State<MyDialog> {
       List<MyQuestion> Questions = [];
       for (var i = 0; i < questionOptions.length; i++) {
         MyQuestion q = MyQuestion(
-            questionOptions[i].question.text,
-            questionOptions[i].option1.text,
-            questionOptions[i].option2.text,
-            questionOptions[i].option3.text,
-            questionOptions[i].option4.text,
-            0);
+          questionOptions[i].question.text,
+          questionOptions[i].option1.text,
+          questionOptions[i].option2.text,
+          questionOptions[i].option3.text,
+          questionOptions[i].option4.text,
+          int.parse(questionOptions[i].answer.text),
+        );
 
         // q.answer = int.parse(questionOptions[i].Answer.toString());
         Questions.add(q);

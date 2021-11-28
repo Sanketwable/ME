@@ -215,13 +215,13 @@ func GetClasses(w http.ResponseWriter, r *http.Request) {
 				responses.ERROR(w, http.StatusUnprocessableEntity, err)
 				return
 			}
-			
+
 		}
 	}(repo)
 	last := len(classes) - 1
 	for i := 0; i < len(classes)/2; i++ {
-        classes[i], classes[last-i] = classes[last-i], classes[i]
-    }
+		classes[i], classes[last-i] = classes[last-i], classes[i]
+	}
 	responses.JSON(w, http.StatusOK, classes)
 
 }
@@ -237,20 +237,20 @@ func UpdateClass(w http.ResponseWriter, r *http.Request) {
 }
 
 func findClass(dummyclass models.Class) models.Class {
-	var err error
+	// var err error
 	// db, _ := database.Connect()
 	// defer db.Close()
-	err = database.DB.Debug().Model(models.Class{}).Where("class_code = ?", dummyclass.ClassCode).Take(&dummyclass).Error
+	err := database.DB.Debug().Model(models.Class{}).Where("class_code = ?", dummyclass.ClassCode).Take(&dummyclass).Error
 	if err != nil {
 		dummyclass.ClassID = 0
 	}
 	return dummyclass
 }
 func findUser(dummyuser models.User) models.User {
-	var err error
+	// var err error
 	// db, _ := database.Connect()
 	// defer db.Close()
-	err = database.DB.Debug().Model(models.User{}).Where("id = ?", dummyuser.ID).Take(&dummyuser).Error
+	err := database.DB.Debug().Model(models.User{}).Where("id = ?", dummyuser.ID).Take(&dummyuser).Error
 	if err != nil {
 		dummyuser.ID = 0
 		return dummyuser

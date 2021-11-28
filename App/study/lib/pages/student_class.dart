@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
+
 import 'package:study/controllers/token.dart';
 import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
@@ -19,7 +19,7 @@ import '../controllers/token.dart';
 var userID;
 
 class Message {
-  int message_ID = 0;
+  int messageID = 0;
   int classID = 0;
   int userID = 0;
   String message = "";
@@ -28,7 +28,7 @@ class Message {
   String time = "";
 
   Map toJson() => {
-        'message_id': message_ID,
+        'message_id': messageID,
         'class_id': classID,
         'user_id': userID,
         'message': message,
@@ -36,7 +36,7 @@ class Message {
         'last_name': lastName,
         'time': time,
       };
-  Message(this.message_ID, this.classID, this.userID, this.message,
+  Message(this.messageID, this.classID, this.userID, this.message,
       this.firstName, this.lastName, this.time);
 
   factory Message.fromJson(dynamic json) {
@@ -51,18 +51,22 @@ class Message {
   }
 }
 
+// ignore: must_be_immutable
 class StudentClass extends StatefulWidget {
+  // ignore: prefer_typing_uninitialized_variables
   var classData;
   StudentClass(data, {Key? key}) : super(key: key) {
     classData = data;
   }
   @override
+  // ignore: no_logic_in_create_state
   _StudentClassState createState() => _StudentClassState(classData);
 }
 
 class _StudentClassState extends State<StudentClass> {
   List<Message> messages = [];
   MyClasses classData;
+  // ignore: prefer_final_fields
   ScrollController _scrollController = ScrollController();
   _StudentClassState(this.classData);
   int _selectedPage = 0;
@@ -81,7 +85,7 @@ class _StudentClassState extends State<StudentClass> {
       child: Scaffold(
         bottomNavigationBar: BottomNavigationBar(
           selectedFontSize: 15,
-          selectedIconTheme: IconThemeData(color: kPrimaryColor),
+          selectedIconTheme: const IconThemeData(color: kPrimaryColor),
           type: BottomNavigationBarType.fixed,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
@@ -141,17 +145,17 @@ class _StudentClassState extends State<StudentClass> {
               backgroundColor: Colors.white,
               flexibleSpace: SafeArea(
                 child: Container(
-                  padding: EdgeInsets.only(right: 16, left: 10),
+                  padding: const EdgeInsets.only(right: 16, left: 10),
                   child: Row(
                     children: <Widget>[
-                      SizedBox(
+                      const SizedBox(
                         width: 2,
                       ),
                       CircleAvatar(
                         backgroundImage: NetworkImage(classData.imageLink),
                         maxRadius: 20,
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 12,
                       ),
                       Expanded(
@@ -161,10 +165,10 @@ class _StudentClassState extends State<StudentClass> {
                           children: <Widget>[
                             Text(
                               classData.subject,
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w600),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               height: 6,
                             ),
                             Text(
@@ -213,12 +217,13 @@ class _StudentClassState extends State<StudentClass> {
                                 scrollDirection: Axis.vertical,
                                 shrinkWrap: true,
                                 controller: _scrollController,
-                                padding: EdgeInsets.only(top: 10, bottom: 10),
+                                padding:
+                                    const EdgeInsets.only(top: 10, bottom: 10),
                                 itemBuilder: (context, index) {
                                   return Column(
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.only(
+                                        padding: const EdgeInsets.only(
                                             left: 14,
                                             right: 14,
                                             top: 10,
@@ -244,8 +249,9 @@ class _StudentClassState extends State<StudentClass> {
                                             child: Column(
                                               children: [
                                                 Padding(
-                                                    padding: EdgeInsets.only(
-                                                        top: 3, left: 2),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            top: 3, left: 2),
                                                     child: messages[index]
                                                                 .userID
                                                                 .toString() !=
@@ -256,13 +262,16 @@ class _StudentClassState extends State<StudentClass> {
                                                                 " " +
                                                                 messages[index]
                                                                     .lastName,
-                                                            style: TextStyle(
-                                                                fontSize: 10,
-                                                                color: Colors
-                                                                    .black),
+                                                            style:
+                                                                const TextStyle(
+                                                                    fontSize:
+                                                                        10,
+                                                                    color: Colors
+                                                                        .black),
                                                             textAlign:
                                                                 TextAlign.left)
-                                                        : SizedBox.shrink()),
+                                                        : const SizedBox
+                                                            .shrink()),
                                                 Padding(
                                                   padding:
                                                       const EdgeInsets.only(
@@ -272,8 +281,8 @@ class _StudentClassState extends State<StudentClass> {
                                                           top: 8),
                                                   child: Text(
                                                     messages[index].message,
-                                                    style:
-                                                        TextStyle(fontSize: 15),
+                                                    style: const TextStyle(
+                                                        fontSize: 15),
                                                   ),
                                                 ),
                                                 Padding(
@@ -284,8 +293,8 @@ class _StudentClassState extends State<StudentClass> {
                                                           right: 15),
                                                   child: Text(
                                                     messages[index].time,
-                                                    style:
-                                                        TextStyle(fontSize: 9),
+                                                    style: const TextStyle(
+                                                        fontSize: 9),
                                                   ),
                                                 ),
                                                 // controllScrollView(_scrollController),
@@ -309,7 +318,7 @@ class _StudentClassState extends State<StudentClass> {
               Align(
                 alignment: Alignment.bottomLeft,
                 child: Container(
-                  padding: EdgeInsets.only(left: 10, bottom: 10, top: 10),
+                  padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
                   height: 60,
                   width: double.infinity,
                   color: Colors.white,
@@ -324,21 +333,21 @@ class _StudentClassState extends State<StudentClass> {
                             color: kPrimaryColor,
                             borderRadius: BorderRadius.circular(30),
                           ),
-                          child: Icon(
+                          child: const Icon(
                             Icons.add,
                             color: Colors.white,
                             size: 20,
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 15,
                       ),
                       Expanded(
                         child: TextField(
                           controller: messageController,
                           cursorColor: kPrimaryColor,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                               hintText: "Write message...",
                               hintStyle: TextStyle(color: Colors.black54),
                               border: InputBorder.none),
@@ -351,7 +360,7 @@ class _StudentClassState extends State<StudentClass> {
                           },
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 15,
                       ),
                       FloatingActionButton(
@@ -362,7 +371,7 @@ class _StudentClassState extends State<StudentClass> {
                             _scrollController.position.maxScrollExtent,
                           );
                         },
-                        child: Icon(
+                        child: const Icon(
                           Icons.send,
                           color: Colors.white,
                           size: 18,
@@ -385,17 +394,15 @@ class _StudentClassState extends State<StudentClass> {
     scc.jumpTo(
       scc.position.maxScrollExtent,
     );
-    return SizedBox.shrink();
+    return const SizedBox.shrink();
   }
 
   Stream<List<dynamic>> getMessages() async* {
     while (true) {
-      int len = messages.length;
       await Future.delayed(const Duration(milliseconds: 500));
       var someProduct = await getMessagesAPI();
-      // if (someProduct.length > len) {
+
       yield someProduct;
-      // }
     }
   }
 
@@ -428,6 +435,9 @@ class _StudentClassState extends State<StudentClass> {
   }
 
   Future<String> sendMessage() async {
+    if (messageController.text == "") {
+      return Future.value("error");
+    }
     var token = await getValue("token");
 
     final ioc = HttpClient();
@@ -548,7 +558,8 @@ class _StudentClassState extends State<StudentClass> {
                                         Row(
                                           children: [
                                             Text(
-                                              "Due : " + datas["due"],
+                                              "Due : " +
+                                                  datas["due"].substring(0, 10),
                                               style: const TextStyle(
                                                   color: Colors.black,
                                                   fontSize: 11),
@@ -636,7 +647,7 @@ class _StudentClassState extends State<StudentClass> {
                 fit: BoxFit.cover,
                 colorFilter: ColorFilter.mode(
                     Colors.black.withOpacity(0.3), BlendMode.dstATop),
-               image: const AssetImage("assets/images/classes.jpg"),
+                image: const AssetImage("assets/images/classes.jpg"),
               ),
 
               color: kPrimaryLightColor,
@@ -664,8 +675,10 @@ class _StudentClassState extends State<StudentClass> {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         classData.branch + " " + classData.year.toString(),
-                        style:
-                            const TextStyle(color: Colors.black, fontSize: 18),
+                        style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                     Padding(
@@ -673,15 +686,19 @@ class _StudentClassState extends State<StudentClass> {
                       child: Text(
                         "Class code : " + classData.classCode,
                         style: const TextStyle(
-                            color: Colors.blueAccent, fontSize: 12),
+                            color: Colors.blueAccent,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
                         "Class Link : " + classData.classLink + "\n",
-                        style:
-                            const TextStyle(color: Colors.blue, fontSize: 11),
+                        style: const TextStyle(
+                            color: Colors.blue,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600),
                       ),
                     ),
                     Container(
@@ -760,9 +777,9 @@ class _StudentClassState extends State<StudentClass> {
                                   children: [
                                     Row(
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: const CircleAvatar(
+                                        const Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: CircleAvatar(
                                             backgroundColor: Colors.white,
                                             radius: 25,
                                             backgroundImage: NetworkImage(
@@ -910,15 +927,6 @@ class _StudentClassState extends State<StudentClass> {
                             ),
                             child: Row(
                               children: [
-                                const Expanded(
-                                  flex: 2,
-                                  child: CircleAvatar(
-                                    backgroundColor: Colors.white,
-                                    radius: 25,
-                                    backgroundImage: NetworkImage(
-                                        "https://i.ibb.co/5nmxwtY/2186059.png"),
-                                  ),
-                                ),
                                 Expanded(
                                   flex: 8,
                                   child: Padding(
@@ -933,15 +941,13 @@ class _StudentClassState extends State<StudentClass> {
                                             await addComment(str, postID);
                                         if (response == "sucessfull") {
                                           commentController.clear();
-
                                           setState(() {});
+                                          // comments(context, postID);
                                         }
                                       },
                                       decoration: const InputDecoration(
                                           border: InputBorder.none,
-                                          labelText: 'Add Comment',
-                                          hintText:
-                                              'Write here to add comment'),
+                                          hintText: 'Add comment'),
                                     ),
                                   ),
                                 ),
@@ -1049,13 +1055,6 @@ class _StudentClassState extends State<StudentClass> {
                                                   ),
                                                 ),
                                               ),
-
-                                              // Text(
-                                              //   "sanket\n\n\n",
-                                              //   style: TextStyle(
-                                              //       color: Colors.white,
-                                              //       fontSize: 11),
-                                              // ),
                                             ],
                                           ),
                                         ],
@@ -1145,6 +1144,9 @@ class _StudentClassState extends State<StudentClass> {
   }
 
   Future<String> addComment(String comment, int classID) async {
+    if (comment == "") {
+      return Future.value("error");
+    }
     var token = await getValue("token");
 
     final ioc = HttpClient();

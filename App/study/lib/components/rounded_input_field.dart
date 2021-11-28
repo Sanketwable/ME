@@ -10,6 +10,9 @@ class RoundedInputField extends StatelessWidget {
   final TextEditingController textController;
   bool readOnly = false;
   // ignore: prefer_typing_uninitialized_variables
+  var keyboardType;
+
+  // ignore: prefer_typing_uninitialized_variables
   var inputFormatter;
   RoundedInputField({
     Key? key,
@@ -19,6 +22,7 @@ class RoundedInputField extends StatelessWidget {
     required this.textController,
     this.readOnly = false,
     this.inputFormatter,
+    this.keyboardType,
   }) : super(key: key);
 
   @override
@@ -26,10 +30,11 @@ class RoundedInputField extends StatelessWidget {
     return TextFieldContainer(
       child: TextField(
         controller: textController,
-        onChanged: onChanged,
+        // onChanged: onChanged,
         readOnly: readOnly,
-        inputFormatters:inputFormatter,
+        inputFormatters: inputFormatter,
         cursorColor: kPrimaryColor,
+        keyboardType: keyboardType,
         decoration: InputDecoration(
           icon: Icon(
             icon,
@@ -37,7 +42,6 @@ class RoundedInputField extends StatelessWidget {
           ),
           hintText: hintText,
           border: InputBorder.none,
-          
         ),
       ),
     );

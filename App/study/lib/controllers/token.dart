@@ -11,9 +11,10 @@ void store(String key, String value, String loginType, String userName,
   await storage.write(key: "user_id", value: userID);
 }
 
-void storeProfileURL(String url) async {
-  await storage.delete(key: "profile_photo");
-  await storage.write(key: "profile_photo", value: url);
+Future storeProfileURL(String url) async {
+  // var a = await storage.delete(key: "profile_photo");
+  var a = await storage.write(key: "profile_photo", value: url);
+  return a;
 }
 
 Future<String> getValue(String key) async {

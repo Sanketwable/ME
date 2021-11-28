@@ -71,7 +71,8 @@ class _StudentAssignmentState extends State<StudentAssignment> {
               children: [
                 Center(
                   child: Text(
-                    "Due : " + assignmentData["due"].toString(),
+                    "Due : " +
+                        assignmentData["due"].toString().substring(0, 10),
                     style: const TextStyle(color: Colors.black, fontSize: 18),
                   ),
                 ),
@@ -113,9 +114,13 @@ class _StudentAssignmentState extends State<StudentAssignment> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
-                  child: submitted
-                      ? Text("score : " + score.toString())
-                      : SizedBox.shrink(),
+                  child: assignmentData["assignment_type"] != 0
+                      ? (submitted
+                          ? Text("score : " + score.toString())
+                          : const SizedBox.shrink())
+                      : (submitted
+                          ? Text("Submission Link : " + score.toString())
+                          : const SizedBox.shrink()),
                 ),
               ),
               Expanded(
@@ -129,21 +134,36 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                         onPressed: () async {
                           if (submitted) {
                           } else {
-                            var alert = showAlertDialog(context, "Submitting");
-                            if (await submitFormAssignment(
-                                    assignmentData["assignment_id"]) ==
-                                "submitted") {
-                              Navigator.pop(alert);
+                            if (assignmentData["assignment_type"] == 0) {
+                              var alert =
+                                  showAlertDialog(context, "Submitting");
+                              if (await submitFileAssignment(
+                                      assignmentData["assignment_id"]) ==
+                                  "submitted") {
+                                Navigator.pop(alert);
 
-                              setState(() {
-                                submitted = true;
-                              });
+                                setState(() {
+                                  submitted = true;
+                                });
+                              }
+                            } else {
+                              var alert =
+                                  showAlertDialog(context, "Submitting");
+                              if (await submitFormAssignment(
+                                      assignmentData["assignment_id"]) ==
+                                  "submitted") {
+                                Navigator.pop(alert);
+
+                                setState(() {
+                                  submitted = true;
+                                });
+                              }
                             }
                           }
                         },
                         child: Text(
-                          "Submit",
-                          style: TextStyle(color: Colors.white),
+                          submitted ? "Submitted" : "Submit",
+                          style: const TextStyle(color: Colors.white),
                         ))),
               )),
             ],
@@ -151,7 +171,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
         ),
         assignmentData["assignment_type"] == 0
             ? FutureBuilder(
-                builder: (context, AsyncSnapshot<List> snapshot) {
+                builder: (context, AsyncSnapshot snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return Padding(
                       padding: EdgeInsets.symmetric(
@@ -179,7 +199,7 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                         ),
                         RoundedInputField(
                           icon: Icons.link,
-                          textController: TextEditingController(),
+                          textController: submissionLinkControlller,
                           onChanged: (str) {},
                           hintText: "Submission Link",
                         )
@@ -318,7 +338,6 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                               ],
                                             ),
                                           ),
-
                                           Container(
                                             alignment: Alignment.centerLeft,
                                             padding: const EdgeInsets.only(
@@ -373,12 +392,6 @@ class _StudentAssignmentState extends State<StudentAssignment> {
                                               ],
                                             ),
                                           ),
-                                          // Text(
-                                          //   "sanket\n\n\n",
-                                          //   style: TextStyle(
-                                          //       color: Colors.white,
-                                          //       fontSize: 11),
-                                          // ),
                                         ],
                                       ),
                                     ),
@@ -421,16 +434,42 @@ class _StudentAssignmentState extends State<StudentAssignment> {
 
   String description = "";
   int points = 0;
-  int score = 0;
+  TextEditingController submissionLinkControlller = TextEditingController();
+  String score = "";
   bool submitted = false;
 
   String attachmentLink = "";
+  Future<dynamic> submitFileAssignment(int assignmentId) async {
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.post(
+      url + '/submitassignment',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        'assignment_id': int.parse(assignmentId.toString()),
+        'points': submissionLinkControlller.text.toString(),
+      }),
+    );
+
+    if (response1.statusCode == 200) {
+      submitted = true;
+      return Future.value("submitted");
+    }
+
+    return Future.value("Error");
+  }
 
   Future<dynamic> submitFormAssignment(int assignmentId) async {
-    int points = 0;
+    int pts = 0;
     for (int i = 0; i < questions.length; i++) {
       if (answers[i] == questions[i].answer) {
-        points++;
+        pts++;
       }
     }
     var token = await getValue("token");
@@ -445,14 +484,13 @@ class _StudentAssignmentState extends State<StudentAssignment> {
         'Authorization': "Bearer " + token,
       },
       body: jsonEncode(<String, dynamic>{
-        'assignment_id': assignmentId.toString(),
-        'points': points.toString(),
+        'assignment_id': int.parse(assignmentId.toString()),
+        'points': pts.toString(),
       }),
     );
-    print(response1.body);
+
     if (response1.statusCode == 200) {
       submitted = true;
-
       return Future.value("submitted");
     }
 
@@ -476,21 +514,22 @@ class _StudentAssignmentState extends State<StudentAssignment> {
     );
     var res = response1.body;
     if (response1.statusCode == 200) {
+      
       var obj = json.decode(res);
       setState(() {
         submitted = true;
-        score = int.parse(obj["points"].toString());
-        print(score);
+        score = obj["points"].toString();
+        
       });
     }
   }
 
   Future<List<dynamic>> getFormAssignment() async {
-    getAssignmentStatus();
     if (questionsLoaded == true) {
-      print("questions already loaded");
+      
       return questions;
     }
+    getAssignmentStatus();
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =
@@ -521,11 +560,11 @@ class _StudentAssignmentState extends State<StudentAssignment> {
       // print(tagObjsJson);
       questions =
           tagObjsJson.map((tagJson) => MyQuestion.fromJson(tagJson)).toList();
-
+      
       // print(tagObjs[0].question);
       totalQuestions = questions.length;
       if (questionsLoaded == false) {
-        print("questions loaded");
+        
         answers.clear();
         for (int i = 0; i < totalQuestions; i++) {
           answers.add(-1);
@@ -539,7 +578,11 @@ class _StudentAssignmentState extends State<StudentAssignment> {
     return Future.value(obj["error"]);
   }
 
-  Future<List> getFileAssignment() async {
+  Future getFileAssignment() async {
+    if (attachmentLink != "") {
+      return attachmentLink;
+    }
+    getAssignmentStatus();
     var token = await getValue("token");
     final ioc = HttpClient();
     ioc.badCertificateCallback =

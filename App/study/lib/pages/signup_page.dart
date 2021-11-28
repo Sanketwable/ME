@@ -13,7 +13,7 @@ import 'package:http/http.dart' as http;
 import 'package:study/components/already_have_an_account_acheck.dart';
 import 'package:study/components/rounded_button.dart';
 import 'package:study/components/rounded_input_field.dart';
-import 'package:study/components/rounded_password_field.dart';
+import 'package:study/components/text_field_container.dart';
 import 'package:study/pages/faculty_info.dart';
 import 'package:study/pages/login_page.dart';
 import 'package:study/pages/student_info.dart';
@@ -25,6 +25,7 @@ import '../controllers/token.dart';
 final signUpEmailController = TextEditingController();
 final signUpPasswordController = TextEditingController();
 var token = "";
+var _passwordVisible = false;
 // ignore: prefer_typing_uninitialized_variables
 
 class Signup extends StatefulWidget {
@@ -103,7 +104,8 @@ class _SignupState extends State<Signup> {
                                       ),
                                 OTPTextField(
                                   length: 6,
-                                  width: MediaQuery.of(context).size.width*0.7,
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.7,
                                   fieldWidth: 30,
                                   style: const TextStyle(fontSize: 20),
                                   textFieldAlignment:
@@ -190,9 +192,34 @@ class _SignupState extends State<Signup> {
                             hintText: "Your Email",
                             onChanged: (value) {},
                           ),
-                          RoundedPasswordField(
-                            textController: signUpPasswordController,
-                            onChanged: (value) {},
+                          TextFieldContainer(
+                            child: TextFormField(
+                              keyboardType: TextInputType.text,
+                              controller: signUpPasswordController,
+                              obscureText: !_passwordVisible,
+                              cursorColor: kPrimaryColor,
+                              decoration: InputDecoration(
+                                hintText: 'Password',
+                                icon: const Icon(
+                                  Icons.lock,
+                                  color: kPrimaryColor,
+                                ),
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _passwordVisible
+                                        ? Icons.visibility
+                                        : Icons.visibility_off,
+                                    color: kPrimaryColor,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      _passwordVisible = !_passwordVisible;
+                                    });
+                                  },
+                                ),
+                                border: InputBorder.none,
+                              ),
+                            ),
                           ),
                           Container(
                             height: 55,
@@ -225,13 +252,13 @@ class _SignupState extends State<Signup> {
                                           child: Row(
                                             children: [
                                               const Padding(
-                                                padding:
-                                                    EdgeInsets.all(5.0),
+                                                padding: EdgeInsets.all(5.0),
                                                 child: Icon(Icons.person_sharp,
                                                     color: kPrimaryColor),
                                               ),
                                               Container(
-                                                  padding: const EdgeInsets.only(
+                                                  padding:
+                                                      const EdgeInsets.only(
                                                     left: 15,
                                                     right: 10,
                                                     top: 10,
@@ -284,7 +311,6 @@ class _SignupState extends State<Signup> {
             ],
           ),
         ),
-        
       ),
     );
   }
@@ -310,6 +336,18 @@ class _SignupState extends State<Signup> {
   }
 
   Future<String> signup() async {
+    if (signUpEmailController.text == "") {
+      signUpError = "email cannot be empty";
+      return Future.value("Error");
+    } else if (signUpPasswordController.text == "" ||
+        signUpPasswordController.text.length < 6 ||
+        signUpPasswordController.text.length > 15) {
+      signUpError = "password must be 6-15 characters";
+      return Future.value("Error");
+    } else if (loginType.toString() == "null") {
+      signUpError = "select proper loginType";
+      return Future.value("Error");
+    }
     final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
@@ -332,7 +370,13 @@ class _SignupState extends State<Signup> {
     var res = response1.body;
 
     var obj = json.decode(res);
-    signUpError = obj['error'];
+    if (obj['error'] ==
+            "gomail: could not send email 1: gomail: invalid address \"sanket\": mail: missing '@' or angle-addr" ||
+        obj['error'] == "mail: missing '@' or angle-addr") {
+      signUpError = "email not correct";
+    } else {
+      signUpError = obj['error'];
+    }
 
     return Future.value("Error");
   }

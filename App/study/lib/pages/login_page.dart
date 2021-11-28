@@ -11,7 +11,9 @@ import 'package:getwidget/getwidget.dart';
 import 'package:study/components/already_have_an_account_acheck.dart';
 import 'package:study/components/rounded_button.dart';
 import 'package:study/components/rounded_input_field.dart';
-import 'package:study/components/rounded_password_field.dart';
+
+import 'package:study/components/text_field_container.dart';
+
 import './faculty_home_page.dart';
 import './student_home_page.dart';
 import '../constants/constants.dart';
@@ -25,6 +27,7 @@ var incorrectDetails = false;
 var loginError = "";
 var userName = "";
 var userID = "";
+bool _passwordVisible = false;
 
 final emailcontroller = TextEditingController();
 final passwordcontroller = TextEditingController();
@@ -102,9 +105,34 @@ class _LoginPage extends State<LoginPage> {
                       textController: emailcontroller,
                       onChanged: (value) {},
                     ),
-                    RoundedPasswordField(
-                      textController: passwordcontroller,
-                      onChanged: (value) {},
+                    TextFieldContainer(
+                      child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        controller: passwordcontroller,
+                        obscureText: !_passwordVisible,
+                        cursorColor: kPrimaryColor,
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          icon: const Icon(
+                            Icons.lock,
+                            color: kPrimaryColor,
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _passwordVisible
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: kPrimaryColor,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _passwordVisible = !_passwordVisible;
+                              });
+                            },
+                          ),
+                          border: InputBorder.none,
+                        ),
+                      ),
                     ),
                     Container(
                       height: 55,
@@ -198,140 +226,6 @@ class _LoginPage extends State<LoginPage> {
             ],
           ),
         ),
-        // body: SingleChildScrollView(
-        //   child: Column(
-        //     children: <Widget>[
-        //       const Padding(
-        //         padding: EdgeInsets.only(top: 40.0, bottom: 40.0),
-        //         child: Center(
-        //             child: Text(
-        //           "Login",
-        //           style: TextStyle(color: Colors.grey, fontSize: 32),
-        //         )),
-        //       ),
-        //       incorrectDetails
-        //           ? Padding(
-        //               padding: const EdgeInsets.symmetric(
-        //                   horizontal: 20, vertical: 20),
-        //               child: Text(
-        //                 loginError.toString(),
-        //                 style: const TextStyle(
-        //                   color: Colors.red,
-        //                 ),
-        //                 textAlign: TextAlign.left,
-        //               ),
-        //             )
-        //           : const Padding(
-        //               padding:
-        //                   EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        //               child: Text(
-        //                 "Enter your details below to login",
-        //                 style: TextStyle(color: Colors.black),
-        //                 textAlign: TextAlign.left,
-        //               ),
-        //             ),
-        //       Padding(
-        //         padding: const EdgeInsets.symmetric(horizontal: 15),
-        //         child: TextField(
-        //           controller: emailcontroller,
-        //           obscureText: false,
-        //           decoration: const InputDecoration(
-        //               border: OutlineInputBorder(),
-        //               labelText: 'Email',
-        //               hintText: 'Enter valid Email'),
-        //         ),
-        //       ),
-        //       Padding(
-        //         padding: const EdgeInsets.only(
-        //             left: 15.0, right: 15.0, top: 15, bottom: 0),
-        //         child: TextField(
-        //           controller: passwordcontroller,
-        //           obscureText: true,
-        //           decoration: const InputDecoration(
-        //               border: OutlineInputBorder(),
-        //               labelText: 'Password',
-        //               hintText: 'Enter secure password'),
-        //         ),
-        //       ),
-        //       Padding(
-        //         padding: const EdgeInsets.only(
-        //             left: 15.0, right: 15.0, top: 15, bottom: 0),
-        //         child: Container(
-        //           height: 50,
-        //           width: MediaQuery.of(context).size.width,
-        //           margin: const EdgeInsets.all(20),
-        //           child: DropdownButtonHideUnderline(
-        //             child: GFDropdown(
-        //               padding: const EdgeInsets.all(15),
-        //               borderRadius: BorderRadius.circular(10),
-        //               border: const BorderSide(color: Colors.black12, width: 1),
-        //               dropdownButtonColor: Colors.grey[300],
-        //               value: dropdownValue,
-        //               hint: const Text("Select Login Type"),
-        //               onChanged: (newValue) {
-        //                 setState(() {
-        //                   dropdownValue = newValue;
-        //                 });
-        //               },
-        //               items: ['faculty', 'student']
-        //                   .map((value) => DropdownMenuItem(
-        //                         value: value,
-        //                         child: Text(value),
-        //                       ))
-        //                   .toList(),
-        //             ),
-        //           ),
-        //         ),
-        //       ),
-        //       TextButton(
-        //         onPressed: () {},
-        //         child: const Text(
-        //           'Forgot Password',
-        //           style: TextStyle(color: Colors.blue, fontSize: 15),
-        //         ),
-        //       ),
-        //       Container(
-        //         height: 50,
-        //         width: 250,
-        //         decoration: BoxDecoration(
-        //             color: Colors.blue,
-        //             borderRadius: BorderRadius.circular(20)),
-        //         child: TextButton(
-        //           onPressed: () async {
-        //             var dialogContext = showAlertDialog(context, "Logging IN");
-        //             if (await login() == "Error") {
-        //               Navigator.pop(dialogContext);
-        //               setState(() {
-        //                 incorrectDetails = true;
-        //                 Navigator.pushAndRemoveUntil(
-        //                     context,
-        //                     MaterialPageRoute(
-        //                         builder: (_) => const LoginPage()),
-        //                     ModalRoute.withName("/Home"));
-        //               });
-        //             } else {
-        //               loginSucessfull();
-        //             }
-        //           },
-        //           child: const Text(
-        //             'Login',
-        //             style: TextStyle(color: Colors.white, fontSize: 25),
-        //           ),
-        //         ),
-        //       ),
-        //       const SizedBox(
-        //         height: 30,
-        //       ),
-        //       TextButton(
-        //         onPressed: () {
-        //           Navigator.push(context,
-        //               MaterialPageRoute(builder: (_) => const Signup()));
-        //         },
-        //         child: const Text("New User? Create account"),
-        //       )
-        //     ],
-        //   ),
-        // ),
       ),
     );
   }
@@ -357,6 +251,18 @@ class _LoginPage extends State<LoginPage> {
   }
 
   Future<String> login() async {
+    if (emailcontroller.text == "") {
+      loginError = "email cannot be empty";
+      return Future.value("Error");
+    } else if (passwordcontroller.text == "" ||
+        passwordcontroller.text.length < 6 ||
+        passwordcontroller.text.length > 15) {
+      loginError = "password must be 6-15 characters";
+      return Future.value("Error");
+    } else if (dropdownValue.toString() == "") {
+      loginError = "select proper loginType";
+      return Future.value("Error");
+    }
     final ioc = HttpClient();
     ioc.badCertificateCallback =
         (X509Certificate cert, String host, int port) => true;
@@ -386,7 +292,12 @@ class _LoginPage extends State<LoginPage> {
     var res = response1.body;
 
     var obj = json.decode(res);
-    loginError = obj['error'];
+    if (obj['error'] ==
+        "crypto/bcrypt: hashedPassword is not the hash of the given password") {
+      loginError = "Email or password incorrect";
+    } else {
+      loginError = obj['error'];
+    }
 
     return Future.value("Error");
   }
@@ -394,6 +305,7 @@ class _LoginPage extends State<LoginPage> {
   void loginSucessfull() {
     incorrectDetails = false;
     loginError = "";
+    _passwordVisible = false;
 
     store('token', token, dropdownValue.toString(), userName, userID);
     emailcontroller.clear();

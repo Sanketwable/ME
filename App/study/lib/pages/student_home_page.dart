@@ -45,6 +45,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    getInfo();
     return GestureDetector(
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
       child: Scaffold(
@@ -89,18 +90,23 @@ class _StudentHomePageState extends State<StudentHomePage> {
           backgroundColor: kPrimaryColor,
           title: const Text('Student'),
           actions: [
-            Container(
-              padding:
-                  const EdgeInsets.only(top: 8, bottom: 8, right: 12, left: 8),
-              child: FutureBuilder(
-                builder: (context, data) {
-                  return CircleAvatar(
-                      backgroundColor: kPrimaryColor,
-                      radius: 20,
-                      onBackgroundImageError: (object, stackTrace) => {},
-                      backgroundImage: NetworkImage(data.data.toString()));
-                },
-                future: getProfilePhotoURL(),
+            TextButton(
+              onPressed: () {
+                _onItemTapped(1);
+              },
+              child: Container(
+                padding: const EdgeInsets.only(
+                    top: 1, bottom: 1, right: 12, left: 8),
+                child: FutureBuilder(
+                  builder: (context, data) {
+                    return CircleAvatar(
+                        backgroundColor: kPrimaryColor,
+                        radius: 20,
+                        onBackgroundImageError: (object, stackTrace) => {},
+                        backgroundImage: NetworkImage(data.data.toString()));
+                  },
+                  future: getProfilePhoto(),
+                ),
               ),
             ),
           ],
@@ -165,6 +171,11 @@ class _StudentHomePageState extends State<StudentHomePage> {
         body: Container(child: _buildChild(_selectedPage)),
       ),
     );
+  }
+
+  Future getProfilePhoto() async {
+    await getInfo();
+    return await getProfilePhotoURL();
   }
 
   Widget _buildChild(int index) {
@@ -238,7 +249,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                         child: edit
                             ? CircleAvatar(
                                 radius: 51,
-                                backgroundColor: kPrimaryLightColor,
+                                // backgroundColor: kPrimaryLightColor,
                                 child: _image != null
                                     ? ClipRRect(
                                         borderRadius: BorderRadius.circular(50),
@@ -246,7 +257,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                           File(_image.path),
                                           width: 100,
                                           height: 100,
-                                          fit: BoxFit.fitHeight,
+                                          fit: BoxFit.cover,
                                         ),
                                       )
                                     : ClipRRect(
@@ -255,7 +266,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                           profilePhoto,
                                           height: 100,
                                           width: 100,
-                                          fit: BoxFit.fitHeight,
+                                          fit: BoxFit.cover,
                                           errorBuilder: (context, obj, st) {
                                             return Container(
                                               decoration: BoxDecoration(
@@ -282,7 +293,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                           profilePhoto,
                                           height: 100,
                                           width: 100,
-                                          fit: BoxFit.fitHeight,
+                                          fit: BoxFit.cover,
                                           errorBuilder: (context, obj, st) {
                                             return Container(
                                               decoration: BoxDecoration(
@@ -336,6 +347,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                     hintText: "Phone No",
                     onChanged: (str) {},
                     textController: phoneNoController,
+                    keyboardType: TextInputType.number,
                     inputFormatter: [
                       FilteringTextInputFormatter.digitsOnly,
                       LengthLimitingTextInputFormatter(10),
@@ -346,6 +358,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                   RoundedInputField(
                     hintText: "Year",
                     onChanged: (str) {},
+                    keyboardType: TextInputType.number,
                     inputFormatter: [FilteringTextInputFormatter.digitsOnly],
                     textController: yearController,
                     readOnly: !edit,
@@ -540,7 +553,8 @@ class _StudentHomePageState extends State<StudentHomePage> {
 
     var obj = json.decode(res);
     if (statusCode == 200) {
-      storeProfileURL(obj["profile_photo"]);
+      // ignore: unused_local_variable
+      var a = storeProfileURL(obj["profile_photo"]);
       return obj;
     }
     List<int> l = [];
@@ -760,7 +774,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                                       datas.year.toString(),
                                                   style: const TextStyle(
                                                       color: Colors.black,
-                                                      fontSize: 18),
+                                                      fontSize: 18, fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                               Padding(
@@ -771,7 +785,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                                       datas.classCode,
                                                   style: const TextStyle(
                                                       color: Colors.blueAccent,
-                                                      fontSize: 12),
+                                                      fontSize: 12, fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                               Padding(
@@ -781,7 +795,7 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                                   datas.classLink + "\n",
                                                   style: const TextStyle(
                                                       color: Colors.blue,
-                                                      fontSize: 11),
+                                                      fontSize: 11, fontWeight: FontWeight.w600),
                                                 ),
                                               ),
                                             ],
@@ -893,3 +907,4 @@ class MyClasses {
         json['image_link'] as String);
   }
 }
+

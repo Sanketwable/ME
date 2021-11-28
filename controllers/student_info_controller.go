@@ -51,8 +51,10 @@ func CreateStudentInfo(w http.ResponseWriter, r *http.Request) {
 
 	token := auth.ExtractToken(r)
 	herokuURL := config.HEROKUURL
-	smsContent := `Click on the URL to verify your mobile number for Study App URL : ` + herokuURL +`/verifymobile?token=` + token
+	smsContent := `Click on the URL to verify your mobile number for Study App URL : ` + herokuURL + `/verifymobile?token=` + token
 	smsErr := SendCellularSMS(mobileNo, smsContent)
+	fmt.Println(smsErr)
+	smsErr = nil
 	if smsErr == nil {
 		// db, err := database.Connect()
 		// if err != nil {

@@ -69,7 +69,7 @@ class _FacultyAssignmentState extends State<FacultyAssignment> {
                 children: [
                   Center(
                     child: Text(
-                      "Due : " + assignmentData["due"].toString(),
+                      "Due : " + assignmentData["due"].toString().substring(0, 10),
                       style: const TextStyle(color: Colors.black, fontSize: 18),
                     ),
                   ),

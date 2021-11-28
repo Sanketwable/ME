@@ -54,12 +54,12 @@ class _StudentInfoState extends State<StudentInfo> {
                     "congrats " + userName + " your accout is created ",
                     style: const TextStyle(color: kPrimaryColor, fontSize: 10),
                   )),
-              Padding(
-                padding: const EdgeInsets.only(top: 10.0, bottom: 30.0),
+              const Padding(
+                padding: EdgeInsets.only(top: 10.0, bottom: 30.0),
                 child: Center(
                     child: Text(
                   "\nEnter your basic Info ",
-                  style: const TextStyle(color: Colors.grey, fontSize: 20),
+                  style: TextStyle(color: Colors.grey, fontSize: 20),
                 )),
               ),
               Center(
@@ -107,6 +107,7 @@ class _StudentInfoState extends State<StudentInfo> {
               RoundedInputField(
                 hintText: "Phone No.",
                 textController: phoneNoController,
+                keyboardType: TextInputType.number,
                 inputFormatter: [
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(10),
@@ -146,19 +147,19 @@ class _StudentInfoState extends State<StudentInfo> {
                       items: ['1', '2', '3', '4', '5']
                           .map((value) => DropdownMenuItem(
                                 value: value,
-                                child: Container(
-                                    child: Row(
+                                child: Row(
                                   children: [
                                     // Icon(Icons.present_to_all_rounded),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 8.0),
                                       child: Text(
                                         value,
-                                        style: TextStyle(color: Colors.black),
+                                        style: const TextStyle(
+                                            color: Colors.black),
                                       ),
                                     ),
                                   ],
-                                )),
+                                ),
                               ))
                           .toList(),
                     ),
@@ -305,7 +306,7 @@ class _StudentInfoState extends State<StudentInfo> {
         'profile_photo': imageLink.toString(),
       }),
     );
-
+    print(response1.body);
     if (response1.statusCode == 201) {
       return Future.value("Submitted");
     }

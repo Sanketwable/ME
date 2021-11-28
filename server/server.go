@@ -15,9 +15,12 @@ import (
 func Run() {
 	config.Load()
 	fmt.Println("config file loaded")
-	database.DBConnect()
+	_, err := database.DBConnect()
+	if err != nil {
+		fmt.Println(err)
+	}
 	auto.Load()
-	
+
 	fmt.Println("DB loaded")
 
 	fmt.Printf("\n\tListening.......[::]:%d \n", config.PORT)

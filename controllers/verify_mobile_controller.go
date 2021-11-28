@@ -7,12 +7,13 @@ import (
 	"api/repository"
 	"api/repository/crud"
 	"api/responses"
+	"fmt"
 	"net/http"
 )
 
 // VerifyMobile is endpoint to verify the link on sms send on mobile
 func VerifyMobile(w http.ResponseWriter, r *http.Request) {
-	
+
 	id, _ := auth.ExtractTokenID(r)
 
 	user := models.User{}
@@ -20,7 +21,6 @@ func VerifyMobile(w http.ResponseWriter, r *http.Request) {
 
 	user = findUser(user)
 	message := []byte("verified")
-	
 
 	// db, err := database.Connect()
 	// if err != nil {
@@ -39,7 +39,11 @@ func VerifyMobile(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write(message)
+			_, err = w.Write(message)
+			if err != nil {
+				fmt.Println(err)
+			}
+
 		}(repo)
 	} else if user.ID != 0 && user.LoginType == "student" {
 		repo := crud.NewRepositoryStudentInfoCRUD(database.DB)
@@ -51,7 +55,10 @@ func VerifyMobile(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			w.WriteHeader(http.StatusOK)
-			w.Write(message)
+			_, err = w.Write(message)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}(repo)
 
 	}
