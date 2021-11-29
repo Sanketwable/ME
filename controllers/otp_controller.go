@@ -59,7 +59,7 @@ func OTP(email string, w http.ResponseWriter, Emailsub string) {
 	
 	otpresponse.Message = "OTP sent"
 	otpresponse.ExpiresAt = tempotp.ExpiresAt
-
+	DeleteTemp(otprequest.Email)
 	err = SaveTemp(tempotp)
 	if err != nil {
 		fmt.Println("error to store otp into DB is : ",err)

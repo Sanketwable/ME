@@ -79,7 +79,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 			responses.ERROR(w, http.StatusNotAcceptable, err1)
 			return
 		}
-		DeleteTemp(tempotp.Email, tempotp)
+		DeleteTemp(tempotp.Email)
 
 		user.Prepare()
 		if err := checkmail.ValidateFormat(user.Email); err == nil {

@@ -10,10 +10,11 @@ import 'package:study/components/rounded_button.dart';
 import 'package:study/components/rounded_input_field.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
-import 'package:study/pages/student_home_page.dart';
+
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/services.dart';
+import 'package:study/pages/Student/student_home_page.dart';
 
 final firstNameController = TextEditingController();
 final lastNameController = TextEditingController();
@@ -309,7 +310,7 @@ class _StudentInfoState extends State<StudentInfo> {
         'profile_photo': imageLink.toString(),
       }),
     );
-    print(response1.body);
+
     if (response1.statusCode == 201) {
       return Future.value("Submitted");
     }

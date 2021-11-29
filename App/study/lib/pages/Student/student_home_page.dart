@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:study/components/rounded_button.dart';
 import 'package:study/components/rounded_input_field.dart';
+import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
+import 'package:study/models/class_model.dart';
+import 'package:study/pages/Student/student_class.dart';
 import 'package:study/pages/redirect_page.dart';
 import 'dart:io';
 // ignore: import_of_legacy_library_into_null_safe
@@ -10,13 +13,9 @@ import 'dart:convert';
 
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
-import 'package:study/pages/student_class.dart';
 
-import '../constants/constants.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:image_picker/image_picker.dart';
-
-import '../controllers/token.dart';
 
 import 'dart:ui';
 import 'package:flutter/cupertino.dart';
@@ -24,6 +23,21 @@ import 'package:flutter/services.dart';
 
 var studentUserName = "";
 List<MyClasses> classes = [];
+var classCodeController = TextEditingController();
+var codeSubmitted = false;
+var codeError = "";
+
+var firstNameController = TextEditingController();
+var lastNameController = TextEditingController();
+var phoneNoController = TextEditingController();
+var yearController = TextEditingController();
+var profilePhoto = "";
+var updateError = "";
+// ignore: prefer_typing_uninitialized_variables
+var year;
+var edit = false;
+// ignore: prefer_typing_uninitialized_variables
+var _image;
 
 class StudentHomePage extends StatefulWidget {
   StudentHomePage(String username, {Key? key}) : super(key: key) {
@@ -173,11 +187,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
     );
   }
 
-  Future getProfilePhoto() async {
-    await getInfo();
-    return await getProfilePhotoURL();
-  }
-
   Widget _buildChild(int index) {
     switch (index) {
       case 0:
@@ -190,21 +199,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
         );
     }
   }
-
-  var codeSubmitted = false;
-  var codeError = "";
-
-  var firstNameController = TextEditingController();
-  var lastNameController = TextEditingController();
-  var phoneNoController = TextEditingController();
-  var yearController = TextEditingController();
-  var profilePhoto = "";
-  var updateError = "";
-  // ignore: prefer_typing_uninitialized_variables
-  var year;
-  var edit = false;
-  // ignore: prefer_typing_uninitialized_variables
-  var _image;
 
   Widget me() {
     return FutureBuilder(
@@ -443,124 +437,6 @@ class _StudentHomePageState extends State<StudentHomePage> {
         });
   }
 
-  _imgFromCamera() async {
-    PickedFile image = await ImagePicker()
-        .getImage(source: ImageSource.camera, imageQuality: 50);
-
-    setState(() {
-      _image = image;
-    });
-  }
-
-  _imgFromGallery() async {
-    PickedFile image = await ImagePicker()
-        .getImage(source: ImageSource.gallery, imageQuality: 50);
-
-    setState(() {
-      _image = image;
-    });
-  }
-
-  showAlertDialog(BuildContext context, String lodingText) {
-    AlertDialog alert = AlertDialog(
-      content: Row(
-        children: [
-          const CircularProgressIndicator(),
-          Container(
-              margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
-        ],
-      ),
-    );
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
-  }
-
-  Future uploadImage() async {
-    var uri =
-        Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
-    var request = http.MultipartRequest('POST', uri);
-
-    request.files.add(await http.MultipartFile.fromPath('image', _image.path));
-    final response = (await request.send());
-    final respStr = await response.stream.bytesToString();
-
-    var obj = json.decode(respStr);
-    if (response.statusCode == 200) {
-      return obj["data"]["image"]["url"];
-    }
-    return "no image";
-  }
-
-  Future<String> updateBasicInfo() async {
-    var imageLink = "";
-    if (_image != null) {
-      imageLink = await uploadImage();
-      storeProfileURL(imageLink);
-    } else {
-      imageLink = await getProfilePhotoURL();
-    }
-
-    var token = await getValue("token");
-
-    final ioc = HttpClient();
-    ioc.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-    final http1 = IOClient(ioc);
-    final http.Response response1 = await http1.put(
-      url + '/studentinfo',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + token,
-      },
-      body: jsonEncode(<String, dynamic>{
-        'first_name': firstNameController.text,
-        'last_name': lastNameController.text,
-        'phone_no': phoneNoController.text,
-        'profile_photo': imageLink.toString(),
-        'year': int.parse(yearController.text),
-      }),
-    );
-
-    if (response1.statusCode == 201) {
-      return Future.value("Submitted");
-    }
-
-    return Future.value("Error");
-  }
-
-  Future<dynamic> getInfo() async {
-    var token = await getValue("token");
-
-    final ioc = HttpClient();
-    ioc.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-    final http1 = IOClient(ioc);
-
-    final http.Response response1 = await http1.get(
-      url + '/studentinfo',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + token,
-      },
-    );
-    var res = response1.body;
-    var statusCode = response1.statusCode;
-
-    var obj = json.decode(res);
-    if (statusCode == 200) {
-      // ignore: unused_local_variable
-      var a = storeProfileURL(obj["profile_photo"]);
-      return obj;
-    }
-    List<int> l = [];
-    return l;
-  }
-
   BuildContext addClassCode(BuildContext context) {
     AlertDialog alert = AlertDialog(
       elevation: 5.0,
@@ -774,7 +650,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                                       datas.year.toString(),
                                                   style: const TextStyle(
                                                       color: Colors.black,
-                                                      fontSize: 18, fontWeight: FontWeight.w600),
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.w600),
                                                 ),
                                               ),
                                               Padding(
@@ -785,7 +663,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                                       datas.classCode,
                                                   style: const TextStyle(
                                                       color: Colors.blueAccent,
-                                                      fontSize: 12, fontWeight: FontWeight.w600),
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.w600),
                                                 ),
                                               ),
                                               Padding(
@@ -795,7 +675,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
                                                   datas.classLink + "\n",
                                                   style: const TextStyle(
                                                       color: Colors.blue,
-                                                      fontSize: 11, fontWeight: FontWeight.w600),
+                                                      fontSize: 11,
+                                                      fontWeight:
+                                                          FontWeight.w600),
                                                 ),
                                               ),
                                             ],
@@ -817,6 +699,124 @@ class _StudentHomePageState extends State<StudentHomePage> {
         ),
       ],
     );
+  }
+
+  _imgFromCamera() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.camera, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  _imgFromGallery() async {
+    PickedFile image = await ImagePicker()
+        .getImage(source: ImageSource.gallery, imageQuality: 50);
+
+    setState(() {
+      _image = image;
+    });
+  }
+
+  showAlertDialog(BuildContext context, String lodingText) {
+    AlertDialog alert = AlertDialog(
+      content: Row(
+        children: [
+          const CircularProgressIndicator(),
+          Container(
+              margin: const EdgeInsets.only(left: 5), child: Text(lodingText)),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  Future uploadImage() async {
+    var uri =
+        Uri.parse(imageUploadUrl + "?key=7c2ac71fd6246e5730c7c0cb22c0a654");
+    var request = http.MultipartRequest('POST', uri);
+
+    request.files.add(await http.MultipartFile.fromPath('image', _image.path));
+    final response = (await request.send());
+    final respStr = await response.stream.bytesToString();
+
+    var obj = json.decode(respStr);
+    if (response.statusCode == 200) {
+      return obj["data"]["image"]["url"];
+    }
+    return "no image";
+  }
+
+  Future<String> updateBasicInfo() async {
+    var imageLink = "";
+    if (_image != null) {
+      imageLink = await uploadImage();
+      storeProfileURL(imageLink);
+    } else {
+      imageLink = await getProfilePhotoURL();
+    }
+
+    var token = await getValue("token");
+
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.put(
+      url + '/studentinfo',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        'first_name': firstNameController.text,
+        'last_name': lastNameController.text,
+        'phone_no': phoneNoController.text,
+        'profile_photo': imageLink.toString(),
+        'year': int.parse(yearController.text),
+      }),
+    );
+
+    if (response1.statusCode == 201) {
+      return Future.value("Submitted");
+    }
+
+    return Future.value("Error");
+  }
+
+  Future<dynamic> getInfo() async {
+    var token = await getValue("token");
+
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+
+    final http.Response response1 = await http1.get(
+      url + '/studentinfo',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    var res = response1.body;
+    var statusCode = response1.statusCode;
+
+    var obj = json.decode(res);
+    if (statusCode == 200) {
+      // ignore: unused_local_variable
+      var a = storeProfileURL(obj["profile_photo"]);
+      return obj;
+    }
+    List<int> l = [];
+    return l;
   }
 
   Future<List<dynamic>> getClasses() async {
@@ -868,43 +868,9 @@ class _StudentHomePageState extends State<StudentHomePage> {
     codeError = obj['error'];
     return Future.value("error");
   }
-}
 
-var classCodeController = TextEditingController();
-
-class MyClasses {
-  int classID;
-  String classCode = "";
-  int facultyID;
-  String classLink = "";
-  int year;
-  String branch = "";
-  String subject = "";
-  String imageLink = "";
-
-  Map toJson() => {
-        'class_id': classID,
-        'class_code': classCode,
-        'faculty_id': facultyID,
-        'link': classLink,
-        'year': year,
-        'branch': branch,
-        'subject': subject,
-        'image_link': imageLink,
-      };
-  MyClasses(this.classID, this.classCode, this.facultyID, this.classLink,
-      this.year, this.branch, this.subject, this.imageLink);
-
-  factory MyClasses.fromJson(dynamic json) {
-    return MyClasses(
-        json['class_id'] as int,
-        json['class_code'] as String,
-        json['faculty_id'] as int,
-        json['link'] as String,
-        json['year'] as int,
-        json['branch'] as String,
-        json['subject'] as String,
-        json['image_link'] as String);
+  Future getProfilePhoto() async {
+    await getInfo();
+    return await getProfilePhotoURL();
   }
 }
-

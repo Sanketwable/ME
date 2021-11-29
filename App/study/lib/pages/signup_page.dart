@@ -14,9 +14,11 @@ import 'package:study/components/already_have_an_account_acheck.dart';
 import 'package:study/components/rounded_button.dart';
 import 'package:study/components/rounded_input_field.dart';
 import 'package:study/components/text_field_container.dart';
-import 'package:study/pages/faculty_info.dart';
+import 'package:study/pages/Faculty/faculty_info.dart';
+import 'package:study/pages/Student/student_info.dart';
+
 import 'package:study/pages/login_page.dart';
-import 'package:study/pages/student_info.dart';
+
 import '../constants/constants.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:otp_text_field/style.dart';

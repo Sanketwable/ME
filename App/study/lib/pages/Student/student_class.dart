@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:study/constants/constants.dart';
 
 import 'package:study/controllers/token.dart';
 import 'dart:io';
@@ -9,47 +10,12 @@ import 'package:http/io_client.dart';
 import 'dart:convert';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
-import 'package:study/pages/student_home_page.dart';
-import '../pages/student_assignment_page.dart';
-import '../constants/constants.dart';
-
-import '../controllers/token.dart';
+import 'package:study/models/class_model.dart';
+import 'package:study/models/message_model.dart';
+import 'package:study/pages/Student/student_assignment_page.dart';
 
 // ignore: prefer_typing_uninitialized_variables
 var userID;
-
-class Message {
-  int messageID = 0;
-  int classID = 0;
-  int userID = 0;
-  String message = "";
-  String firstName = "";
-  String lastName = "";
-  String time = "";
-
-  Map toJson() => {
-        'message_id': messageID,
-        'class_id': classID,
-        'user_id': userID,
-        'message': message,
-        'first_name': firstName,
-        'last_name': lastName,
-        'time': time,
-      };
-  Message(this.messageID, this.classID, this.userID, this.message,
-      this.firstName, this.lastName, this.time);
-
-  factory Message.fromJson(dynamic json) {
-    return Message(
-        json['message_id'] as int,
-        json['class_id'] as int,
-        json['user_id'] as int,
-        json['message'] as String,
-        json['first_name'] as String,
-        json['last_name'] as String,
-        json['time'] as String);
-  }
-}
 
 // ignore: must_be_immutable
 class StudentClass extends StatefulWidget {
@@ -390,79 +356,6 @@ class _StudentClassState extends State<StudentClass> {
     );
   }
 
-  Widget controllScrollView(ScrollController scc) {
-    scc.jumpTo(
-      scc.position.maxScrollExtent,
-    );
-    return const SizedBox.shrink();
-  }
-
-  Stream<List<dynamic>> getMessages() async* {
-    while (true) {
-      await Future.delayed(const Duration(milliseconds: 500));
-      var someProduct = await getMessagesAPI();
-
-      yield someProduct;
-    }
-  }
-
-  Future<List> getMessagesAPI() async {
-    userID = await getUserID();
-    var token = await getValue("token");
-    final ioc = HttpClient();
-    ioc.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-    final http1 = IOClient(ioc);
-
-    final http.Response response1 = await http1.get(
-      url + '/message?class_id=' + classData.classID.toString(),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + token,
-      },
-    );
-    var res = response1.body;
-
-    if (response1.statusCode == 200) {
-      var classesObjsJson = jsonDecode(res) as List;
-      messages =
-          classesObjsJson.map((tagJson) => Message.fromJson(tagJson)).toList();
-      return messages;
-    }
-    var obj = json.decode(res);
-
-    return Future.value(obj["error"]);
-  }
-
-  Future<String> sendMessage() async {
-    if (messageController.text == "") {
-      return Future.value("error");
-    }
-    var token = await getValue("token");
-
-    final ioc = HttpClient();
-    ioc.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-    final http1 = IOClient(ioc);
-    final http.Response response1 = await http1.post(
-      url + '/message',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + token,
-      },
-      body: jsonEncode(<String, dynamic>{
-        "class_id": classData.classID,
-        "message": messageController.text,
-      }),
-    );
-
-    if (response1.statusCode == 200) {
-      return Future.value("sucessfull");
-    }
-
-    return Future.value("error");
-  }
-
   Widget assignmentPage() {
     return Column(
       children: [
@@ -607,6 +500,79 @@ class _StudentClassState extends State<StudentClass> {
         ),
       ],
     );
+  }
+
+  Widget controllScrollView(ScrollController scc) {
+    scc.jumpTo(
+      scc.position.maxScrollExtent,
+    );
+    return const SizedBox.shrink();
+  }
+
+  Stream<List<dynamic>> getMessages() async* {
+    while (true) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      var someProduct = await getMessagesAPI();
+
+      yield someProduct;
+    }
+  }
+
+  Future<List> getMessagesAPI() async {
+    userID = await getUserID();
+    var token = await getValue("token");
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+
+    final http.Response response1 = await http1.get(
+      url + '/message?class_id=' + classData.classID.toString(),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+    );
+    var res = response1.body;
+
+    if (response1.statusCode == 200) {
+      var classesObjsJson = jsonDecode(res) as List;
+      messages =
+          classesObjsJson.map((tagJson) => Message.fromJson(tagJson)).toList();
+      return messages;
+    }
+    var obj = json.decode(res);
+
+    return Future.value(obj["error"]);
+  }
+
+  Future<String> sendMessage() async {
+    if (messageController.text == "") {
+      return Future.value("error");
+    }
+    var token = await getValue("token");
+
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.post(
+      url + '/message',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + token,
+      },
+      body: jsonEncode(<String, dynamic>{
+        "class_id": classData.classID,
+        "message": messageController.text,
+      }),
+    );
+
+    if (response1.statusCode == 200) {
+      return Future.value("sucessfull");
+    }
+
+    return Future.value("error");
   }
 
   Future<List<dynamic>> getAssignments() async {

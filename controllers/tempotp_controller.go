@@ -54,7 +54,7 @@ func UpdateTemp(tempotp models.TempOTP) {
 }
 
 // DeleteTemp is a func
-func DeleteTemp(email string, tempotp models.TempOTP) {
+func DeleteTemp(email string) {
 	// db, err := database.Connect()
 	// if err != nil {
 	// 	fmt.Println(err)
@@ -65,7 +65,7 @@ func DeleteTemp(email string, tempotp models.TempOTP) {
 	repo := crud.NewRepositoryTempOTPCRUD(database.DB)
 
 	func(tempOTPRepository repository.TempOTPRepository) {
-		_, err := tempOTPRepository.Delete(email, tempotp)
+		_, err := tempOTPRepository.Delete(email)
 		if err != nil {
 			fmt.Println("error is :", err)
 			return

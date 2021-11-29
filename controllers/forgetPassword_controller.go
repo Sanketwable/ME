@@ -64,7 +64,7 @@ func ForgetPassword(w http.ResponseWriter, r *http.Request) {
 		responses.ERROR(w, http.StatusNotAcceptable, err1)
 		return
 	}
-	DeleteTemp(tempotp.Email, tempotp)
+	DeleteTemp(tempotp.Email)
 	UpdateForgettedPassword(req.Email, req.Password, uid, w)
 
 	token, err := auth.CreateToken(uid)

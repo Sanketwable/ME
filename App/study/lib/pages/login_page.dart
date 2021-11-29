@@ -13,9 +13,9 @@ import 'package:study/components/rounded_button.dart';
 import 'package:study/components/rounded_input_field.dart';
 
 import 'package:study/components/text_field_container.dart';
+import 'package:study/pages/Faculty/faculty_home_page.dart';
+import 'package:study/pages/Student/student_home_page.dart';
 
-import './faculty_home_page.dart';
-import './student_home_page.dart';
 import '../constants/constants.dart';
 import './signup_page.dart';
 import '../controllers/token.dart';

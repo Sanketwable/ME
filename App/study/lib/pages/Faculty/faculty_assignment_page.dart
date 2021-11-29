@@ -3,11 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
-import 'package:study/pages/faculty_class.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/io_client.dart';
+import 'package:study/models/question_model.dart';
 import 'dart:convert';
 
 // ignore: prefer_typing_uninitialized_variables

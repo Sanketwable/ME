@@ -65,7 +65,7 @@ func (r *repositoryTempOTPCRUD) FindByEmail(email string, tempotp models.TempOTP
 }
 
 // Delete is used to delete OTP after veification
-func (r *repositoryTempOTPCRUD) Delete(email string, tempotp models.TempOTP) (int64, error) {
+func (r *repositoryTempOTPCRUD) Delete(email string) (int64, error) {
 	var rs *gorm.DB 
 	done := make(chan bool) 
 	go func(ch chan<- bool) {

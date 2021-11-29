@@ -1,8 +1,8 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:study/pages/faculty_home_page.dart';
-import 'package:study/pages/student_home_page.dart';
+import 'package:study/pages/Faculty/faculty_home_page.dart';
+import 'package:study/pages/Student/student_home_page.dart';
 
 import 'package:study/pages/welcome_page.dart';
 import '../controllers/token.dart';
@@ -13,9 +13,7 @@ import 'package:http/io_client.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:http/http.dart' as http;
 
-import './faculty_home_page.dart';
-import './student_home_page.dart';
-import '../constants/constants.dart';
+import 'package:study/constants/constants.dart';
 
 var loginType = "";
 var userName = "";
@@ -28,40 +26,6 @@ class Redirect extends StatefulWidget {
 }
 
 class _RedirectState extends State<Redirect> {
-  Future finalAttemptoGetToken() async {
-    var tkn = await getValue("token");
-    await Future.delayed(Duration(seconds: 1));
-    final ioc = HttpClient();
-    ioc.badCertificateCallback =
-        (X509Certificate cert, String host, int port) => true;
-    final http1 = IOClient(ioc);
-    final http.Response response1 = await http1.get(
-      url + '/verifyuser',
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': "Bearer " + tkn,
-      },
-    );
-
-    if (response1.statusCode == 200) {
-      loginType = await getLoginType();
-      userName = await getUserName();
-      if (loginType == "faculty") {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => FacultyHomePage(userName)),
-            ModalRoute.withName("/Home"));
-      } else {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => StudentHomePage(userName)),
-            ModalRoute.withName("/Home"));
-      }
-    }
-
-    Future;
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -106,5 +70,39 @@ class _RedirectState extends State<Redirect> {
         ],
       ),
     );
+  }
+
+  Future finalAttemptoGetToken() async {
+    var tkn = await getValue("token");
+    await Future.delayed(const Duration(seconds: 1));
+    final ioc = HttpClient();
+    ioc.badCertificateCallback =
+        (X509Certificate cert, String host, int port) => true;
+    final http1 = IOClient(ioc);
+    final http.Response response1 = await http1.get(
+      url + '/verifyuser',
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': "Bearer " + tkn,
+      },
+    );
+
+    if (response1.statusCode == 200) {
+      loginType = await getLoginType();
+      userName = await getUserName();
+      if (loginType == "faculty") {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => FacultyHomePage(userName)),
+            ModalRoute.withName("/Home"));
+      } else {
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => StudentHomePage(userName)),
+            ModalRoute.withName("/Home"));
+      }
+    }
+
+    Future;
   }
 }

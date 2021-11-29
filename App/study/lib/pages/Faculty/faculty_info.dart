@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:getwidget/getwidget.dart';
 import 'package:study/constants/constants.dart';
 import 'package:study/controllers/token.dart';
-import 'package:study/pages/faculty_home_page.dart';
+import 'package:study/pages/Faculty/faculty_home_page.dart';
 
 final firstNameController = TextEditingController();
 final lastNameController = TextEditingController();
